@@ -140,12 +140,11 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
               <Link to="/" className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-lg flex items-center justify-center">
-                <Package size={40} />
-              </div>
-              <span className="text-xl font-bold tracking-tight">
-                PickoPick
-              </span>
+                <img
+                  src="/PICKLogo.png"
+                  alt="PickoPick"
+                  className="h-24 md:h-32 lg:h-40 object-contain hover:scale-105 transition"
+                />
               </Link>
 
               {/* Right */}

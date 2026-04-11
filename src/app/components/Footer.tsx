@@ -7,12 +7,13 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-16">
           <div className="col-span-2 lg:col-span-2">
             <a href="#" className="flex items-center gap-2 mb-6 text-white">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-lg flex items-center justify-center">
-                <Package size={20} />
+              <div className="mb-6 -mt-[80px] md:-mt-[115px] -mb-[120px] md:-mb-[145px] w-[200px] md:w-[240px]">
+                <img
+                  src="/PICKLogo.png"
+                  alt="PickoPick"
+                  className="w-full object-contain"
+                />
               </div>
-              <span className="text-xl font-bold tracking-tight">
-                PickoPick
-              </span>
             </a>
             <p className="mb-6 max-w-sm">
               Your premium global logistics partner. Buy from any Indian store and we'll ship it to your doorstep anywhere in the world.

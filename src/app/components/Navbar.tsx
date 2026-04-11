@@ -55,181 +55,92 @@ export function Navbar() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
-        <nav className={`pointer-events-auto w-full transition-all duration-300 ${isScrolled ? 'bg-gradient-to-r from-blue-600/95 to-indigo-800/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10' : 'bg-gradient-to-r from-blue-600 to-indigo-800 py-5 shadow-xl'}`}>
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
+        <nav className={`w-full transition-all duration-300 ${
+          isScrolled
+            ? 'bg-gradient-to-r from-blue-600/95 to-indigo-800/95 backdrop-blur-md py-3'
+            : 'bg-gradient-to-r from-blue-600 to-indigo-800 py-5'
+        }`}>
           <div className="px-6 flex items-center justify-between">
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => handleScrollTo(e, link.href)}
-                className={`relative font-semibold text-base whitespace-nowrap transition-all
-                  ${link.highlight 
-                    ? 'text-yellow-300 animate-pulse' 
-                    : 'text-white/90 hover:text-white'
+
+            {/* ✅ LOGO */}
+            {/* <div className="flex items-center">
+              <img
+                src="/PICKLogo.png"
+                alt="PickoPick"
+                className="h-10 sm:h-12 md:h-14 object-contain"
+              />
+            </div> */}
+
+            {/* Desktop Nav */}
+            <div className="hidden lg:flex items-center gap-6">
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => handleScrollTo(e, link.href)}
+                  className={`font-semibold ${
+                    link.highlight
+                      ? 'text-yellow-300 animate-pulse'
+                      : 'text-white/90 hover:text-white'
                   }`}
+                >
+                  {link.name}
+                </a>
+              ))}
+            </div>
+
+            {/* Desktop Right */}
+            <div className="hidden lg:flex items-center gap-6">
+              <button
+                onClick={() => setIsLoginOpen(true)}
+                className="text-white"
               >
-               {link.name}
-                {link.highlight && (
-                  <>
-                    <img src="/icons/fire.gif" className="w-4 h-4 inline ml-1" />
-                    <span className="ml-1 text-xs bg-yellow-400 text-black px-1 rounded">
-                      NEW
-                    </span>
-                  </>
-                )}
-              </a>
-            ))}
+                Login
+              </button>
+              <button
+                onClick={() => setIsRegisterOpen(true)}
+                className="bg-white px-6 py-2 rounded-full font-bold"
+              >
+                Register
+              </button>
+            </div>
+
+            {/* Mobile */}
+            <div className="lg:hidden flex items-center gap-4">
+              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                {isMobileMenuOpen ? <X /> : <Menu />}
+              </button>
+            </div>
           </div>
 
-          {/* Right Actions */}
-          <div className="hidden lg:flex items-center gap-6 ml-auto">
-            {user ? (
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col items-end">
-                  <span className="text-white font-bold text-sm">{user.name}</span>
-                  <button 
-                    onClick={handleLogout}
-                    className="text-white/60 hover:text-white text-xs font-medium transition-colors"
-                  >
-                    Logout
-                  </button>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-bold">
-                  {user.name.charAt(0)}
-                </div>
-              </div>
-            ) : (
-              <>
-                <button 
-                  onClick={() => setIsLoginOpen(true)}
-                  className="flex items-center gap-2 text-white/90 hover:text-white font-semibold transition-colors"
-                >
-                  <LogIn size={18} />
-                  <span>Login</span>
-                </button>
-                <button 
-                  onClick={() => setIsRegisterOpen(true)}
-                  className="relative overflow-hidden rounded-full bg-white px-8 py-3 font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] group"
-                >
-                  <span className="absolute inset-0 bg-gradient-to-r from-blue-50 via-white to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <span className="relative z-10 flex items-center gap-2">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 text-base">
-                      Register Now
-                    </span>
-                    <motion.span
-                      initial={{ x: 0 }}
-                      whileHover={{ x: 4 }}
-                      className="inline-block text-indigo-600"
-                    >
-                      →
-                    </motion.span>
-                  </span>
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <div className="lg:hidden flex items-center justify-between w-full">
-            <span className="font-bold text-xl text-white">PickoPick</span>
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white">
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-blue-600/95 backdrop-blur-md border-t border-white/10 overflow-hidden rounded-b-2xl"
-            >
-              <div className="px-6 py-4 flex flex-col gap-4">
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: 'auto' }}
+                exit={{ height: 0 }}
+                className="lg:hidden px-6 py-4"
+              >
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
                     href={link.href}
                     onClick={(e) => handleScrollTo(e, link.href)}
-                    className="text-white/90 hover:text-white font-semibold py-2"
+                    className="block py-2 text-white"
                   >
                     {link.name}
                   </a>
                 ))}
-                <div className="flex flex-col gap-4 pt-4 border-t border-white/10">
-                  {user ? (
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-4 px-2">
-                        <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-bold">
-                          {user.name.charAt(0)}
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-white font-bold">{user.name}</span>
-                          <span className="text-white/60 text-xs">{user.email}</span>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={handleLogout}
-                        className="bg-white/10 text-white px-6 py-3 rounded-full font-bold text-center hover:bg-white/20 transition-colors"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <button 
-                        onClick={() => {
-                          setIsLoginOpen(true);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="flex items-center justify-center gap-2 text-white/90 hover:text-white font-semibold py-2"
-                      >
-                        <LogIn size={18} />
-                        <span>Login</span>
-                      </button>
-                      <button 
-                        onClick={() => {
-                          setIsRegisterOpen(true);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="bg-white px-6 py-3 rounded-full font-bold text-center hover:scale-[1.02] transition-transform shadow-lg shadow-blue-900/20"
-                      >
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 text-base">
-                          Register Now
-                        </span>
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-    </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </nav>
+      </div>
 
-    <RegisterModal 
-        isOpen={isRegisterOpen} 
-        onClose={() => setIsRegisterOpen(false)} 
-        onLoginClick={() => {
-          setIsRegisterOpen(false);
-          setIsLoginOpen(true);
-        }}
-      />
-
-    <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        onRegisterClick={() => {
-          setIsLoginOpen(false);
-          setIsRegisterOpen(true);
-        }}
-      />
+      <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </>
   );
 }
