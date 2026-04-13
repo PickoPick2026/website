@@ -124,7 +124,7 @@ async function startServer() {
 
 
 app.post("/api/auth/register", async (req, res) => {
-  const { name, email, password, otpVerified } = req.body;
+  const { name, email, password, otpVerified, phoneNumber } = req.body;
 
   if (!otpVerified) {
     return res.status(400).json({ error: "OTP not verified" });
@@ -160,7 +160,8 @@ app.post("/api/auth/register", async (req, res) => {
         {
           firstName: name,
           emailID: cleanEmail,
-          password: hashedPassword
+          password: hashedPassword,
+          phoneNumber: phoneNumber,
         }
       ])
       .select();
@@ -185,6 +186,52 @@ app.post("/api/auth/register", async (req, res) => {
     res.status(500).json({
       error: "Internal server error"
     });
+  }
+});
+
+app.post("/api/change-password", async (req, res) => {
+  try {
+    let { email, currentPassword, newPassword } = req.body;
+
+    if (!email || !currentPassword || !newPassword) {
+      return res.status(400).json({ error: "All fields required" });
+    }
+
+    email = email.trim().toLowerCase();
+
+    const { data: user, error } = await supabase
+      .from("customerList")
+      .select("*")
+      .eq("emailID", email)
+      .maybeSingle();
+
+    if (error || !user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const { error: updateError } = await supabase
+      .from("customerList")
+      .update({ password: hashedPassword })
+      .eq("emailID", email);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ error: "Failed to update password" });
+    }
+
+    return res.json({ message: "Password updated successfully" });
+
+  } catch (err) {
+    console.error("CHANGE PASSWORD ERROR:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 });
 // app.post("/api/verify-otp", (req, res) => {
@@ -283,22 +330,84 @@ app.post("/api/verify-otp", (req, res) => {
   }
 });
 
-app.post("/api/forgot-password", (req, res) => {
+app.post("/api/check-user-email", async (req, res) => {
   let { email } = req.body;
 
   email = email.trim().toLowerCase();
 
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const { data, error } = await supabase
+    .from("customerList")
+    .select("customerID")
+    .eq("emailID", email)
+    .maybeSingle();
 
-  // store in memory
-  otpStore[email] = {
-    otp,
-    expiry: Date.now() + 10 * 60 * 1000, // 10 mins
-  };
+  if (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
 
-  console.log("OTPforgot:", otp);
+  res.json({ exists: !!data });
+});
+app.post("/api/forgot-password", async (req, res) => {
+  try {
+    let { email, name } = req.body;
 
-  res.json({ message: "OTP generated" });
+    email = email.trim().toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({ error: "Email required" });
+    }
+
+    // ✅ CHECK USER EXISTS
+    const { data: user } = await supabase
+      .from("customerList")
+      .select("customerID")
+      .eq("emailID", email)
+      .maybeSingle();
+
+    if (!user) {
+      return res.status(400).json({
+        error: "Email not registered"
+      });
+    }
+
+    // ✅ GENERATE OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    otpStore[email] = {
+      otp,
+      expiry: Date.now() + 10 * 60 * 1000,
+      nextAllowedTime: Date.now() + 60 * 1000
+    };
+
+    console.log("FORGOT OTP:", otp);
+
+    // ✅ SEND EMAIL
+    await mailClient.sendMailWithTemplate({
+      template_key: "2518b.5f1360f6e8e70412.k1.510d86e0-2cc0-11f1-85bc-8e9a6c33ddc2.19d424f664e",
+      from: {
+        address: "noreply@pickopick.com",
+        name: "PickoPick"
+      },
+      to: [
+        {
+          email_address: {
+            address: email,
+            name: name || "User"
+          }
+        }
+      ],
+      merge_info: {
+        name: name || "User",
+        OTP: otp
+      }
+    });
+
+    res.json({ message: "OTP sent successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to send OTP" });
+  }
 });
 
 app.post("/api/reset-password", async (req, res) => {

@@ -143,23 +143,61 @@ const handleForgotPassword = async () => {
       // 📩 SEND OTP
       if (step === "forgot") {
 
-        const res = await fetch("http://localhost:3000/api/forgot-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: formData.email }),
-        });
+  if (!formData.email) {
+    toast.error("Enter email first");
+    setIsSubmitting(false);
+    return;
+  }
 
-        const data = await res.json();
+  try {
+    // ✅ CHECK EMAIL EXISTS
+    const checkRes = await fetch("http://localhost:3000/api/check-user-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: formData.email.trim().toLowerCase()
+      })
+    });
 
-        if (!res.ok) {
-          toast.error(data.error);
-          setIsSubmitting(false);
-          return;
-        }
+    const checkData = await checkRes.json();
 
-        toast.success("OTP sent successfully ✅");
-        setStep("reset");
-      }
+    console.log("CHECK EMAIL RESPONSE:", checkData);
+
+    if (!checkData.exists) {
+      toast.error("Email not registered ❌");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // ✅ SEND OTP
+    const res = await fetch("http://localhost:3000/api/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        name: "User"
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data.error);
+      setIsSubmitting(false);
+      return;
+    }
+
+    toast.success("OTP sent successfully ✅");
+    setStep("reset");
+
+  } catch {
+    toast.error("Failed to send OTP");
+  }
+}
 
       // 🔑 RESET PASSWORD
       if (step === "reset") {

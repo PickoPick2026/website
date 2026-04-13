@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Mail, Lock, ArrowRight, X } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, X, Phone } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase';
 import {toast } from 'sonner';
+import { useRef, useEffect } from "react";
+import intlTelInput from "intl-tel-input";
+
 
 
 
@@ -16,9 +19,12 @@ export function RegisterModal({ isOpen, onClose, onLoginClick }: RegisterModalPr
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    phoneNumber: '', 
     password: '',
     agreeTerms: false,
   });
+  const phoneRef = useRef<HTMLInputElement | null>(null);
+const itiRef = useRef<any>(null);
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -27,12 +33,18 @@ export function RegisterModal({ isOpen, onClose, onLoginClick }: RegisterModalPr
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  
+
 const validate = () => {
   const newErrors: Record<string, string> = {};
 
   if (!formData.fullName.trim()) {
     newErrors.fullName = "Full name is required";
   }
+  if (!formData.phoneNumber.trim()) {
+    newErrors.phoneNumber = "Mobile number is required";
+  }
+  
 
   if (!formData.email.trim()) {
     newErrors.email = "Email is required";
@@ -223,17 +235,18 @@ const handleVerifyOtp = async () => {
   
 const handleRegister = async (e: React.FormEvent) => {
   e.preventDefault();
-
+if (!validate()) return;
   if (!otpVerified) {
     toast.error("Please verify OTP first");
     return;
   }
 
-  if (!validate()) return;
+  
 
   setIsSubmitting(true);
 
   try {
+    
     const res = await fetch("http://localhost:3000/api/auth/register", {
       method: "POST",
       headers: {
@@ -243,6 +256,7 @@ const handleRegister = async (e: React.FormEvent) => {
         name: formData.fullName,
         email: formData.email,
         password: formData.password,
+        phoneNumber: formData.phoneNumber,
         otpVerified: true
       })
     });
@@ -288,8 +302,10 @@ const handleRegister = async (e: React.FormEvent) => {
 };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    
     setFormData(prev => ({
       ...prev,
+      
       [name]: type === 'checkbox' ? checked : value
     }));
     // Clear error when user types
@@ -375,6 +391,35 @@ const handleRegister = async (e: React.FormEvent) => {
                     </div>
                     {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
                   </div>
+                <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1.5">
+                        Mobile Number
+                      </label>
+
+                      <div className="relative">
+                        {/* Phone Icon */}
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Phone size={16} className="text-slate-400" />
+                        </div>
+
+                        <input
+                          type="tel"
+                          name="phoneNumber"
+                          value={formData.phoneNumber}
+                          onChange={handleChange}
+                          placeholder="Enter mobile number"
+                          className={`w-full pl-10 pr-4 py-2.5 text-sm bg-white border rounded-lg outline-none transition-all ${
+                            errors.phoneNumber
+                              ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                              : "border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          }`}
+                        />
+                      </div>
+
+                      {errors.phone && (
+                        <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                      )}
+                    </div>        
 
                   {/* Email */}
                   <div>

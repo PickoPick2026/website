@@ -1,3 +1,7 @@
+/* ✅ FIRST LINE ONLY */
+@import url("https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css");
+
+/* then others */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -179,4 +183,29 @@ html.lenis, html.lenis body {
   html {
     @apply font-sans;
   }
+}
+
+/* intl-tel-input fix */
+
+
+/* fix width */
+/* Fix alignment */
+.iti {
+  width: 100%;
+}
+
+.iti input {
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+}
+
+.iti__flag-container {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+.iti__flag {
+  background-image: url("https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/img/flags.png");
 }
