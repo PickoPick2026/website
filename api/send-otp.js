@@ -30,6 +30,26 @@ export default async function handler(req, res) {
     });
 
     // 👉 keep your ZeptoMail email sending here
+    await client.sendMailWithTemplate({
+      template_key: "2518b.5f1360f6e8e70412.k1.510d86e0-2cc0-11f1-85bc-8e9a6c33ddc2.19d424f664e",
+      from: {
+        address: "noreply@pickopick.com",
+        name: "PickoPick"
+      },
+      to: [
+        {
+          email_address: {
+            address: email,
+            name: name || "User"
+          }
+        }
+      ],
+      merge_info: {
+        name: name || "User",
+        OTP: otp
+      }
+    });
+
 
     res.json({ message: "OTP sent successfully" });
 
