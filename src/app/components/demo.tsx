@@ -93,7 +93,7 @@ export function LoginModal({ isOpen, onClose, onRegisterClick }: LoginModalProps
       // 📩 SEND OTP
       if (step === "forgot") {
 
-        const res = await fetch("http://localhost:3000/api/forgot-password", {
+        const res = await fetch("https://pickopick.com/api/forgot-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: formData.email }),
@@ -114,7 +114,7 @@ export function LoginModal({ isOpen, onClose, onRegisterClick }: LoginModalProps
       // 🔑 RESET PASSWORD
       if (step === "reset") {
 
-        const res = await fetch("http://localhost:3000/api/reset-password", {
+        const res = await fetch("https://pickopick.com/api/reset-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

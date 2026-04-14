@@ -77,7 +77,7 @@ const handleSendOtp = async () => {
 
   try {
     // ✅ CHECK EMAIL EXISTS FIRST
-    const checkRes = await fetch("http://localhost:3000/api/check-email", {
+    const checkRes = await fetch("https://pickopick.com/api/check-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -95,7 +95,7 @@ const handleSendOtp = async () => {
     }
 
     // ✅ SEND OTP
-    const res = await fetch("http://localhost:3000/api/send-otp", {
+    const res = await fetch("https://pickopick.com/api/send-otp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -128,7 +128,7 @@ const handleVerifyOtp = async () => {
       return;
     }
 
-    const res = await fetch("http://localhost:3000/api/verify-otp", {
+    const res = await fetch("https://pickopick.com/api/verify-otp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -203,7 +203,7 @@ const handleVerifyOtp = async () => {
 //    const user = data[0];
 
 // // ✅ FIRE AND FORGET (safe)
-// fetch("http://localhost:3000/api/send-email", {
+// fetch("https://pickopick.com/api/send-email", {
 //   method: "POST",
 //   headers: {
 //     "Content-Type": "application/json"
@@ -247,7 +247,7 @@ if (!validate()) return;
 
   try {
     
-    const res = await fetch("http://localhost:3000/api/auth/register", {
+    const res = await fetch("https://pickopick.com/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -273,7 +273,7 @@ if (!validate()) return;
     const user = data.user;
 
     // optional email trigger
-    fetch("http://localhost:3000/api/send-email", {
+    fetch("https://pickopick.com/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

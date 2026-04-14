@@ -124,7 +124,7 @@ export default function Profile() {
       return;
     }
 
-    const res = await fetch("http://localhost:3000/api/change-password", {
+    const res = await fetch("https://pickopick.com/api/change-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
