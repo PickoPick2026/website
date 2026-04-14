@@ -1,13 +1,8 @@
-import otpStore from "./_otpStore.js";
-
 export default async function handler(req, res) {
   try {
-    // ✅ Only allow POST
-    if (req.method !== "POST") {
-      return res.status(200).json({ message: "Use POST request" });
-    }
+    const otpStore = global.otpStore || {};
+    global.otpStore = otpStore;
 
-    // ✅ Safe body parsing
     const body = typeof req.body === "string"
       ? JSON.parse(req.body)
       : req.body || {};
@@ -32,7 +27,7 @@ export default async function handler(req, res) {
     res.json({ message: "OTP sent successfully" });
 
   } catch (err) {
-    console.error("SEND OTP ERROR:", err);
+    console.error(err);
     res.status(500).json({ error: "Failed to send OTP" });
   }
 }
