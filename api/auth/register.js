@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { createClient } from "@supabase/supabase-js";
+import { SendMailClient } from "zeptomail";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -13,15 +14,15 @@ export default async function handler(req, res) {
         ? JSON.parse(req.body)
         : req.body || {};
 
-    const { name, email, password } = body;
+    const { name, email, password, phoneNumber } = body;
 
-    if (!email || !password || !name) {
+    const cleanEmail = email.trim().toLowerCase();
+    
+    if (!email || !password || !name || !phoneNumber) {
       return res.status(400).json({ error: "All fields required" });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-
-    // ✅ CHECK OTP FROM DB
+    // ✅ CHECK OTP
     const { data: otpData } = await supabase
       .from("otp_store")
       .select("*")
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "OTP not verified" });
     }
 
-    // ✅ CHECK USER EXISTS
+    // ✅ CHECK EXISTING USER
     const { data: existing } = await supabase
       .from("customerList")
       .select("customerID")
@@ -54,6 +55,7 @@ export default async function handler(req, res) {
           firstName: name,
           emailID: cleanEmail,
           password: hashedPassword,
+          phoneNumber: phoneNumber,
         },
       ])
       .select();
@@ -62,10 +64,35 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: error.message });
     }
 
-    // ✅ DELETE OTP AFTER USE
+    const user = data[0];
+
+    // ✅ DELETE OTP
     await supabase.from("otp_store").delete().eq("email", cleanEmail);
 
-    res.json({ user: data[0] });
+    // ✅ SEND WELCOME EMAIL (YOUR CODE)
+    const mailClient = new SendMailClient({
+      url: "https://api.zeptomail.in/v1.1/email/template",
+      token: process.env.ZEPTO_TOKEN,
+    });
+
+    await mailClient.sendMailWithTemplate({
+      template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
+      from: {
+        address: "noreply@pickopick.com",
+        name: "PickoPick"
+      },
+      to: [
+        {
+          email_address: {
+            address: cleanEmail,
+            name: name,
+          }
+        }
+      ],
+      merge_info: {}
+    });
+
+    res.json({ user });
 
   } catch (err) {
     console.error("REGISTER ERROR:", err);
