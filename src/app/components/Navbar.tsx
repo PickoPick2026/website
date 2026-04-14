@@ -45,13 +45,20 @@ export function Navbar() {
   };
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
-      setIsMobileMenuOpen(false);
-    }
-  };
+  e.preventDefault();
+
+  const target = document.querySelector(href);
+
+  if (target) {
+    // ✅ scroll
+    target.scrollIntoView({ behavior: 'smooth' });
+
+    // ✅ update URL
+    window.history.pushState(null, '', href);
+
+    setIsMobileMenuOpen(false);
+  }
+};
 
   return (
     <>
