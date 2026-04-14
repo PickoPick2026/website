@@ -58,7 +58,7 @@ const handleTrack = async () => {
   try {
     const response = await fetch(`/api/shipments/${trackingId}`);
     const data = await response.json();
-
+    console.log("TRACK RESPONSE:", data);
     if (response.ok) {
       setSearchResult(data);
     } else {
@@ -67,6 +67,7 @@ const handleTrack = async () => {
 
     setShowModal(true); // ✅ open modal always
   } catch (error) {
+    console.error("TRACK ERROR:", error);
     setErrorMsg("Error tracking shipment");
     setShowModal(true);
     trackingId && setTrackingId("");
