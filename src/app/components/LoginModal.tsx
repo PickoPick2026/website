@@ -151,7 +151,7 @@ const handleForgotPassword = async () => {
 
   try {
     // ✅ CHECK EMAIL EXISTS
-    const checkRes = await fetch("https://pickopick.com/api/check-user-email", {
+    const checkRes = await fetch("/api/check-user-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -172,7 +172,7 @@ const handleForgotPassword = async () => {
     }
 
     // ✅ SEND OTP
-    const res = await fetch("https://pickopick.com/api/forgot-password", {
+    const res = await fetch("/api/forgot-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -209,7 +209,7 @@ const handleForgotPassword = async () => {
           });
 
 
-        const res = await fetch("https://pickopick.com/api/reset-password", {
+        const res = await fetch("/api/reset-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
