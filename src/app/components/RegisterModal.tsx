@@ -358,7 +358,7 @@ if (!validate()) return;
               {/* Header */}
               <h2 className="text-2xl font-bold text-slate-900 mb-2 text-center">Create your account</h2>
               <p className="text-sm text-slate-600 mb-8 text-center">
-                Already have an account? <button onClick={onLoginClick} className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 font-medium hover:underline">Sign in</button>
+                Already have an account? <button onClick={onLoginClick} className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 font-medium hover:underline">Login</button>
               </p>
 
               {errors.form && (

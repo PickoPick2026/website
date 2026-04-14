@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogIn, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { RegisterModal } from './RegisterModal';
 import { LoginModal } from './LoginModal';
 
@@ -13,7 +13,7 @@ const navLinks = [
   { name: 'Services', href: '#services' },
   { name: 'About', href: '#about' },
   { name: 'Contact', href: '#contact' },
-  { name: 'Exclusive', href: '#shop-directory', highlight: true }, // ✅ NEW
+  { name: 'Exclusive', href: '#shop-directory', highlight: true },
 ];
 
 export function Navbar() {
@@ -21,15 +21,8 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-
-    }
-
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -37,32 +30,19 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    window.location.reload();
-  };
-
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-  e.preventDefault();
+    e.preventDefault();
+    const target = document.querySelector(href);
 
-  const target = document.querySelector(href);
-
-  if (target) {
-    // ✅ scroll
-    target.scrollIntoView({ behavior: 'smooth' });
-
-    // ✅ update URL
-    window.history.pushState(null, '', href);
-
-    setIsMobileMenuOpen(false);
-  }
-};
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+      window.history.pushState(null, '', href);
+      setIsMobileMenuOpen(false);
+    }
+  };
 
   return (
     <>
-    
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
         <nav className={`w-full transition-all duration-300 ${
           isScrolled
@@ -70,15 +50,6 @@ export function Navbar() {
             : 'bg-gradient-to-r from-blue-600 to-indigo-800 py-5'
         }`}>
           <div className="px-6 flex items-center justify-between">
-
-            {/* ✅ LOGO */}
-            {/* <div className="flex items-center">
-              <img
-                src="/PICKLogo.png"
-                alt="PickoPick"
-                className="h-10 sm:h-12 md:h-14 object-contain"
-              />
-            </div> */}
 
             {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-6">
@@ -100,10 +71,7 @@ export function Navbar() {
 
             {/* Desktop Right */}
             <div className="hidden lg:flex items-center gap-6">
-              <button
-                onClick={() => setIsLoginOpen(true)}
-                className="text-white"
-              >
+              <button onClick={() => setIsLoginOpen(true)} className="text-white">
                 Login
               </button>
               <button
@@ -114,15 +82,57 @@ export function Navbar() {
               </button>
             </div>
 
-            {/* Mobile */}
-            <div className="lg:hidden flex items-center gap-4">
-              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {/* ✅ MOBILE NAV (UPDATED) */}
+            <div className="lg:hidden flex items-center gap-3">
+
+              {/* Hamburger */}
+              {/* <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                 {isMobileMenuOpen ? <X /> : <Menu />}
+              </button> */}
+
+              {/* Show important links */}
+              <a
+                href="#home"
+                onClick={(e) => handleScrollTo(e, "#home")}
+                className="text-white text-sm font-semibold"
+              >
+                Home
+              </a>
+
+              <a
+                href="#track-shipment"
+                onClick={(e) => handleScrollTo(e, "#track-shipment")}
+                className="text-white text-sm font-semibold"
+              >
+                Track
+              </a>
+
+              <a
+                href="#shop-directory"
+                onClick={(e) => handleScrollTo(e, "#shop-directory")}
+                className="text-white text-sm font-semibold"
+              >
+                Shop
+              </a>
+
+              <button
+                onClick={() => setIsLoginOpen(true)}
+                className="text-white text-sm font-semibold"
+              >
+                Login
               </button>
+
+              <button
+                onClick={() => setIsRegisterOpen(true)}
+                className="text-white text-sm font-semibold"
+              >
+                Register
+              </button>
+
             </div>
           </div>
 
-          {/* Mobile Menu */}
+          {/* Mobile Dropdown */}
           <AnimatePresence>
             {isMobileMenuOpen && (
               <motion.div
@@ -147,8 +157,18 @@ export function Navbar() {
         </nav>
       </div>
 
-      <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <RegisterModal
+  isOpen={isRegisterOpen}
+  onClose={() => setIsRegisterOpen(false)}
+  onLoginClick={() => {
+    setIsRegisterOpen(false);   // close register
+    setIsLoginOpen(true);       // open login
+  }}
+/>
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)}  onRegisterClick={() => {
+          setIsLoginOpen(false);     // close login modal
+          setIsRegisterOpen(true);   // open register modal
+        }}/>
     </>
   );
 }
