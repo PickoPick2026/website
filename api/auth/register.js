@@ -1,22 +1,38 @@
-// api/auth/register.js
 import bcrypt from "bcryptjs";
-import otpStore from "../_otpStore";
-import { supabase } from "../../src/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 export default async function handler(req, res) {
   try {
-    const { name, email, password } = req.body;
+    const body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : req.body || {};
+
+    const { name, email, password } = body;
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: "All fields required" });
+    }
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // OTP check
-    const record = otpStore[cleanEmail];
+    // ✅ CHECK OTP FROM DB
+    const { data: otpData } = await supabase
+      .from("otp_store")
+      .select("*")
+      .eq("email", cleanEmail)
+      .maybeSingle();
 
-    if (!record || !record.verified) {
+    if (!otpData || !otpData.verified) {
       return res.status(400).json({ error: "OTP not verified" });
     }
 
-    // Check existing user
+    // ✅ CHECK USER EXISTS
     const { data: existing } = await supabase
       .from("customerList")
       .select("customerID")
@@ -27,8 +43,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Email already exists" });
     }
 
+    // ✅ HASH PASSWORD
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ INSERT USER
     const { data, error } = await supabase
       .from("customerList")
       .insert([
@@ -44,11 +62,13 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: error.message });
     }
 
-    delete otpStore[cleanEmail];
+    // ✅ DELETE OTP AFTER USE
+    await supabase.from("otp_store").delete().eq("email", cleanEmail);
 
     res.json({ user: data[0] });
 
   } catch (err) {
+    console.error("REGISTER ERROR:", err);
     res.status(500).json({ error: "Server error" });
   }
 }
