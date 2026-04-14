@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { SendMailClient } from "zeptomail";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -29,7 +30,13 @@ export default async function handler(req, res) {
       verified: false
     });
 
-    // 👉 keep your ZeptoMail email sending here
+    // ✅ CREATE CLIENT (FIX)
+    const client = new SendMailClient({
+      url: "https://api.zeptomail.in/v1.1/email/template",
+      token: process.env.ZEPTO_TOKEN,
+    });
+
+    // ✅ SEND EMAIL
     await client.sendMailWithTemplate({
       template_key: "2518b.5f1360f6e8e70412.k1.510d86e0-2cc0-11f1-85bc-8e9a6c33ddc2.19d424f664e",
       from: {
@@ -50,11 +57,10 @@ export default async function handler(req, res) {
       }
     });
 
-
     res.json({ message: "OTP sent successfully" });
 
   } catch (err) {
-    console.error(err);
+    console.error("SEND OTP ERROR:", err);
     res.status(500).json({ error: "Failed to send OTP" });
   }
 }
