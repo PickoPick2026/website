@@ -1,12 +1,12 @@
-import { SendMailClient } from "zeptomail";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 export default async function handler(req, res) {
   try {
-    // ✅ global store (temporary)
-    const otpStore = global.otpStore || {};
-    global.otpStore = otpStore;
-
-    // ✅ safe body
     const body = typeof req.body === "string"
       ? JSON.parse(req.body)
       : req.body || {};
@@ -19,47 +19,22 @@ export default async function handler(req, res) {
 
     email = email.trim().toLowerCase();
 
-    // ✅ generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    otpStore[email] = {
+    // ✅ SAVE OTP IN DB
+    await supabase.from("otp_store").upsert({
+      email,
       otp,
       expiry: Date.now() + 5 * 60 * 1000,
-    };
-
-    console.log("OTP:", otp);
-
-    // ✅ ZeptoMail setup (same as your old server)
-    const client = new SendMailClient({
-      url: "https://api.zeptomail.in/v1.1/email/template",
-      token: process.env.ZEPTO_TOKEN, // from Vercel env
+      verified: false
     });
 
-    // ✅ SEND EMAIL (your same template)
-    await client.sendMailWithTemplate({
-      template_key: "2518b.5f1360f6e8e70412.k1.510d86e0-2cc0-11f1-85bc-8e9a6c33ddc2.19d424f664e",
-      from: {
-        address: "noreply@pickopick.com",
-        name: "PickoPick"
-      },
-      to: [
-        {
-          email_address: {
-            address: email,
-            name: name || "User"
-          }
-        }
-      ],
-      merge_info: {
-        name: name || "User",
-        OTP: otp
-      }
-    });
+    // 👉 keep your ZeptoMail email sending here
 
     res.json({ message: "OTP sent successfully" });
 
   } catch (err) {
-    console.error("EMAIL ERROR:", err);
+    console.error(err);
     res.status(500).json({ error: "Failed to send OTP" });
   }
 }

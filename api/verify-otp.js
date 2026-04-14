@@ -1,17 +1,15 @@
-// api/verify-otp.js
+import { createClient } from "@supabase/supabase-js";
 
-export default function handler(req, res) {
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+export default async function handler(req, res) {
   try {
-    // ✅ allow only POST
-    if (req.method !== "POST") {
-      return res.status(200).json({ message: "Use POST request" });
-    }
-
-    // ✅ safe body parsing
-    const body =
-      typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : req.body || {};
+    const body = typeof req.body === "string"
+      ? JSON.parse(req.body)
+      : req.body || {};
 
     let { email, otp } = body;
 
@@ -22,31 +20,35 @@ export default function handler(req, res) {
     email = email.trim().toLowerCase();
     otp = String(otp).trim();
 
-    // ✅ use global store (same as send-otp)
-    const otpStore = global.otpStore || {};
-    global.otpStore = otpStore;
+    // ✅ FETCH FROM DB
+    const { data, error } = await supabase
+      .from("otp_store")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle();
 
-    const record = otpStore[email];
-
-    if (!record) {
+    if (!data) {
       return res.status(400).json({ error: "OTP not generated" });
     }
 
-    if (record.otp !== otp) {
+    if (data.otp !== otp) {
       return res.status(400).json({ error: "Invalid OTP" });
     }
 
-    if (record.expiry < Date.now()) {
+    if (data.expiry < Date.now()) {
       return res.status(400).json({ error: "OTP expired" });
     }
 
-    // ✅ mark verified
-    otpStore[email].verified = true;
+    // ✅ MARK VERIFIED
+    await supabase
+      .from("otp_store")
+      .update({ verified: true })
+      .eq("email", email);
 
     res.json({ message: "OTP verified successfully" });
 
   } catch (err) {
-    console.error("VERIFY OTP ERROR:", err);
+    console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 }
