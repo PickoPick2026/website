@@ -1,4 +1,4 @@
-import otpStore from "./_otpStore";
+import otpStore from "./_otpStore.js";
 
 export default async function handler(req, res) {
   try {
