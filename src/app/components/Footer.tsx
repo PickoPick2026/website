@@ -1,4 +1,5 @@
 import { Package } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
@@ -35,26 +36,30 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-6">Company</h4>
-            <ul className="space-y-4">
-              <li><a href="#" className="hover:text-blue-400 transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Contact</a></li>
-            </ul>
-          </div>
+          
 
           <div>
             <h4 className="text-white font-semibold mb-6">Legal</h4>
             <ul className="space-y-4">
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Terms of Service</a></li>
+              <li><Link to="/terms">Terms of Service</Link></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">Prohibited Items</a></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">Refund Policy</a></li>
             </ul>
           </div>
+          <div>
+            <h4 className="text-white font-semibold mb-6">Address</h4>
+            <p className="leading-relaxed">
+              Pickopick Private Limited <br />
+              No : 49 & 51, 2nd Sector <br />
+              Thiru Vi Ka Industrial Estate, Guindy <br />
+              Chennai - 600032
+            </p>
+            <p><b>Contact Number </b>: 9790361222 / 9003715617</p>
+          </div>
+
         </div>
+        
 
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
           <p>&copy; {new Date().getFullYear()} PickoPick. All rights reserved.</p>

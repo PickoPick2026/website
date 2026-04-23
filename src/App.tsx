@@ -7,6 +7,7 @@ import Addresses from "./app/pages/Adresses";
 import Wallet from "./app/pages/Wallet";
 import Profile from "./app/pages/Profile";
 import { Toaster } from "sonner";
+import TermsPage from "./app/terms/page";
 
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
           
           {/* Default page */}
           <Route index element={<Home />} />
+           <Route path="terms" element={<TermsPage />} />
 
           {/* After login pages */}
           <Route path="cart" element={<Cart />} />

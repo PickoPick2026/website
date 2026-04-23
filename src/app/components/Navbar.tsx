@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { RegisterModal } from './RegisterModal';
 import { LoginModal } from './LoginModal';
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const navLinks = [
-  { name: 'Home', href: '#home' },
+  
   { name: 'How It Works', href: '#how-it-works' },
   { name: 'Shop Directory', href: '#shop-directory' },
   { name: 'Track Shipment', href: '#track-shipment' },
@@ -30,6 +31,18 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const location = useLocation();
+const navigate = useNavigate();
+
+const handleHomeClick = () => {
+  if (location.pathname !== "/") {
+    navigate("/#home"); // go to home + scroll
+  } else {
+    const section = document.querySelector("#home");
+    section?.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     const target = document.querySelector(href);
@@ -53,6 +66,12 @@ export function Navbar() {
 
             {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-6">
+              <button
+  onClick={handleHomeClick}
+  className="text-white font-semibold"
+>
+  Home
+</button>
               {navLinks.map((link) => (
                 <a
                   key={link.name}
@@ -91,14 +110,12 @@ export function Navbar() {
               </button> */}
 
               {/* Show important links */}
-              <a
-                href="#home"
-                onClick={(e) => handleScrollTo(e, "#home")}
+              <button
+                onClick={handleHomeClick}
                 className="text-white text-sm font-semibold"
               >
                 Home
-              </a>
-
+              </button>
               <a
                 href="#track-shipment"
                 onClick={(e) => handleScrollTo(e, "#track-shipment")}
