@@ -62,7 +62,18 @@ db.exec(`
 `);
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const geminiKey = process.env.GEMINI_API_KEY || "";
+let ai: any = null;
+try {
+  if (geminiKey) {
+    ai = new GoogleGenAI({ apiKey: geminiKey });
+    console.log("✅ Gemini AI initialized");
+  } else {
+    console.warn("⚠️ GEMINI_API_KEY not set — AI features will use Supabase-only fallback");
+  }
+} catch (e) {
+  console.error("❌ Failed to initialize Gemini:", e);
+}
 
 const mailUrl = "https://api.zeptomail.in/v1.1/email/template";
 const mailToken = process.env.ZEPTO_TOKEN || "YOUR_TOKEN";
@@ -522,69 +533,258 @@ app.post("/api/auth/login", async (req, res) => {
     res.json({ cost, days: rate.days });
   });
 
+  // 🔍 Helper: Search Supabase productTable for matching products
+  async function searchSupabaseProducts(query: string) {
+    if (!query || query === "Product") return [];
+    try {
+      const keywords = query.trim().split(/\s+/).filter(k => k.length >= 3);
+      
+      // Attempt 1: Full phrase match (highest relevance)
+      let { data, error } = await supabase
+        .from("productTable")
+        .select(`
+          productID,
+          productName,
+          price,
+          stock,
+          imageURL,
+          category:categoryID (
+            categoryName
+          )
+        `)
+        .ilike("productName", `%${query.trim()}%`)
+        .limit(5);
+
+      if (error) throw error;
+      
+      let results = data || [];
+
+      // Attempt 2: If no full match, try matching ANY significant keyword
+      if (results.length === 0 && keywords.length > 0) {
+        // We'll search for the longest keyword as it is likely the most specific
+        const sortedKeywords = [...keywords].sort((a, b) => b.length - a.length);
+        const searchKeyword = sortedKeywords[0];
+
+        const { data: keywordData } = await supabase
+          .from("productTable")
+          .select(`
+            productID,
+            productName,
+            price,
+            stock,
+            imageURL,
+            category:categoryID (
+              categoryName
+            )
+          `)
+          .ilike("productName", `%${searchKeyword}%`)
+          .limit(5);
+        
+        if (keywordData) results = keywordData;
+      }
+
+      // Format and deduplicate results
+      return results.map((item: any) => {
+        let imageUrl = "";
+        try {
+          const parsed = typeof item.imageURL === "string" ? JSON.parse(item.imageURL) : item.imageURL;
+          if (Array.isArray(parsed)) imageUrl = parsed[0];
+          else if (typeof parsed === "string") imageUrl = parsed;
+        } catch { imageUrl = ""; }
+        
+        if (imageUrl.startsWith("blob:")) imageUrl = "";
+        
+        return {
+          id: item.productID,
+          name: item.productName,
+          price: `₹${Number(item.price).toLocaleString("en-IN")}`,
+          store: "PickoPick",
+          source: "pickopick",
+          image: imageUrl,
+          category: item.category?.categoryName || "Other",
+          inStock: Number(item.stock) > 0,
+          url: "/products"
+        };
+      });
+    } catch (error) {
+      console.error("Supabase search error:", error);
+      return [];
+    }
+  }
+
+  // 🔍 Helper: Build real Amazon/Flipkart search URLs
+  function buildStoreUrl(store: string, productName: string): string {
+    const query = encodeURIComponent(productName);
+    const storeLower = store.toLowerCase();
+    if (storeLower.includes("amazon")) return `https://www.amazon.in/s?k=${query}`;
+    if (storeLower.includes("flipkart")) return `https://www.flipkart.com/search?q=${query}`;
+    if (storeLower.includes("myntra")) return `https://www.myntra.com/${query.replace(/%20/g, '-')}`;
+    return `https://www.google.com/search?q=${query}+buy+online+india`;
+  }
+
+  // 🔍 Helper: Extract product name from link without AI (Fallback)
+  function extractProductFromUrl(link: string): string {
+    try {
+      const url = new URL(link);
+      const host = url.hostname.toLowerCase();
+      
+      // Manual Search Fallback
+      if (host === 'manual-search.com') {
+        return decodeURIComponent(url.pathname.substring(1));
+      }
+      
+      if (host.includes('amazon')) {
+        const pathParts = url.pathname.split('/');
+        const namePart = pathParts.find(p => p.length > 5 && !p.includes('.') && p !== 'dp' && p !== 'gp' && p !== 'product-reviews');
+        if (namePart) return decodeURIComponent(namePart.replace(/-/g, ' '));
+      }
+      
+      if (host.includes('flipkart')) {
+        const pathParts = url.pathname.split('/');
+        if (pathParts[1]) return decodeURIComponent(pathParts[1].replace(/-/g, ' '));
+      }
+
+      if (host.includes('myntra')) {
+        const pathParts = url.pathname.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        return decodeURIComponent(lastPart.replace(/-/g, ' ').replace(/\.html$/, '').replace(/\d+$/, ''));
+      }
+
+      const parts = url.pathname.split('/').filter(p => p.length > 3);
+      if (parts.length > 0) return decodeURIComponent(parts.sort((a, b) => b.length - a.length)[0].replace(/[-_]/g, ' '));
+    } catch (e) {}
+    return "Product";
+  }
+
   app.post("/api/analyze-image", async (req, res) => {
     try {
       const { image } = req.body;
-      if (!image) {
-        return res.status(400).json({ error: "No image provided" });
+      if (!image) return res.status(400).json({ error: "No image provided" });
+
+      let identified: any = { productName: "Product", category: "General", estimatedPriceINR: "Check Store" };
+      let geminiWorking = !!ai;
+
+      // Try AI silently, if it fails, we just don't populate 'identified'
+      if (ai) {
+        try {
+          const identifyResponse = await ai.models.generateContent({
+            model: "gemini-2.0-flash",
+            contents: [{
+              parts: [
+                { text: "Identify this product specifically including brand and model. Return JSON: { productName, category, estimatedPriceINR }" },
+                { inlineData: { mimeType: "image/jpeg", data: image.split(",")[1] } }
+              ]
+            }],
+            config: { responseMimeType: "application/json" }
+          });
+          identified = JSON.parse(identifyResponse.text || "{}");
+        } catch (e) {
+          console.warn("AI ID failed, continuing to manual fallback silently");
+          geminiWorking = false;
+        }
       }
 
-      const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: [
-          {
-            parts: [
-              {
-                text: "Identify the product in this image and suggest 3 similar products that can be bought from major Indian e-commerce sites like Amazon India, Myntra, or Flipkart. For each product, provide: 1. Name, 2. Estimated Price in INR, 3. Store Name, 4. A brief description. Format the output as a JSON array of objects with keys: id, name, price, store, description.",
-              },
-              {
-                inlineData: {
-                  mimeType: "image/jpeg",
-                  data: image.split(",")[1],
-                },
-              },
-            ],
-          },
-        ],
-        config: {
-          responseMimeType: "application/json",
-        },
+      const productName = identified.productName || "Product";
+      
+      // Always return a valid response, even if AI failed
+      const localProducts = await searchSupabaseProducts(productName);
+      const stores = ["Amazon India", "Flipkart", "Google Shopping"];
+      const universalResults = stores.map((store, i) => ({
+        id: `universal-${i}`,
+        name: productName,
+        price: identified.estimatedPriceINR || "Check Price",
+        store: store,
+        source: store.toLowerCase().split(' ')[0],
+        image: "",
+        category: identified.category || "General",
+        inStock: true,
+        url: buildStoreUrl(store, productName),
+        description: `Find ${productName} on ${store}`
+      }));
+
+      res.json({
+        source: localProducts.length > 0 ? "mixed" : "universal",
+        identified: productName === "Product" ? "" : productName, // Send empty if generic
+        results: [...localProducts, ...universalResults],
+        aiFailed: !geminiWorking
       });
 
-      res.json(JSON.parse(response.text || "[]"));
     } catch (error) {
-      console.error("Gemini API Error:", error);
-      res.status(500).json({ error: "Failed to analyze image" });
+      console.error("Analyze Image Error:", error);
+      res.json({ source: "universal", identified: "", results: [], error: "Search ready" });
     }
   });
 
   app.post("/api/analyze-link", async (req, res) => {
     try {
       const { link } = req.body;
-      if (!link) {
-        return res.status(400).json({ error: "No link provided" });
-      }
+      if (!link) return res.status(400).json({ error: "No link provided" });
 
-      const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: [
-          {
-            parts: [
-              {
-                text: `Analyze this product link: ${link}. Identify the product and suggest 3 similar products that can be bought from major Indian e-commerce sites like Amazon India, Myntra, or Flipkart. For each product, provide: 1. Name, 2. Estimated Price in INR, 3. Store Name, 4. A brief description. Format the output as a JSON array of objects with keys: id, name, price, store, description.`,
-              },
-            ],
-          },
-        ],
-        config: {
-          responseMimeType: "application/json",
-        },
+      // 100% Reliable URL Extraction (Zero AI Quota used)
+      const productName = extractProductFromUrl(link);
+      console.log("🛠️ Link Analysis (URL extraction):", productName);
+
+      const localProducts = await searchSupabaseProducts(productName);
+      const stores = ["Amazon India", "Flipkart", "Google Shopping"];
+      const universalResults = stores.map((store, i) => ({
+        id: `link-universal-${i}`,
+        name: productName,
+        price: "Check Store",
+        store: store,
+        source: store.toLowerCase().split(' ')[0],
+        image: "",
+        category: "E-commerce",
+        inStock: true,
+        url: buildStoreUrl(store, productName),
+        description: `View ${productName} details on ${store}`
+      }));
+
+      res.json({
+        source: localProducts.length > 0 ? "mixed" : "universal",
+        identified: productName,
+        results: [...localProducts, ...universalResults]
       });
 
-      res.json(JSON.parse(response.text || "[]"));
     } catch (error) {
-      console.error("Gemini API Error:", error);
-      res.status(500).json({ error: "Failed to analyze link" });
+      console.error("Analyze Link Error:", error);
+      res.json({ source: "universal", identified: "", results: [] });
+    }
+  });
+
+  app.post("/api/search", async (req, res) => {
+    try {
+      const { query } = req.body;
+      if (!query) return res.status(400).json({ error: "No query provided" });
+
+      console.log("🔍 Direct Search Query:", query);
+
+      // Priority 1: Search local DB
+      const localProducts = await searchSupabaseProducts(query);
+      
+      // Priority 2: Always generate Universal Search Links
+      const stores = ["Amazon India", "Flipkart", "Google Shopping"];
+      const universalResults = stores.map((store, i) => ({
+        id: `universal-search-${i}`,
+        name: query,
+        price: "Check Store",
+        store: store,
+        source: store.toLowerCase().split(' ')[0],
+        image: "",
+        category: "Marketplace",
+        inStock: true,
+        url: buildStoreUrl(store, query),
+        description: `Find ${query} on ${store}`
+      }));
+
+      res.json({
+        source: localProducts.length > 0 ? "mixed" : "universal",
+        identified: query,
+        results: [...localProducts, ...universalResults]
+      });
+
+    } catch (error) {
+      console.error("Search API Error:", error);
+      res.status(500).json({ error: "Search failed" });
     }
   });
 

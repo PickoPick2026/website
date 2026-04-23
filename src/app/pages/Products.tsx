@@ -13,10 +13,10 @@ type OutletContextType = {
 
 const priceRanges = [
   { label: "All Prices", min: 0, max: Infinity },
-  { label: "Under $100", min: 0, max: 100 },
-  { label: "$100 - $500", min: 100, max: 500 },
-  { label: "$500 - $1000", min: 500, max: 1000 },
-  { label: "$1000+", min: 1000, max: Infinity },
+  { label: "Under Rs100", min: 0, max: 100 },
+  { label: "Rs100 - Rs500", min: 100, max: 500 },
+  { label: "Rs500 - Rs1000", min: 500, max: 1000 },
+  { label: "Rs1000+", min: 1000, max: Infinity },
 ];
 
 export default function Products() {
@@ -164,7 +164,7 @@ const handleAddToCart = async (product: any) => {
   return (
     <div className="bg-gray-50">
       {/* Discount Banner */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+      {/* <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -179,9 +179,20 @@ const handleAddToCart = async (product: any) => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
+
+      
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Image Section */}
+        <div className="w-full">
+          <img
+            src="/Artboard.jpeg"
+            alt="Sale Banner"
+            className="w-full h-auto object-cover"
+          />
+        </div>
+        <br />
         {/* Search and Filters */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row gap-4">
