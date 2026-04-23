@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
 
       // ✅ ADD THESE ROUTES
       { path: "terms", Component: Terms },
-      
+
     ],
   },
 ]);

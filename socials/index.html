@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickopick | Social Links</title>
+    <meta name="description"
+        content="Connect with Pickopick on all our social media platforms. Stay updated with our latest news and updates.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --secondary: #3b82f6;
+            --accent: #fde047;
+            --bg-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            color: var(--text-main);
+        }
+
+        /* Subtle Animated Background Elements */
+        .bg-blob {
+            position: fixed;
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.6;
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: #818cf8;
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: #60a5fa;
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -5s;
+        }
+
+        @keyframes move {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(100px, 100px) scale(1.2);
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        /* Profile Section */
+        .profile {
+            margin-bottom: 32px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo-container {
+            width: 96px;
+            height: 96px;
+            background: white;
+            border-radius: 30%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            padding: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+
+        .tagline {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Links Section */
+        .links-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 18px 24px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            background: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .link-card .icon-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .link-card i {
+            color: var(--primary);
+            width: 24px;
+            height: 24px;
+        }
+
+        .link-card.youtube:hover i {
+            color: #FF0000;
+        }
+
+        .link-card.x:hover i {
+            color: #000000;
+        }
+
+        .link-card.instagram:hover i {
+            color: #E1306C;
+        }
+
+        .link-card.facebook:hover i {
+            color: #1877F2;
+        }
+
+        .chevron {
+            color: var(--text-muted);
+            opacity: 0.5;
+            transition: transform 0.3s ease;
+        }
+
+        .link-card:hover .chevron {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 60px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Staggered animation for links */
+        .link-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .link-card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .link-card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .link-card:nth-child(4) {
+            animation-delay: 0.5s;
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 480px) {
+            body {
+                padding: 30px 16px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .link-card {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <div class="container">
+        <header class="profile">
+            <div class="logo-container">
+                <!-- Using the logo from the project -->
+                <img src="PICKLogo.png" alt="Pickopick Logo"
+                    onerror="this.src='https://placehold.co/200x200/4f46e5/white?text=PICKOPICK'">
+            </div>
+            <h1>Pickopick</h1>
+            <p class="tagline">Innovative solutions for modern problems.</p>
+        </header>
+
+        <main class="links-grid">
+            <a href="https://www.youtube.com/@pickopiok/posts" target="_blank" class="link-card youtube">
+                <div class="icon-wrapper">
+                    <i data-lucide="youtube"></i>
+                    <span>YouTube</span>
+                </div>
+                <i data-lucide="chevron-right" class="chevron"></i>
+            </a>
+
+            <a href="https://x.com/Pickopicko61028" target="_blank" class="link-card x">
+                <div class="icon-wrapper">
+                    <i data-lucide="twitter"></i>
+                    <span>X (Twitter)</span>
+                </div>
+                <i data-lucide="chevron-right" class="chevron"></i>
+            </a>
+
+            <a href="https://www.instagram.com/pickopickofficial/" target="_blank" class="link-card instagram">
+                <div class="icon-wrapper">
+                    <i data-lucide="instagram"></i>
+                    <span>Instagram</span>
+                </div>
+                <i data-lucide="chevron-right" class="chevron"></i>
+            </a>
+
+            <a href="https://www.facebook.com/profile.php?id=61578667226102" target="_blank" class="link-card facebook">
+                <div class="icon-wrapper">
+                    <i data-lucide="facebook"></i>
+                    <span>Facebook</span>
+                </div>
+                <i data-lucide="chevron-right" class="chevron"></i>
+            </a>
+        </main>
+
+        <footer>
+            <p>© 2026 <a href="https://pickopick.com">Pickopick</a>. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
