@@ -132,6 +132,14 @@ const handleHomeClick = () => {
                 Shop
               </a>
 
+              <a
+                href="#contact"
+                onClick={(e) => handleScrollTo(e, "#contact")}
+                className="text-white text-sm font-semibold"
+              >
+                Contact
+              </a>
+
               <button
                 onClick={() => setIsLoginOpen(true)}
                 className="text-white text-sm font-semibold"
