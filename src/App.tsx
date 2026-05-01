@@ -8,7 +8,7 @@ import Wallet from "./app/pages/Wallet";
 import Profile from "./app/pages/Profile";
 import { Toaster } from "sonner";
 import TermsPage from "./app/terms/page";
-import WhatsAppButton from "./app/components/Whatsappbutton";
+import WhatsAppButton from "./app/components/WhatsAppButton";
 
 
 export default function App() {
