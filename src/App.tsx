@@ -8,11 +8,14 @@ import Wallet from "./app/pages/Wallet";
 import Profile from "./app/pages/Profile";
 import { Toaster } from "sonner";
 import TermsPage from "./app/terms/page";
+import WhatsAppButton from "./app/components/Whatsappbutton";
 
 
 export default function App() {
   return (
     <BrowserRouter>
+      <WhatsAppButton />
+    
       <Toaster position="bottom-right" richColors closeButton />
       <Routes>
       
