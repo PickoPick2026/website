@@ -117,25 +117,26 @@ export function Hero() {
       {/* Video Background */}
       <div className="absolute inset-0 z-0 bg-black overflow-hidden">
 
-  <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    className="
-      w-full h-full object-center
-      object-contain scale-125
-      sm:object-cover sm:scale-110
-      md:object-cover md:scale-100
-    "
-  >
-    <source src="/videos/PICK.mp4" type="video/mp4" />
-  </video>
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="
+              w-full h-full object-center
+              object-contain scale-125
+              sm:object-cover sm:scale-110
+              md:object-cover md:scale-100
+            "
+          >
+            <source src="/videos/PICK.mp4" type="video/mp4" />
+          </video>
 
-  {/* Overlay */}
-  <div className="absolute inset-0 bg-black/60 sm:bg-black/50 md:bg-black/40"></div>
+        {/* Overlay */}
+        {/* <div className="absolute inset-0 bg-black/60 sm:bg-black/50 md:bg-black/40"></div> */}
 
 </div>
+
 
       {/* Content */}
       {/* <div className="max-w-7xl mx-auto px-6 relative z-10 w-full grid lg:grid-cols-2 gap-12 items-center text-white">
