@@ -92,6 +92,38 @@ export default async function handler(req, res) {
       merge_info: {}
     });
 
+     const mailClient1 = new SendMailClient({
+      url: "https://api.zeptomail.in/v1.1/email/template",
+      token: process.env.ZEPTO_TOKEN,
+    });
+
+
+    await mailClient1.sendMailWithTemplate({
+      template_key: "2518b.5f1360f6e8e70412.k1.ef76b6b0-5026-11f1-8706-e256a66a52e4.19e2a502d9b",
+      from: {
+        address: "noreply@pickopick.com",
+        name: "PickoPick"
+      },
+      to: [
+        {
+          email_address: {
+            address: "kathirvel@pickopick.com",
+            name: "Info",
+          },
+        },
+        {
+          email_address: {
+            address: "dm1@pickopick.com",
+            name: "Support",
+          },
+        },
+      ],
+      "merge_info": {"name":"name","email":"cleanEmail"},
+    });
+
+
+    
+
     res.json({ user });
 
   } catch (err) {
