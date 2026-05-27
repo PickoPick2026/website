@@ -15,6 +15,7 @@ import { ShopBanner } from "../components/ShopBanner";
 import { CTA } from "../components/CTA";
 import { LiveActivity } from "../components/LiveActivity";
 import Products from "./Products";
+import { HeroMobile } from "../components/HeroMobile";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,7 +62,15 @@ export default function Home() {
 
   return (
     <main className="bg-white text-slate-900">
-      <Hero />
+      {/* MOBILE HERO */}
+      <div className="block sm:hidden">
+        <HeroMobile />
+      </div>
+
+      {/* DESKTOP HERO */}
+      <div className="hidden sm:block">
+        <Hero />
+      </div>
       <ImageSearch />
       <TrustMetrics />
       <StoryFlow />

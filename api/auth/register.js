@@ -118,7 +118,7 @@ export default async function handler(req, res) {
           },
         },
       ],
-      "merge_info": {"name":"name","email":"cleanEmail"},
+      "merge_info": {"name":name,"email":cleanEmail,"phoneNumber":phoneNumber},
     });
 
 
