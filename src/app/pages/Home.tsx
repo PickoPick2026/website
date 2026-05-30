@@ -16,6 +16,7 @@ import { CTA } from "../components/CTA";
 import { LiveActivity } from "../components/LiveActivity";
 import Products from "./Products";
 import { HeroMobile } from "../components/HeroMobile";
+import { AboutUs } from "../components/AboutUs";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -73,6 +74,7 @@ export default function Home() {
       </div>
       <ImageSearch />
       <TrustMetrics />
+      <AboutUs />
       <StoryFlow />
       <Services />
       <ShoppingDirectory />
