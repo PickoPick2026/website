@@ -9,6 +9,9 @@ import Profile from "./app/pages/Profile";
 import { Toaster } from "sonner";
 import TermsPage from "./app/terms/page";
 import WhatsAppButton from "./app/components/WhatsAppButton";
+import PrivacyPolicyPage from "./app/privacy/page";
+import ProhibitedItemsPage from "./app/prohibited/page";
+import RefundPage from "./app/refund/page";
 
 
 export default function App() {
@@ -25,6 +28,9 @@ export default function App() {
           {/* Default page */}
           <Route index element={<Home />} />
            <Route path="terms" element={<TermsPage />} />
+           <Route path="privacy" element={<PrivacyPolicyPage />} />
+           <Route path="prohibited" element={<ProhibitedItemsPage />} />
+           <Route path="refund" element={<RefundPage />} />
 
           {/* After login pages */}
           <Route path="cart" element={<Cart />} />
