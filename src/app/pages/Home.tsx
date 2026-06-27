@@ -72,13 +72,14 @@ export default function Home() {
       <div className="hidden sm:block ">
         <Hero />
       </div>
+      <TrackingExperience />
       <ImageSearch />
       {/* <TrustMetrics /> */}
       <AboutUs />
       <StoryFlow />
       <Services />
       <ShoppingDirectory />
-      <TrackingExperience />
+      
       <Testimonials />
       <ShopBanner />
       <CTA />

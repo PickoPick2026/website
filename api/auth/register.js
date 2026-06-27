@@ -67,6 +67,38 @@ export default async function handler(req, res) {
     const user = data[0];
     const pickID = user.pickID;
 
+
+    // ✅ SEND LEAD TO CRATIO CRM
+    try {
+      const webhookPayload = {
+        "Contact name": name,
+        "Contact number ": phoneNumber,
+        "email": cleanEmail,
+        "City": "",
+        "Address": "",
+        "Country": "India",
+        "Region": "",
+        "Picopick id": pickID,
+      };
+
+      const crmResponse = await fetch(
+        "https://apps.cratiocrm.com/Customize/Webhooks/webhook.php?id=79915",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(webhookPayload),
+        }
+      );
+
+      const crmResult = await crmResponse.text();
+
+      console.log("CRATIO CRM RESPONSE:", crmResult);
+    } catch (crmError) {
+      console.error("CRATIO CRM ERROR:", crmError);
+    }
+
     // ✅ DELETE OTP
     await supabase.from("otp_store").delete().eq("email", cleanEmail);
 

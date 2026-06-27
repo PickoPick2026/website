@@ -82,6 +82,9 @@ export function CTA() {
                   <p className="text-lg text-blue-200 mt-1">
                     9003715617
                   </p>
+                  <p>
+                    sales@pickopick.com
+                  </p>
                 </div>
 
               </div>

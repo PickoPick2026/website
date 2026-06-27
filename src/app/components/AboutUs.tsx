@@ -208,7 +208,7 @@ export function AboutUs() {
             <div>
               <div className="space-y-3 text-slate-600">
                 <p>📞 +91 97903 61222</p>
-                <p>📧 support@pickopick.com</p>
+                <p>📧 sales@pickopick.com</p>
                 <p>🌐 www.pickopick.com</p>
               </div>
             </div>

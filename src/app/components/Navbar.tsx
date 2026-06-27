@@ -7,10 +7,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const navLinks = [
   
+  { name: 'Track Shipment', href: '#track-shipment' },
   { name: 'How It Works', href: '#how-it-works' },
   { name: 'Shop Directory', href: '#shop-directory' },
-  { name: 'Track Shipment', href: '#track-shipment' },
-  { name: 'Search by Image', href: '#search-by-image' },
+  
+  { name: 'Search by Link', href: '#search-by-image' },
   { name: 'Services', href: '#services' },
   { name: 'About', href: '#about' },
   { name: 'Contact', href: '#contact' },
@@ -59,8 +60,8 @@ const handleHomeClick = () => {
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
         <nav className={`w-full transition-all duration-300 ${
           isScrolled
-            ? 'bg-gradient-to-r from-blue-600/95 to-indigo-800/95 backdrop-blur-md py-3'
-            : 'bg-gradient-to-r from-blue-600 to-indigo-800 py-5'
+            ? 'bg-gradient-to-r from-orange-600/95 to-orange-800/95 backdrop-blur-md py-3'
+            : 'bg-gradient-to-r from-orange-600 to-orange-800 py-5'
         }`}>
           <div className="px-6 flex items-center justify-between">
 

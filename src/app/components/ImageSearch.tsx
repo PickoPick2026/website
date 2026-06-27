@@ -94,7 +94,7 @@ export function ImageSearch() {
   const [results, setResults] = useState<ProductResult[]>([]);
   const [resultSource, setResultSource] = useState<'pickopick' | 'external' | null>(null);
   const [identifiedProduct, setIdentifiedProduct] = useState<string>('');
-  const [searchType, setSearchType] = useState<'image' | 'link'>('image');
+  const [searchType, setSearchType] = useState<'image' | 'link'>('link');
   const [productLink, setProductLink] = useState('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
@@ -412,7 +412,7 @@ export function ImageSearch() {
         {/* Search Type Selector */}
         <div className="flex justify-center mb-12">
           <div className="inline-flex p-1 bg-white rounded-2xl shadow-sm border border-slate-100">
-            <button
+            {/* <button
               onClick={() => setSearchType('image')}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 searchType === 'image' 
@@ -421,7 +421,7 @@ export function ImageSearch() {
               }`}
             >
               Search by Image
-            </button>
+            </button> */}
             <button
               onClick={() => setSearchType('link')}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
