@@ -78,7 +78,7 @@ export function StoryFlow() {
    
                 >
                   <div className={`flex-1 w-full ${isEven ? 'md:text-left' : 'md:text-right'}`}>
-                    <div className="bg-gradient-to-br from-blue-600 to-indigo-800 p-8 rounded-3xl shadow-xl shadow-blue-900/20 border border-blue-500 hover:border-blue-400 transition-colors group">
+                    <div className="bg-gradient-to-br from-orange-600 to-orange-800 p-8 rounded-3xl shadow-xl shadow-orange-900/20 border border-orange-500 hover:border-orange-400 transition-colors group">
                       <h3 className="text-3xl font-bold text-white mb-4 group-hover:text-blue-100 transition-colors">{step.title}</h3>
                       <p className="text-white/90 text-xl">{step.desc}</p>
                     </div>

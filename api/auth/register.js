@@ -65,6 +65,7 @@ export default async function handler(req, res) {
     }
 
     const user = data[0];
+    const pickID = user.pickID;
 
     // ✅ DELETE OTP
     await supabase.from("otp_store").delete().eq("email", cleanEmail);
@@ -89,7 +90,7 @@ export default async function handler(req, res) {
           }
         }
       ],
-      merge_info: {}
+      merge_info: {"pickID":pickID}
     });
 
      const mailClient1 = new SendMailClient({
@@ -107,7 +108,8 @@ export default async function handler(req, res) {
       to: [
         {
           email_address: {
-            address: "kathirvel@pickopick.com",
+            // address: "kathirvel@pickopick.com",
+            address: "dm2@pickopick.com",
             name: "Info",
           },
         },
@@ -118,7 +120,7 @@ export default async function handler(req, res) {
           },
         },
       ],
-      "merge_info": {"name":name,"email":cleanEmail,"phoneNumber":phoneNumber},
+      "merge_info": {"name":name,"email":cleanEmail,"phoneNumber":phoneNumber,"pickID":pickID},
     });
 
 

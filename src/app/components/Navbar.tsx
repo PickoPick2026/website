@@ -67,11 +67,11 @@ const handleHomeClick = () => {
             {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-6">
               <button
-  onClick={handleHomeClick}
-  className="text-white font-semibold"
->
-  Home
-</button>
+                  onClick={handleHomeClick}
+                  className="text-white font-semibold"
+                >
+                  Home
+                </button>
               {navLinks.map((link) => (
                 <a
                   key={link.name}

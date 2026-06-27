@@ -69,11 +69,11 @@ export default function Home() {
       </div>
 
       {/* DESKTOP HERO */}
-      <div className="hidden sm:block">
+      <div className="hidden sm:block ">
         <Hero />
       </div>
       <ImageSearch />
-      <TrustMetrics />
+      {/* <TrustMetrics /> */}
       <AboutUs />
       <StoryFlow />
       <Services />
