@@ -1,0 +1,122 @@
+import React from 'react';
+import { 
+  Headphones, 
+  Clock4, 
+  CalendarCheck2, 
+  Calculator, 
+  ArrowUpRight 
+} from 'lucide-react';
+
+interface QuickActionsProps {
+  onOpenConsultation: () => void;
+  onOpenBlockSlot: () => void;
+  onStartBooking: () => void;
+  onOpenEstimator: () => void;
+}
+
+export const QuickActions: React.FC<QuickActionsProps> = ({
+  onOpenConsultation,
+  onOpenBlockSlot,
+  onStartBooking,
+  onOpenEstimator,
+}) => {
+  const cards = [
+    {
+      id: 'card-consultation',
+      number: 'CARD 01',
+      title: 'BOOK FREE CONSULTATION',
+      description: 'Not sure what you need? Talk to our team before you ship.',
+      cta: 'Book Consultation',
+      icon: Headphones,
+      action: onOpenConsultation,
+      accent: 'border-slate-200 hover:border-slate-300 bg-white',
+      btnStyle: 'text-[#0A1931] bg-slate-100 hover:bg-slate-200',
+    },
+    {
+      id: 'card-block-slot',
+      number: 'CARD 02',
+      title: 'BLOCK YOUR SLOT',
+      description: 'Planning your shipment? Reserve a preferred service slot.',
+      cta: 'Block My Slot',
+      icon: Clock4,
+      action: onOpenBlockSlot,
+      accent: 'border-slate-200 hover:border-[#FF6321]/40 bg-white',
+      btnStyle: 'text-[#FF6321] bg-orange-50 hover:bg-orange-100 border border-orange-200',
+    },
+    {
+      id: 'card-schedule-pickup',
+      number: 'CARD 03',
+      title: 'SCHEDULE YOUR PICKUP',
+      description: 'Ready to send? Choose your pickup date and time.',
+      cta: 'Schedule Pickup',
+      icon: CalendarCheck2,
+      action: onStartBooking,
+      accent: 'border-[#FF6321]/30 hover:border-[#FF6321] bg-gradient-to-b from-orange-50/40 to-white shadow-sm',
+      btnStyle: 'text-white bg-[#FF6321] hover:bg-orange-600 shadow-sm shadow-[#FF6321]/25',
+      highlightBadge: 'Fastest Route',
+    },
+    {
+      id: 'card-get-estimate',
+      number: 'CARD 04',
+      title: 'GET SHIPPING ESTIMATE',
+      description: 'Tell us your destination and package details.',
+      cta: 'Get Estimate',
+      icon: Calculator,
+      action: onOpenEstimator,
+      accent: 'border-slate-200 hover:border-slate-300 bg-white',
+      btnStyle: 'text-[#0A1931] bg-slate-100 hover:bg-slate-200',
+    },
+  ];
+
+  return (
+    <section className="relative -mt-8 z-20 max-w-7xl mx-auto px-4 sm:px-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        {cards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <div
+              key={card.id}
+              id={card.id}
+              className={`rounded-2xl border p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between ${card.accent}`}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-[#0A1931] text-white flex items-center justify-center shadow-sm">
+                    <Icon className="w-5 h-5 text-[#FF6321]" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {card.highlightBadge && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FF6321] text-white">
+                        {card.highlightBadge}
+                      </span>
+                    )}
+                    <span className="text-[11px] font-bold tracking-wider text-slate-400 font-mono">
+                      {card.number}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="text-sm font-extrabold text-[#0A1931] tracking-tight leading-snug">
+                  {card.title}
+                </h3>
+                <p className="mt-2 text-xs text-slate-600 leading-relaxed">
+                  {card.description}
+                </p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100">
+                <button
+                  onClick={card.action}
+                  className={`w-full py-2.5 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 group cursor-pointer ${card.btnStyle}`}
+                >
+                  <span>{card.cta}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+};

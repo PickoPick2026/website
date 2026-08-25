@@ -10,6 +10,7 @@ const navLinks = [
   { name: 'Track Shipment', href: '#track-shipment' },
   { name: 'How It Works', href: '#how-it-works' },
   { name: 'Shop Directory', href: '#shop-directory' },
+  { name: 'NRI', href: '/nri' },
   
   { name: 'Search by Link', href: '#search-by-image' },
   { name: 'Services', href: '#services' },
@@ -46,6 +47,13 @@ const handleHomeClick = () => {
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+
+    if (href.startsWith('/')) {
+      navigate(href);
+      setIsMobileMenuOpen(false);
+      return;
+    }
+
     const target = document.querySelector(href);
 
     if (target) {
@@ -131,6 +139,14 @@ const handleHomeClick = () => {
                 className="text-white text-sm font-semibold"
               >
                 Shop
+              </a>
+
+              <a
+                href="/nri"
+                onClick={(e) => handleScrollTo(e, "/nri")}
+                className="text-white text-sm font-semibold"
+              >
+                NRI
               </a>
 
               <a

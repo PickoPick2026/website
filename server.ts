@@ -85,7 +85,7 @@ const mailClient = new SendMailClient({
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = 3006;
 
  
   app.use(express.json({ limit: "50mb" }));
@@ -640,6 +640,62 @@ app.post("/api/auth/login", async (req, res) => {
     }
     const cost = rate.base_rate + (parseFloat(weight) * rate.per_kg_rate);
     res.json({ cost, days: rate.days });
+  });
+
+  // A single persistence endpoint for consultations, pickup reservations and shipment requests.
+  // The complete form is retained in JSONB so every NRI form can be reviewed in one admin queue.
+  app.post("/api/nri-requests", async (req, res) => {
+    try {
+      const { requestType, payload } = req.body || {};
+      const allowedTypes = ["consultation", "slot_reservation", "pickup_request"];
+      if (!allowedTypes.includes(requestType) || !payload || typeof payload !== "object") {
+        return res.status(400).json({ error: "A valid NRI request type and form data are required." });
+      }
+
+      const text = (value: unknown) => typeof value === "string" ? value.trim() : "";
+      const consultation = requestType === "consultation";
+      const slotReservation = requestType === "slot_reservation";
+      const name = text(consultation ? payload.fullName : (slotReservation ? payload.customerName : (payload.customerName || payload.pickupName)));
+      const phone = text(consultation || slotReservation ? payload.whatsappNumber : (payload.customerWhatsapp || payload.pickupPhone));
+      const country = text(consultation ? payload.currentCountry : payload.destinationCountry);
+
+      if (!phone || (consultation && !name) || (!consultation && !country)) {
+        return res.status(400).json({ error: "Please complete the required contact and request details." });
+      }
+
+      const prefix = consultation ? "NRI-CON" : slotReservation ? "NRI-SLOT" : "NRI-PICK";
+      const requestCode = `${prefix}-${Date.now().toString().slice(-8)}-${Math.floor(100 + Math.random() * 900)}`;
+      const record = {
+        request_code: requestCode,
+        request_type: requestType,
+        status: "PENDING",
+        customer_name: name || "NRI customer",
+        whatsapp_number: phone,
+        email: text(payload.email || payload.customerEmail) || null,
+        country,
+        preferred_date: text(consultation ? payload.preferredDate : (slotReservation ? payload.preferredDate : payload.preferredPickupDate)) || null,
+        preferred_time: text(consultation ? payload.preferredTime : (slotReservation ? payload.preferredTimeSlot : payload.preferredPickupSlotLabel)) || null,
+        payload,
+      };
+
+      const { data, error } = await supabase.from("nri_requests").insert(record).select("id, request_code, created_at").single();
+      if (error) {
+        console.error("NRI request insert error:", error);
+        return res.status(500).json({ error: "We could not save your request. Please try again shortly.", details: process.env.NODE_ENV === "production" ? undefined : error.message });
+      }
+
+      const message = encodeURIComponent(`Hello Pick O Pick! I submitted an NRI ${requestType.replace(/_/g, " ")} request.\nReference: ${data.request_code}`);
+      return res.status(201).json({
+        success: true,
+        requestId: data.request_code,
+        createdAt: data.created_at,
+        whatsappUrl: `https://wa.me/919876543210?text=${message}`,
+        noticeText: slotReservation ? "Slot request received — our team will confirm availability shortly." : "Your request has been received. Our NRI team will contact you on WhatsApp.",
+      });
+    } catch (error) {
+      console.error("NRI request API error:", error);
+      return res.status(500).json({ error: "Unable to submit your request right now." });
+    }
   });
 
   // 🔍 Helper: Search Supabase productTable for matching products
