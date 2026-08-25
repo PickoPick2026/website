@@ -4,10 +4,7 @@ import {
   CalendarCheck2, 
   MessageSquare, 
   Phone, 
-  Mail, 
-  ShieldCheck, 
-  Globe2, 
-  Sparkles 
+  Mail
 } from 'lucide-react';
 
 interface FinalCtaSectionProps {
@@ -20,30 +17,25 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
   onStartBooking,
 }) => {
   return (
-    <section className="relative overflow-hidden bg-[#0A1931] text-white py-18 sm:py-24">
-      {/* Background ambient accents */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#FF6321]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <section className="bg-[#F7F9FF] px-4 py-12 text-white sm:py-16">
+      <div
+        className="mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#0B56D9] bg-cover bg-center px-5 py-10 text-center sm:px-10 sm:py-14"
+        style={{ backgroundImage: "url('/images/nri-cta-closer-v1.png')" }}
+      >
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+            India is closer than you think.
+          </h2>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center relative z-10 space-y-7">
-        
-        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-[#FF6321] text-xs font-bold uppercase tracking-wider border border-white/15">
-          <Sparkles className="w-3.5 h-3.5" />
-          Bringing India Closer To You
-        </span>
+          <p className="mx-auto max-w-xl text-base font-normal leading-relaxed text-blue-50 sm:text-lg">
+            Tell us what you need from India. We'll take care of the rest.
+          </p>
 
-        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white max-w-2xl mx-auto leading-tight">
-          India Is Closer Than You Think.
-        </h2>
-
-        <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto font-normal leading-relaxed">
-          Tell us what you need from India. Weâ€™ll take care of the rest.
-        </p>
-
-        {/* Primary and Secondary CTA buttons */}
-        <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-4">
+          {/* Primary and Secondary CTA buttons */}
+          <div className="flex flex-col items-center justify-center gap-4 pt-3 sm:flex-row">
           <button
             onClick={onOpenConsultation}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-[#0A1931] hover:bg-slate-100 font-extrabold text-xs tracking-wider uppercase shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50 sm:w-auto"
           >
             <span>BOOK FREE CONSULTATION</span>
             <ArrowRight className="w-4 h-4 text-[#FF6321]" />
@@ -51,57 +43,58 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
 
           <button
             onClick={onStartBooking}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#FF6321] hover:bg-orange-600 text-white font-extrabold text-xs tracking-wider uppercase shadow-lg shadow-[#FF6321]/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white bg-[#0B56D9] px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-[#0849B7] sm:w-auto"
           >
             <span>SCHEDULE YOUR PICKUP</span>
             <CalendarCheck2 className="w-4 h-4" />
           </button>
-        </div>
+          </div>
 
-        {/* Contact Channels: WhatsApp, Call, Email */}
-        <div className="pt-10 mt-10 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          {/* Contact Channels: WhatsApp, Call, Email */}
+          <div className="mt-10 grid grid-cols-1 gap-4 border-t border-white/30 pt-10 text-xs sm:grid-cols-3">
           
           <a
             href="https://wa.me/919876543210?text=Hello%20Pick%20O%20Pick!%20I%20have%20an%20inquiry."
             target="_blank"
             rel="noopener noreferrer"
-            className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-3 transition-colors text-slate-200 hover:text-white"
+            className="flex items-center justify-center gap-3 rounded-2xl bg-white/10 p-4 text-white transition-colors hover:bg-white/20"
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white">
               <MessageSquare className="w-4 h-4" />
             </div>
             <div className="text-left">
-              <span className="block text-[10px] text-slate-400 uppercase font-bold">WhatsApp Concierge</span>
+              <span className="block text-[10px] font-bold uppercase text-white">WhatsApp Concierge</span>
               <span className="font-bold">+91 98765 43210</span>
             </div>
           </a>
 
           <a
             href="tel:+919876543210"
-            className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-3 transition-colors text-slate-200 hover:text-white"
+            className="flex items-center justify-center gap-3 rounded-2xl bg-white/10 p-4 text-white transition-colors hover:bg-white/20"
           >
-            <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white">
               <Phone className="w-4 h-4" />
             </div>
             <div className="text-left">
-              <span className="block text-[10px] text-slate-400 uppercase font-bold">Direct Phone Desk</span>
+              <span className="block text-[10px] font-bold uppercase text-white">Direct Phone Desk</span>
               <span className="font-bold">+91 (80) 4123-8899</span>
             </div>
           </a>
 
           <a
             href="mailto:support@pickopick.com"
-            className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-3 transition-colors text-slate-200 hover:text-white"
+            className="flex items-center justify-center gap-3 rounded-2xl bg-white/10 p-4 text-white transition-colors hover:bg-white/20"
           >
-            <div className="w-8 h-8 rounded-lg bg-[#FF6321]/20 text-[#FF6321] flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white">
               <Mail className="w-4 h-4" />
             </div>
             <div className="text-left">
-              <span className="block text-[10px] text-slate-400 uppercase font-bold">Email Inquiries</span>
+              <span className="block text-[10px] font-bold uppercase text-white">Email Inquiries</span>
               <span className="font-bold">nri@pickopick.com</span>
             </div>
           </a>
 
+          </div>
         </div>
 
       </div>

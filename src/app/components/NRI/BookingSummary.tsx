@@ -4,32 +4,28 @@ import {
   MapPin, 
   Calendar, 
   Clock, 
-  MessageSquare, 
   ShieldCheck, 
-  ChevronDown, 
-  ChevronUp,
-  Sparkles,
   PhoneCall
 } from 'lucide-react';
 import { BookingFormData } from './types';
 import { NRI_SERVICES } from './data/mockData';
+import { FaWhatsapp } from 'react-icons/fa';
 
 interface BookingSummaryProps {
   formData: BookingFormData;
   currentStep: number;
-  isMobileCollapsed?: boolean;
-  onToggleMobileCollapse?: () => void;
   onOpenEstimator?: () => void;
 }
 
 export const BookingSummary: React.FC<BookingSummaryProps> = ({
   formData,
   currentStep,
-  isMobileCollapsed = false,
-  onToggleMobileCollapse,
   onOpenEstimator,
 }) => {
   const selectedServiceObj = NRI_SERVICES.find((s) => s.id === formData.serviceType);
+  const selectedServiceNames = NRI_SERVICES
+    .filter((service) => formData.selectedServices.includes(service.id))
+    .map((service) => service.title);
 
   const getPackageTypeLabel = (type: string) => {
     switch (type) {
@@ -43,32 +39,9 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden sticky top-24">
-      {/* Header */}
-      <div className="bg-[#0A1931] text-white p-4 sm:p-5 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#FF6321] flex items-center justify-center font-black text-xs text-white">
-            POP
-          </div>
-          <div>
-            <h3 className="text-sm font-extrabold tracking-tight uppercase">YOUR REQUEST</h3>
-            <p className="text-[11px] text-slate-300 font-mono">Live NRI Booking Docket</p>
-          </div>
-        </div>
-
-        {onToggleMobileCollapse && (
-          <button
-            onClick={onToggleMobileCollapse}
-            className="lg:hidden p-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
-            aria-label="Toggle Summary Details"
-          >
-            {isMobileCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
-          </button>
-        )}
-      </div>
-
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden sticky top-24">
       {/* Content */}
-      <div className={`p-5 space-y-4 ${isMobileCollapsed ? 'hidden lg:block' : 'block'}`}>
+      <div className="p-5 space-y-4">
         
         {/* Service */}
         <div className="pb-3 border-b border-slate-100 flex items-start justify-between gap-3">
@@ -77,7 +50,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
               Service
             </span>
             <p className="text-xs font-bold text-[#0A1931] mt-0.5">
-              {selectedServiceObj ? selectedServiceObj.title : 'Not Selected'}
+              {selectedServiceNames.length ? selectedServiceNames.join(', ') : selectedServiceObj ? selectedServiceObj.title : 'Not Selected'}
             </p>
             {formData.requirementDescription && (
               <p className="text-[11px] text-slate-500 italic mt-0.5 line-clamp-1">
@@ -200,9 +173,8 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
           <div className="pt-2">
             <button
               onClick={onOpenEstimator}
-              className="w-full py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+               className="w-full rounded-xl border border-[#0B56D9] bg-white px-3 py-2.5 text-xs font-bold text-[#0B56D9] transition-colors hover:bg-blue-50 flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#FF6321]" />
               <span>Check Estimated Shipping Rate</span>
             </button>
           </div>
@@ -223,7 +195,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
             rel="noopener noreferrer"
             className="mt-2.5 w-full py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
           >
-            <MessageSquare className="w-3.5 h-3.5" />
+              <FaWhatsapp className="h-4 w-4" />
             <span>Chat With Pick O Pick</span>
           </a>
         </div>

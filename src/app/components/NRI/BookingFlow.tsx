@@ -37,13 +37,14 @@ import {
   ALL_SUPPORTED_COUNTRIES 
 } from './data/mockData';
 import { BookingSummary } from './BookingSummary';
+import { ServiceCards } from './ServiceCards';
 
 interface BookingFlowProps {
   formData: BookingFormData;
   setFormData: React.Dispatch<React.SetStateAction<BookingFormData>>;
   onOpenEstimator: () => void;
-  onOpenConsultation: () => void;
   onResetBooking: () => void;
+  startStep?: number;
 }
 
 const STEP_LABELS = [
@@ -59,8 +60,8 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
   formData,
   setFormData,
   onOpenEstimator,
-  onOpenConsultation,
   onResetBooking,
+  startStep,
 }) => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -73,7 +74,10 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [mobileSummaryCollapsed, setMobileSummaryCollapsed] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (startStep && startStep > 1) setCurrentStep(startStep);
+  }, [startStep]);
 
   // Fetch real backend slots when pickup date changes
   useEffect(() => {
@@ -141,6 +145,16 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
           ? prev.specialHandling.filter((t) => t !== tag)
           : [...prev.specialHandling, tag],
       };
+    });
+  };
+
+  const toggleBookingService = (serviceId: ServiceTypeId) => {
+    setFormData((prev) => {
+      const exists = prev.selectedServices.includes(serviceId);
+      const selectedServices = exists && prev.selectedServices.length > 1
+        ? prev.selectedServices.filter((id) => id !== serviceId)
+        : exists ? prev.selectedServices : [...prev.selectedServices, serviceId];
+      return { ...prev, selectedServices, serviceType: selectedServices.includes(prev.serviceType) ? prev.serviceType : selectedServices[0] };
     });
   };
 
@@ -268,27 +282,16 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
   };
 
   return (
-    <section id="booking-portal" className="py-16 sm:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+    <section id="booking-portal" className="py-16 sm:py-20 bg-[#F7F9FF]">
+      <div className="max-w-7xl mx-auto p-6 rounded-3xl bg-white">
         
         {/* Stepper Header */}
         <div className="mb-10">
           <div className="flex items-center justify-between flex-wrap gap-4 pb-6 border-b border-slate-200">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#FF6321] bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
-                Pick O Pick Service Desk
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A1931] mt-2 tracking-tight">
-                NRI Customer Booking Portal
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A1931] tracking-tight">
+                Plan Your India Shipment
               </h2>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onOpenConsultation}
-                className="text-xs font-bold text-slate-700 hover:text-slate-900 border border-slate-300 hover:border-slate-400 rounded-full px-4 py-2 transition-colors cursor-pointer"
-              >
-                Need Help? Book Consultation
-              </button>
             </div>
           </div>
 
@@ -358,30 +361,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
                     Select Your Required NRI Service:
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {NRI_SERVICES.map((s) => {
-                      const isSelected = formData.serviceType === s.id;
-                      return (
-                        <div
-                          key={s.id}
-                          onClick={() => setFormData((prev) => ({ ...prev, serviceType: s.id }))}
-                          className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                            isSelected
-                              ? 'bg-white border-[#FF6321] shadow-md ring-2 ring-[#FF6321]/20'
-                              : 'bg-white border-slate-200 hover:border-slate-300'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-bold text-[#0A1931]">{s.title}</h4>
-                            {isSelected && <Check className="w-4 h-4 text-[#FF6321]" />}
-                          </div>
-                          <p className="mt-1 text-xs text-slate-500 line-clamp-2">
-                            {s.shortDesc}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <ServiceCards selectedServices={formData.selectedServices} onToggleService={toggleBookingService} />
                 </div>
 
                 <div>
@@ -742,7 +722,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Siddharth Menon"
                       value={formData.recipientName}
                       onChange={(e) => setFormData((prev) => ({ ...prev, recipientName: e.target.value }))}
                       className="w-full p-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]"
@@ -755,7 +734,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. +1 (214) 555-0199"
                       value={formData.recipientPhone}
                       onChange={(e) => setFormData((prev) => ({ ...prev, recipientPhone: e.target.value }))}
                       className="w-full p-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]"
@@ -942,7 +920,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Priya Sharma"
                         value={formData.customerName}
                         onChange={(e) => setFormData((prev) => ({ ...prev, customerName: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm font-semibold focus:ring-2 focus:ring-[#0A1931]"
@@ -955,7 +932,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="tel"
-                        placeholder="e.g. +1 (408) 555-0192 or +91 9876543210"
                         value={formData.customerWhatsapp}
                         onChange={(e) => setFormData((prev) => ({ ...prev, customerWhatsapp: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm font-semibold focus:ring-2 focus:ring-[#0A1931]"
@@ -970,7 +946,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="email"
-                        placeholder="e.g. priya@example.com"
                         value={formData.customerEmail}
                         onChange={(e) => setFormData((prev) => ({ ...prev, customerEmail: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0A1931]"
@@ -983,7 +958,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. USA, UK, UAE, Singapore"
                         value={formData.currentCountry}
                         onChange={(e) => setFormData((prev) => ({ ...prev, currentCountry: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0A1931]"
@@ -1006,7 +980,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Ramesh Sharma (Father / Sender)"
                         value={formData.pickupName}
                         onChange={(e) => setFormData((prev) => ({ ...prev, pickupName: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0A1931]"
@@ -1019,7 +992,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="tel"
-                        placeholder="e.g. +91 98450 12345"
                         value={formData.pickupPhone}
                         onChange={(e) => setFormData((prev) => ({ ...prev, pickupPhone: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0A1931]"
@@ -1075,7 +1047,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Bengaluru"
                         value={formData.pickupCity}
                         onChange={(e) => setFormData((prev) => ({ ...prev, pickupCity: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0A1931]"
@@ -1088,7 +1059,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Karnataka"
                         value={formData.pickupState}
                         onChange={(e) => setFormData((prev) => ({ ...prev, pickupState: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0A1931]"
@@ -1101,7 +1071,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. 560038"
                         value={formData.pickupPin}
                         onChange={(e) => setFormData((prev) => ({ ...prev, pickupPin: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm font-bold focus:ring-2 focus:ring-[#0A1931]"
@@ -1178,18 +1147,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
             {/* ----------------- STEP 06: FINAL CONFIRMATION ----------------- */}
             {currentStep === 6 && submissionResult && (
               <div className="space-y-6">
-                <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center">
-                  <div className="w-14 h-14 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto mb-3 shadow-md">
-                    <CheckCircle2 className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-2xl font-extrabold text-[#0A1931]">
-                    Your Request Is With Us.
-                  </h3>
-                  <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                    Weâ€™ve received your request. Our team will review the details and contact you on WhatsApp to confirm the next step.
-                  </p>
-                </div>
-
                 {/* Booking Receipt Summary Card */}
                 <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
                   <div className="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -1303,10 +1260,10 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                   <button
                     type="button"
                     onClick={handleNextStep}
-                    className="px-8 py-3.5 rounded-full bg-[#0A1931] hover:bg-[#132646] text-white text-xs font-extrabold shadow-md shadow-slate-900/15 flex items-center gap-2 transition-all cursor-pointer uppercase tracking-wider"
+                    className="px-8 py-3.5 rounded-full bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-extrabold flex items-center gap-2 transition-colors cursor-pointer uppercase tracking-wider"
                   >
                     <span>CONTINUE</span>
-                    <ArrowRight className="w-4 h-4 text-[#FF6321]" />
+                    <ArrowRight className="w-4 h-4 text-white" />
                   </button>
                 ) : (
                   <button
@@ -1335,9 +1292,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
             <BookingSummary
               formData={formData}
               currentStep={currentStep}
-              isMobileCollapsed={mobileSummaryCollapsed}
-              onToggleMobileCollapse={() => setMobileSummaryCollapsed(!mobileSummaryCollapsed)}
-              onOpenEstimator={onOpenEstimator}
+               onOpenEstimator={onOpenEstimator}
             />
           </div>
 

@@ -8,6 +8,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'Personal Sourcing & Shopping Assistance',
     badge: 'Popular for NRIs',
     iconName: 'ShoppingBag',
+    imagePath: '/images/nri-services/shop-from-india.png',
     popularItems: ['Clothing & Ethnic Wear', 'Ayurvedic Products', 'Regional Books & Stationery', 'Handcrafted Utensils'],
   },
   {
@@ -17,6 +18,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'Doorstep Courier & Relocation',
     badge: 'Express Doorstep',
     iconName: 'Package',
+    imagePath: '/images/nri-services/personal-items.png',
     popularItems: ['Wardrobe Excess', 'Academic Certificates', 'Family Keepsakes', 'Custom Tailored Outfits'],
   },
   {
@@ -26,6 +28,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'FSSAI Verified & Sealed Packing',
     badge: 'Specialized Food Packing',
     iconName: 'Utensils',
+    imagePath: '/images/nri-services/food-groceries.png',
     popularItems: ['Homemade Sweets & Pickles', 'Regional Spices & Masalas', 'Dry Snacks & Namkeens', 'Organic Herbal Teas'],
   },
   {
@@ -35,6 +38,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'Curated Packaging & Greetings',
     badge: 'Festive Ready',
     iconName: 'Gift',
+    imagePath: '/images/nri-services/gifts-festive.png',
     popularItems: ['Festival Sweets & Diyas', 'Wedding Favors & Hampers', 'Pooja Essentials', 'Customized NRI Gift Boxes'],
   },
   {
@@ -44,6 +48,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'Zero Locker Fees for 30 Days',
     badge: 'Save up to 70% Shipping',
     iconName: 'Layers',
+    imagePath: '/images/nri-services/consolidation.png',
     popularItems: ['E-Commerce Multi-Cart', 'Designer Saree Parcels', 'Tech Accessories & Books', 'Combined Family Boxes'],
   },
   {
@@ -53,6 +58,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'Commercial Invoice & Export Customs',
     badge: 'B2B & Commercial',
     iconName: 'Truck',
+    imagePath: '/images/nri-services/business-bulk.png',
     popularItems: ['Export Apparel & Fabrics', 'Handicrafts & Decor Inventory', 'Corporate Merchandise', 'Event Supplies'],
   },
 ];

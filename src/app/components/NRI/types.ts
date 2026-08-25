@@ -13,6 +13,7 @@ export interface ServiceOption {
   tagline: string;
   badge?: string;
   iconName: string;
+  imagePath: string;
   popularItems: string[];
 }
 
@@ -52,6 +53,7 @@ export interface UploadedFileMeta {
 export interface BookingFormData {
   // Step 1: Service
   serviceType: ServiceTypeId;
+  selectedServices: ServiceTypeId[];
   requirementDescription: string;
   alreadyPurchasing: 'yes' | 'no' | null;
 

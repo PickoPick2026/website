@@ -64,19 +64,19 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       <div className="bg-white rounded-t-3xl sm:rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[92dvh] overflow-y-auto">
         
         {/* Header */}
-        <div className="bg-[#0A1931] text-white p-5 flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-transparent p-5 text-[#0A1931]">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#FF6321] flex items-center justify-center text-white font-bold">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-200 font-bold text-[#0B56D9]">
               <Headphones className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-extrabold">Book Free NRI Consultation</h3>
-              <p className="text-[11px] text-slate-300">Expert guidance before you ship</p>
+               <p className="text-[11px] text-slate-500">Expert guidance before you ship</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+             className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -122,7 +122,6 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Ramesh Iyer"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="w-full p-3 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#0A1931] focus:outline-none"
@@ -136,7 +135,6 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 <input
                   type="tel"
                   required
-                  placeholder="e.g. +1 (408) 555-0199 or +91 9876543210"
                   value={formData.whatsappNumber}
                   onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
                   className="w-full p-3 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#0A1931] focus:outline-none"
@@ -150,7 +148,6 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. USA, UK, UAE"
                     value={formData.currentCountry}
                     onChange={(e) => setFormData({ ...formData, currentCountry: e.target.value })}
                     className="w-full p-3 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#0A1931] focus:outline-none"
@@ -178,7 +175,6 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   </label>
                   <input
                     type="email"
-                    placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full p-3 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#0A1931] focus:outline-none"

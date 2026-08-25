@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { HeroSection } from '../components/NRI/HeroSection';
 import { QuickActions } from '../components/NRI/QuickActions';
-import { ServiceSelector } from '../components/NRI/ServiceSelector';
 import { BookingFlow } from '../components/NRI/BookingFlow';
 import { FreeConsultationModule } from '../components/NRI/FreeConsultationModule';
-import { BlockSlotModule } from '../components/NRI/BlockSlotModule';
 import { ProcessSection } from '../components/NRI/ProcessSection';
 import { WhyChooseUsSection } from '../components/NRI/WhyChooseUsSection';
 import { NriUseCasesSection } from '../components/NRI/NriUseCasesSection';
@@ -13,13 +11,13 @@ import { FaqSection } from '../components/NRI/FaqSection';
 import { FinalCtaSection } from '../components/NRI/FinalCtaSection';
 import { ShippingEstimateModal } from '../components/NRI/ShippingEstimateModal';
 import { ConsultationModal } from '../components/NRI/ConsultationModal';
-import { AdminPortalModal } from '../components/NRI/AdminPortalModal';
 import { BookingFormData, ServiceTypeId } from '../components/NRI/types';
 
 export default function App() {
   // Master booking form state
   const [formData, setFormData] = useState<BookingFormData>({
     serviceType: 'shop_from_india',
+    selectedServices: ['shop_from_india'],
     requirementDescription: '',
     alreadyPurchasing: null,
     packageType: 'parcel',
@@ -63,6 +61,7 @@ export default function App() {
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
   const [isEstimatorModalOpen, setIsEstimatorModalOpen] = useState(false);
   const [isAdminPortalOpen, setIsAdminPortalOpen] = useState(false);
+  const [bookingStartStep, setBookingStartStep] = useState(1);
 
   // Scroll to section helper
   const scrollToSection = (sectionId: string) => {
@@ -74,14 +73,14 @@ export default function App() {
 
   // Select service from any interactive trigger and scroll to booking flow
   const handleSelectService = (serviceId: ServiceTypeId) => {
-    setFormData((prev) => ({ ...prev, serviceType: serviceId }));
+    setFormData((prev) => ({ ...prev, serviceType: serviceId, selectedServices: [serviceId] }));
     scrollToSection('booking-portal');
   };
 
   // Start booking with optional pre-fill
   const handleStartBooking = (serviceId?: string) => {
     if (serviceId) {
-      setFormData((prev) => ({ ...prev, serviceType: serviceId as ServiceTypeId }));
+      setFormData((prev) => ({ ...prev, serviceType: serviceId as ServiceTypeId, selectedServices: [serviceId as ServiceTypeId] }));
     }
     scrollToSection('booking-portal');
   };
@@ -93,8 +92,10 @@ export default function App() {
 
   // Reset form
   const handleResetBooking = () => {
+    setBookingStartStep(1);
     setFormData({
       serviceType: 'shop_from_india',
+      selectedServices: ['shop_from_india'],
       requirementDescription: '',
       alreadyPurchasing: null,
       packageType: 'parcel',
@@ -137,7 +138,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F1F5F9] text-[#0A1931] font-sans antialiased selection:bg-[#FF6321]/20 selection:text-[#FF6321]">
+    <div className="nri-page min-h-screen flex flex-col bg-[#F7F9FF] text-[#0A1931] font-sans antialiased">
+      <style>{`
+        .nri-page [class*="shadow"] { box-shadow: none !important; }
+        .nri-page [class*="bg-gradient"] { background-image: none !important; }
+        .nri-page [class*="bg-orange-50"], .nri-page [class*="bg-orange-100"] { background-color: #EEF4FF !important; }
+        .nri-page [class*="bg-[#FF6321]"], .nri-page [class*="bg-orange-600"], .nri-page [class*="bg-orange-700"] { background-color: #0B56D9 !important; }
+        .nri-page [class*="text-[#FF6321]"], .nri-page [class*="text-orange-"] { color: #0B56D9 !important; }
+        .nri-page [class*="border-[#FF6321]"], .nri-page [class*="border-orange-"] { border-color: #0B56D9 !important; }
+        .nri-page [class*="ring-[#FF6321]"] { --tw-ring-color: rgb(11 86 217 / .22) !important; }
+      `}</style>
       
     
 
@@ -152,32 +162,22 @@ export default function App() {
         {/* 4 Quick Action Cards */}
         <QuickActions
           onOpenConsultation={() => setIsConsultationModalOpen(true)}
-          onOpenBlockSlot={handleOpenBlockSlot}
           onStartBooking={() => scrollToSection('booking-portal')}
           onOpenEstimator={() => setIsEstimatorModalOpen(true)}
         />
 
-        {/* NRI Service Selector (6 Cards) */}
-        <ServiceSelector
-          selectedService={formData.serviceType}
-          onSelectService={(id) => setFormData((prev) => ({ ...prev, serviceType: id }))}
-          onContinueToForm={() => scrollToSection('booking-portal')}
-        />
 
         {/* Core Multi-Step Booking Engine & Sticky Live Summary */}
         <BookingFlow
           formData={formData}
           setFormData={setFormData}
           onOpenEstimator={() => setIsEstimatorModalOpen(true)}
-          onOpenConsultation={() => setIsConsultationModalOpen(true)}
           onResetBooking={handleResetBooking}
+          startStep={bookingStartStep}
         />
 
         {/* Free 1-on-1 Concierge Consultation Section */}
         <FreeConsultationModule />
-
-        {/* Block Your Slot Section */}
-        <BlockSlotModule />
 
         {/* Process Section (6 Steps) */}
         <ProcessSection />
@@ -186,7 +186,7 @@ export default function App() {
         <WhyChooseUsSection />
 
         {/* NRI Use Cases & Life Scenarios */}
-        <NriUseCasesSection onSelectUseCase={handleSelectService} />
+        <NriUseCasesSection onOpenConsultation={() => setIsConsultationModalOpen(true)} />
 
         {/* Customer Testimonials */}
         <TestimonialsSection />
@@ -220,11 +220,6 @@ export default function App() {
       <ConsultationModal
         isOpen={isConsultationModalOpen}
         onClose={() => setIsConsultationModalOpen(false)}
-      />
-
-      <AdminPortalModal
-        isOpen={isAdminPortalOpen}
-        onClose={() => setIsAdminPortalOpen(false)}
       />
 
     </div>

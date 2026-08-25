@@ -1,83 +1,75 @@
 import React from 'react';
-import { 
-  MessageSquare, 
-  Store, 
-  Boxes, 
-  ShieldCheck, 
-  Plane, 
-  Home, 
-  Sparkles,
-  ArrowRight
-} from 'lucide-react';
-import { PROCESS_STEPS } from './data/mockData';
+import { Box, Boxes, MessageSquare, Plane } from 'lucide-react';
 
-export const ProcessSection: React.FC = () => {
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'MessageSquare': return MessageSquare;
-      case 'Store': return Store;
-      case 'Boxes': return Boxes;
-      case 'ShieldCheck': return ShieldCheck;
-      case 'Plane': return Plane;
-      case 'Home': return Home;
-      default: return Sparkles;
-    }
-  };
+const steps = [
+  {
+    number: '01',
+    title: 'Tell us what you need',
+    description: 'Share your items, destination, and preferred pickup details.',
+    icon: MessageSquare,
+  },
+  {
+    number: '02',
+    title: 'We source or collect',
+    description: 'We shop for you or collect your purchases from anywhere in India.',
+    icon: Box,
+  },
+  {
+    number: '03',
+    title: 'We prepare one shipment',
+    description: 'We inspect, consolidate, and pack everything securely for the journey.',
+    icon: Boxes,
+  },
+  {
+    number: '04',
+    title: 'You receive it abroad',
+    description: 'Your shipment leaves India with tracking and arrives at your doorstep.',
+    icon: Plane,
+  },
+];
 
-  return (
-    <section id="how-it-works" className="py-16 sm:py-20 bg-white border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#FF6321] bg-orange-50 px-3.5 py-1.5 rounded-full border border-orange-200">
-            End-To-End NRI Logistics
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0A1931] tracking-tight mt-3">
-            From India To You — We Handle The Rest.
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-600">
-            A frictionless six-step journey connecting Indian markets and hometown doorsteps directly to your overseas address.
-          </p>
-        </div>
-
-        {/* 6 Process Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-          {PROCESS_STEPS.map((step, idx) => {
-            const Icon = getIcon(step.icon);
-            return (
-              <div
-                key={step.step}
-                className="relative rounded-2xl bg-slate-50 border border-slate-200/80 p-6 sm:p-7 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="text-2xl font-black font-mono text-[#FF6321]">
-                      {step.step}
-                    </span>
-                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-[#0A1931] flex items-center justify-center shadow-xs">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  </div>
-
-                  <h3 className="text-base font-extrabold text-[#0A1931] tracking-tight">
-                    {step.title}
-                  </h3>
-
-                  <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-slate-200/80 flex items-center text-[11px] font-bold text-slate-400 font-mono">
-                  <span>STAGE 0{idx + 1} OF 06</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
+export const ProcessSection: React.FC = () => (
+  <section id="how-it-works" className="border-b border-slate-200 bg-white py-14 sm:py-18">
+    <div className="mx-auto max-w-6xl px-4 sm:px-8">
+      <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#0B56D9]">Simple NRI shipping</p>
+        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-4xl">
+          From India to you. We handle the rest.
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+          One clear process from your first request to your overseas doorstep.
+        </p>
       </div>
-    </section>
-  );
-};
+
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch lg:gap-0">
+        {steps.map((step, index) => {
+          const Icon = step.icon;
+          return (
+            <React.Fragment key={step.number}>
+              <article className="relative flex-1 rounded-2xl border border-blue-100 bg-[#F7F9FF] p-5 sm:p-6 lg:min-w-0">
+                <div className="flex items-center justify-between">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0B56D9] text-white">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs font-black tracking-[0.2em] text-[#0B56D9]">{step.number}</span>
+                </div>
+                <h3 className="mt-5 text-base font-extrabold text-[#0A1931]">{step.title}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-600 sm:text-sm">{step.description}</p>
+              </article>
+              {index < steps.length - 1 && (
+                <div className="flex h-8 shrink-0 items-center justify-center lg:w-16 lg:self-center">
+                  <img
+                    src="/images/nri-process-route-arrow-v1.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="h-10 w-16 rotate-90 object-contain lg:h-12 lg:w-16 lg:rotate-0"
+                  />
+                </div>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+);

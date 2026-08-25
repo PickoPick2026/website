@@ -75,8 +75,8 @@ export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({
           
           {/* Left Column: Concierge Value Proposition */}
           <div className="lg:col-span-5 space-y-5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#FF6321] text-xs font-bold uppercase tracking-wider">
-              <Headphones className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0B56D9]">
+              <Headphones className="h-3.5 w-3.5" />
               NRI Concierge Advisory Desk
             </div>
 
@@ -159,7 +159,6 @@ export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Ramesh Iyer"
                       value={formData.fullName}
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                       className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
@@ -173,7 +172,6 @@ export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({
                     <input
                       type="tel"
                       required
-                      placeholder="e.g. +1 408 555 0199"
                       value={formData.whatsappNumber}
                       onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
                       className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
@@ -188,7 +186,6 @@ export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. USA, UK, UAE, Canada, Australia"
                       value={formData.currentCountry}
                       onChange={(e) => setFormData({ ...formData, currentCountry: e.target.value })}
                       className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
@@ -201,7 +198,6 @@ export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({
                     </label>
                     <input
                       type="email"
-                      placeholder="e.g. ramesh@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"

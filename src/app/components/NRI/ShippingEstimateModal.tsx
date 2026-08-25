@@ -67,23 +67,23 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
       <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full overflow-hidden max-h-[90vh] flex flex-col">
         
         {/* Modal Header */}
-        <div className="bg-[#0A1931] text-white p-5 sm:p-6 flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-transparent p-5 text-[#0A1931] sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FF6321] flex items-center justify-center text-white font-bold">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200 font-bold text-[#0B56D9]">
               <Calculator className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-extrabold tracking-tight">
                 International Shipping Rate Estimator
               </h3>
-              <p className="text-xs text-slate-300">
+               <p className="text-xs text-slate-500">
                 Transparent live estimates with volumetric packaging comparison
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+             className="rounded-xl p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

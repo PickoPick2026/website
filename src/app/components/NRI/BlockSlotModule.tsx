@@ -128,7 +128,6 @@ export const BlockSlotModule: React.FC = () => {
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Anjali Deshmukh"
                         value={formData.customerName}
                         onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
                         className="w-full p-3 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0A1931]"
@@ -193,7 +192,6 @@ export const BlockSlotModule: React.FC = () => {
                     <input
                       type="tel"
                       required
-                      placeholder="e.g. +1 408 555 0199 or +91 98450 12345"
                       value={formData.whatsappNumber}
                       onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
                       className="w-full p-3 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0A1931]"
