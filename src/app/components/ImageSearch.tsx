@@ -376,17 +376,17 @@ export function ImageSearch() {
   };
 
   return (
-    <section id="search-by-image" className="pt-12 pb-32 bg-slate-50">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="search-by-image" className="pt-12 pb-32 bg-[#F7F9FF]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-14">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100/50 text-blue-700 font-medium text-sm mb-6"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-xs font-bold uppercase tracking-widest text-[#0B56D9]"
           >
-            <Search size={16} />
+            <Search size={14} />
             AI Product Discovery
           </motion.div>
           <motion.h2
@@ -394,7 +394,7 @@ export function ImageSearch() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6"
+            className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]"
           >
             Find it . Buy it . Ship it .
           </motion.h2>
@@ -403,7 +403,7 @@ export function ImageSearch() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-slate-600 max-w-2xl mx-auto"
+            className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-slate-600"
           >
             Looking for something specific? Search by uploading an image or pasting a product link below.
           </motion.p>
@@ -411,23 +411,13 @@ export function ImageSearch() {
 
         {/* Search Type Selector */}
         <div className="flex justify-center mb-12">
-          <div className="inline-flex p-1 bg-white rounded-2xl shadow-sm border border-slate-100">
-            {/* <button
-              onClick={() => setSearchType('image')}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                searchType === 'image' 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
-                  : 'text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              Search by Image
-            </button> */}
+          <div className="inline-flex p-1 rounded-full bg-white border border-slate-200 shadow-sm">
             <button
               onClick={() => setSearchType('link')}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                searchType === 'link' 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
-                  : 'text-slate-500 hover:text-slate-900'
+              className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                searchType === 'link'
+                  ? 'bg-[#0B56D9] text-white shadow-md shadow-[#0B56D9]/20'
+                  : 'text-slate-500 hover:text-[#0A1931]'
               }`}
             >
               Search by Link
@@ -443,7 +433,7 @@ export function ImageSearch() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100"
+            className="bg-white rounded-2xl border border-slate-200 p-6"
           >
             {searchType === 'image' ? (
               <>
@@ -586,12 +576,12 @@ export function ImageSearch() {
               </>
             ) : (
               <div className="h-full min-h-[400px] flex flex-col justify-center">
-                <div className="p-8 border-2 border-slate-100 rounded-3xl bg-slate-50/50">
-                  <div className="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-600/20">
-                    <Upload size={28} className="rotate-180" />
+                <div className="p-8 border border-slate-200 rounded-2xl bg-slate-50/60">
+                  <div className="w-14 h-14 bg-[#0B56D9] text-white rounded-xl flex items-center justify-center mb-6">
+                    <Upload size={26} className="rotate-180" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-4">Search by Product Link</h3>
-                  <p className="text-slate-500 mb-8">Paste a link to any product from an Indian e-commerce store like Amazon, Myntra, or Flipkart.</p>
+                  <h3 className="text-xl font-extrabold tracking-tight text-[#0A1931] mb-3">Search by Product Link</h3>
+                  <p className="text-sm text-slate-600 mb-8">Paste a link to any product from an Indian e-commerce store like Amazon, Myntra, or Flipkart.</p>
                   
                   <form onSubmit={handleLinkSearch} className="space-y-4">
                     <div className="relative">
@@ -601,14 +591,14 @@ export function ImageSearch() {
                         required
                         value={productLink}
                         onChange={(e) => setProductLink(e.target.value)}
-                        className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all pr-12 text-slate-900"
+                        className="w-full px-5 py-3.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:outline-none transition-all pr-12 text-xs text-slate-900"
                       />
-                      <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                      <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     </div>
                     <button
                       type="submit"
                       disabled={isSearching}
-                      className="w-full py-4 bg-gradient-to-br from-blue-600 to-indigo-800 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-900 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50"
+                      className="w-full py-3.5 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
                     >
                       {isSearching ? 'Analyzing Link...' : 'Search Product'}
                     </button>
@@ -624,14 +614,14 @@ export function ImageSearch() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-[2rem] p-8 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col min-h-[400px]"
+            className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 flex flex-col min-h-[400px]"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="text-blue-600">
-                  <ImageIcon size={24} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200 text-[#0B56D9]">
+                  <ImageIcon size={20} />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900">Matching Products</h3>
+                <h3 className="text-lg font-extrabold tracking-tight text-[#0A1931]">Matching Products</h3>
               </div>
               {results.length > 0 && (
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${

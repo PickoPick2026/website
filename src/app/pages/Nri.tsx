@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HeroSection } from '../components/NRI/HeroSection';
 import { QuickActions } from '../components/NRI/QuickActions';
 import { BookingFlow } from '../components/NRI/BookingFlow';
@@ -9,7 +9,6 @@ import { NriUseCasesSection } from '../components/NRI/NriUseCasesSection';
 import { TestimonialsSection } from '../components/NRI/TestimonialsSection';
 import { FaqSection } from '../components/NRI/FaqSection';
 import { FinalCtaSection } from '../components/NRI/FinalCtaSection';
-import { ShippingEstimateModal } from '../components/NRI/ShippingEstimateModal';
 import { ConsultationModal } from '../components/NRI/ConsultationModal';
 import { BookingFormData, ServiceTypeId } from '../components/NRI/types';
 
@@ -59,7 +58,6 @@ export default function App() {
 
   // Modal open states
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
-  const [isEstimatorModalOpen, setIsEstimatorModalOpen] = useState(false);
   const [isAdminPortalOpen, setIsAdminPortalOpen] = useState(false);
   const [bookingStartStep, setBookingStartStep] = useState(1);
 
@@ -70,6 +68,25 @@ export default function App() {
       el.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    const openPickup = () => {
+      setBookingStartStep(1);
+      scrollToSection('booking-portal');
+    };
+    const openEstimate = () => { window.location.assign('/shipping-estimate'); };
+    window.addEventListener('pickopick:open-pickup', openPickup);
+    window.addEventListener('pickopick:open-estimate', openEstimate);
+
+    const action = window.location.hash;
+    if (action === '#booking-portal') window.setTimeout(openPickup, 120);
+    if (action === '#shipping-estimate') window.setTimeout(openEstimate, 120);
+
+    return () => {
+      window.removeEventListener('pickopick:open-pickup', openPickup);
+      window.removeEventListener('pickopick:open-estimate', openEstimate);
+    };
+  }, []);
 
   // Select service from any interactive trigger and scroll to booking flow
   const handleSelectService = (serviceId: ServiceTypeId) => {
@@ -162,8 +179,7 @@ export default function App() {
         {/* 4 Quick Action Cards */}
         <QuickActions
           onOpenConsultation={() => setIsConsultationModalOpen(true)}
-          onStartBooking={() => scrollToSection('booking-portal')}
-          onOpenEstimator={() => setIsEstimatorModalOpen(true)}
+          onOpenEstimator={() => window.location.assign('/shipping-estimate')}
         />
 
 
@@ -171,13 +187,13 @@ export default function App() {
         <BookingFlow
           formData={formData}
           setFormData={setFormData}
-          onOpenEstimator={() => setIsEstimatorModalOpen(true)}
+          onOpenEstimator={() => window.location.assign('/shipping-estimate')}
           onResetBooking={handleResetBooking}
           startStep={bookingStartStep}
         />
 
         {/* Free 1-on-1 Concierge Consultation Section */}
-        <FreeConsultationModule />
+        <FreeConsultationModule onOpenConsultation={() => setIsConsultationModalOpen(true)} />
 
         {/* Process Section (6 Steps) */}
         <ProcessSection />
@@ -204,19 +220,6 @@ export default function App() {
     
 
       {/* Interactive Modals */}
-      <ShippingEstimateModal
-        isOpen={isEstimatorModalOpen}
-        onClose={() => setIsEstimatorModalOpen(false)}
-        onProceedWithEstimate={(country, weight) => {
-          setFormData((prev) => ({
-            ...prev,
-            destinationCountry: country,
-            approxWeightKg: weight,
-          }));
-          scrollToSection('booking-portal');
-        }}
-      />
-
       <ConsultationModal
         isOpen={isConsultationModalOpen}
         onClose={() => setIsConsultationModalOpen(false)}

@@ -4,8 +4,8 @@ import {
   MapPin, 
   Calendar, 
   Clock, 
-  ShieldCheck, 
-  PhoneCall
+  PhoneCall,
+  ChevronDown,
 } from 'lucide-react';
 import { BookingFormData } from './types';
 import { NRI_SERVICES } from './data/mockData';
@@ -41,14 +41,16 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   return (
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden sticky top-24">
       {/* Content */}
-      <div className="p-5 space-y-4">
+      <div className="p-5 space-y-3">
         
         {/* Service */}
-        <div className="pb-3 border-b border-slate-100 flex items-start justify-between gap-3">
+        <details className="group border-b border-slate-100">
+          <summary className="flex cursor-pointer list-none items-center justify-between py-2 text-xs font-bold text-[#0A1931]">
+            <span><span className="mr-2 text-[10px] font-mono text-[#0B56D9]">01</span>Service</span>
+            <ChevronDown className="h-4 w-4 text-[#0B56D9] transition-transform group-open:rotate-180" />
+          </summary>
+        <div className="pb-3">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-              Service
-            </span>
             <p className="text-xs font-bold text-[#0A1931] mt-0.5">
               {selectedServiceNames.length ? selectedServiceNames.join(', ') : selectedServiceObj ? selectedServiceObj.title : 'Not Selected'}
             </p>
@@ -58,17 +60,17 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
               </p>
             )}
           </div>
-          <span className="text-[10px] font-bold text-[#FF6321] bg-orange-50 px-2 py-0.5 rounded shrink-0">
-            Step 01
-          </span>
         </div>
+        </details>
 
         {/* Package Specs */}
-        <div className="pb-3 border-b border-slate-100 flex items-start justify-between gap-3">
+        <details className="group border-b border-slate-100">
+          <summary className="flex cursor-pointer list-none items-center justify-between py-2 text-xs font-bold text-[#0A1931]">
+            <span><span className="mr-2 text-[10px] font-mono text-[#0B56D9]">02</span>Package Details</span>
+            <ChevronDown className="h-4 w-4 text-[#0B56D9] transition-transform group-open:rotate-180" />
+          </summary>
+        <div className="pb-3">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-              Package Details
-            </span>
             <p className="text-xs font-bold text-[#0A1931] mt-0.5">
               {getPackageTypeLabel(formData.packageType)} â€¢ {formData.packageCount} {formData.packageCount === 1 ? 'Box' : 'Boxes'}
             </p>
@@ -88,17 +90,17 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
               </div>
             )}
           </div>
-          <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded shrink-0">
-            Step 02
-          </span>
         </div>
+        </details>
 
         {/* Destination */}
-        <div className="pb-3 border-b border-slate-100 flex items-start justify-between gap-3">
+        <details className="group border-b border-slate-100">
+          <summary className="flex cursor-pointer list-none items-center justify-between py-2 text-xs font-bold text-[#0A1931]">
+            <span><span className="mr-2 text-[10px] font-mono text-[#0B56D9]">03</span>Destination</span>
+            <ChevronDown className="h-4 w-4 text-[#0B56D9] transition-transform group-open:rotate-180" />
+          </summary>
+        <div className="pb-3">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-              Destination
-            </span>
             <p className="text-xs font-bold text-[#0A1931] mt-0.5">
               {formData.destinationCountry || 'Country Not Selected'}
             </p>
@@ -113,17 +115,17 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
               </p>
             )}
           </div>
-          <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded shrink-0">
-            Step 03
-          </span>
         </div>
+        </details>
 
         {/* Pickup Schedule */}
-        <div className="pb-3 border-b border-slate-100 flex items-start justify-between gap-3">
+        <details className="group border-b border-slate-100">
+          <summary className="flex cursor-pointer list-none items-center justify-between py-2 text-xs font-bold text-[#0A1931]">
+            <span><span className="mr-2 text-[10px] font-mono text-[#0B56D9]">04</span>Pickup Schedule</span>
+            <ChevronDown className="h-4 w-4 text-[#0B56D9] transition-transform group-open:rotate-180" />
+          </summary>
+        <div className="pb-3">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-              Pickup Schedule
-            </span>
             <p className="text-xs font-bold text-[#0A1931] mt-0.5">
               {formData.preferredPickupDate ? (
                 new Date(formData.preferredPickupDate).toLocaleDateString('en-US', {
@@ -140,17 +142,17 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
               {formData.preferredPickupSlotLabel || 'Time Slot Pending'}
             </p>
           </div>
-          <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded shrink-0">
-            Step 04
-          </span>
         </div>
+        </details>
 
         {/* Pickup Location */}
-        <div className="pb-2 flex items-start justify-between gap-3">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none items-center justify-between py-2 text-xs font-bold text-[#0A1931]">
+            <span><span className="mr-2 text-[10px] font-mono text-[#0B56D9]">05</span>Pickup Location</span>
+            <ChevronDown className="h-4 w-4 text-[#0B56D9] transition-transform group-open:rotate-180" />
+          </summary>
+        <div className="pb-2">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-              Pickup Location
-            </span>
             <p className="text-xs font-bold text-[#0A1931] mt-0.5">
               {formData.pickupCity ? `${formData.pickupCity}, ${formData.pickupState || 'India'}` : 'Address Pending'}
             </p>
@@ -163,10 +165,8 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
               </p>
             )}
           </div>
-          <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded shrink-0">
-            Step 05
-          </span>
         </div>
+        </details>
 
         {/* Dynamic Rate Guidance Action */}
         {onOpenEstimator && (
@@ -181,14 +181,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
         )}
 
         {/* Human Concierge Footer Help */}
-        <div className="pt-4 border-t border-slate-100 bg-slate-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
-          <p className="text-[11px] font-bold text-[#0A1931] flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            Need instant guidance?
-          </p>
-          <p className="text-[11px] text-slate-500 mt-0.5">
-            Talk to our Indian logistics desk on WhatsApp.
-          </p>
+        <div className="border-t border-slate-100 bg-slate-50 -mx-5 -mb-5 rounded-b-2xl p-4 pt-3">
           <a
             href="https://wa.me/919876543210?text=Hello%20Pick%20O%20Pick!%20I%20am%20filling%20out%20my%20NRI%20booking%20and%20need%20help."
             target="_blank"

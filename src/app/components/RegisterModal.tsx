@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Mail, Lock, ArrowRight, X, Phone } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, X, Phone, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase';
 import {toast } from 'sonner';
 import { useRef, useEffect } from "react";
@@ -334,7 +334,7 @@ if (!validate()) return;
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-[101] p-4"
           >
-            <div className="bg-[#f8f9fa] rounded-3xl shadow-2xl overflow-hidden flex flex-col items-center pt-8 pb-6 px-6 sm:px-10">
+            <div className="bg-white rounded-3xl overflow-hidden flex flex-col items-center pt-6 pb-6 px-6 sm:px-10 relative border border-slate-200">
               
               {/* Close Button */}
               <button 
@@ -344,21 +344,10 @@ if (!validate()) return;
                 <X size={20} />
               </button>
 
-              {/* Logo Icon */}
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-600/20">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 3L20 7.5V16.5L12 21L4 16.5V7.5L12 3Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 12L20 7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 12V21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 12L4 7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16 5.25L8 9.75" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-
               {/* Header */}
-              <h2 className="text-2xl font-bold text-slate-900 mb-2 text-center">Create your account</h2>
-              <p className="text-sm text-slate-600 mb-8 text-center">
-                Already have an account? <button onClick={onLoginClick} className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 font-medium hover:underline">Login</button>
+              <h2 className="text-2xl font-extrabold tracking-tight text-[#0A1931] mt-2 mb-2 text-center">Create your account</h2>
+              <p className="text-sm text-slate-600 mb-6 text-center">
+                Already have an account? <button onClick={onLoginClick} className="text-[#0B56D9] font-bold hover:text-[#0849B7] hover:underline">Login</button>
               </p>
 
               {errors.form && (
@@ -368,7 +357,7 @@ if (!validate()) return;
               )}
 
               {/* Form Card */}
-              <div className="w-full bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+              <div className="w-full bg-white rounded-2xl p-6 border border-slate-200">
                 <form onSubmit={handleRegister} className="flex flex-col gap-4">
                   
                   {/* Full Name */}
@@ -383,9 +372,9 @@ if (!validate()) return;
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleChange}
-                        placeholder="John Doe"
+                        placeholder="Enter your full name"
                         className={`w-full pl-10 pr-4 py-2.5 text-sm bg-white border rounded-lg outline-none transition-all ${
-                          errors.fullName ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                          errors.fullName ? 'border-red-500 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]' : 'border-slate-200 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]'
                         }`}
                       />
                     </div>
@@ -407,11 +396,11 @@ if (!validate()) return;
                           name="phoneNumber"
                           value={formData.phoneNumber}
                           onChange={handleChange}
-                          placeholder="Enter mobile number"
+                          placeholder="Enter your mobile number"
                           className={`w-full pl-10 pr-4 py-2.5 text-sm bg-white border rounded-lg outline-none transition-all ${
                             errors.phoneNumber
-                              ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                              : "border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                              ? "border-red-500 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]"
+                              : "border-slate-200 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]"
                           }`}
                         />
                       </div>
@@ -433,9 +422,9 @@ if (!validate()) return;
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="you@example.com"
+                        placeholder="Enter your email"
                         className={`w-full pl-10 pr-4 py-2.5 text-sm bg-white border rounded-lg outline-none transition-all ${
-                          errors.email ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                          errors.email ? 'border-red-500 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]' : 'border-slate-200 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]'
                         }`}
                       />
                     </div>
@@ -446,7 +435,7 @@ if (!validate()) return;
                       type="button"
                       onClick={handleSendOtp}
                       disabled={timer > 0}
-                      className="text-blue-600 text-xs"
+                      className="text-[#0B56D9] text-xs font-bold"
                     >
                       {timer > 0 ? `Resend in ${timer}s` : "Send OTP"}
                     </button>
@@ -460,7 +449,7 @@ if (!validate()) return;
                             placeholder="Enter OTP"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
-                            className="w-full border rounded-lg px-3 py-2 text-sm pr-10"
+                            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm pr-10 outline-none focus:ring-1 focus:ring-[#0B56D9] focus:border-[#0B56D9]"
                           />
 
                           {/* ✅ Tick mark */}
@@ -478,7 +467,7 @@ if (!validate()) return;
                           <button
                             type="button"
                             onClick={handleVerifyOtp}
-                            className="w-full mt-2 bg-green-600 text-white py-2 rounded-lg text-sm"
+                            className="w-full mt-2 bg-[#0B56D9] text-white py-2.5 rounded-lg text-sm font-bold hover:bg-[#0849B7] transition-colors"
                           >
                             Verify OTP
                           </button>
@@ -504,21 +493,21 @@ if (!validate()) return;
                           name="password"
                           value={formData.password}
                           onChange={handleChange}
-                          placeholder="••••••••"
+                          placeholder="Enter your password"
                           className={`w-full pl-10 pr-10 py-2.5 text-sm bg-white border rounded-lg outline-none transition-all ${
                             errors.password
-                              ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                              : "border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                              ? "border-red-500 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]"
+                              : "border-slate-200 focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9]"
                           }`}
                         />
 
-                        {/* 👁️ RIGHT SIDE BUTTON */}
+                        {/* Eye toggle */}
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
                         >
-                          {showPassword ? "🙈" : "👁️"}
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
 
@@ -543,7 +532,7 @@ if (!validate()) return;
                         </svg>
                       </div>
                       <span className="text-xs text-slate-600 select-none">
-                        I agree to the <a href="#" className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 hover:underline">Terms</a> and <a href="#" className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 hover:underline">Privacy Policy</a>
+                        I agree to the <a href="#" className="text-[#0B56D9] font-semibold hover:underline">Terms</a> and <a href="#" className="text-[#0B56D9] font-semibold hover:underline">Privacy Policy</a>
                       </span>
                     </label>
                     {errors.agreeTerms && <p className="text-red-500 text-xs mt-1 ml-6">{errors.agreeTerms}</p>}
@@ -553,7 +542,7 @@ if (!validate()) return;
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full mt-2 bg-gradient-to-br from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 text-white py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-blue-600/20"
+                    className="w-full mt-2 bg-[#0B56D9] hover:bg-[#0849B7] text-white py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? 'Creating account...' : 'Create account'}
                     {!isSubmitting && <ArrowRight size={16} />}

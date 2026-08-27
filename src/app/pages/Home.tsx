@@ -8,7 +8,7 @@ import { Hero } from "../components/Hero";
 import { ImageSearch } from "../components/ImageSearch";
 import { TrustMetrics } from "../components/TrustMetrics";
 import { Services } from "../components/Services";
-import { ShoppingDirectory } from "../components/ShoppingDirectory";
+import { ShoppingDirectoryMarquee } from "../components/ShoppingDirectoryMarquee";
 import { TrackingExperience } from "../components/TrackingExperience";
 import { Testimonials } from "../components/Testimonials";
 import { ShopBanner } from "../components/ShopBanner";
@@ -72,13 +72,13 @@ export default function Home() {
       <div className="hidden sm:block ">
         <Hero />
       </div>
-      <TrackingExperience />
       <ImageSearch />
+      <TrackingExperience />
       {/* <TrustMetrics /> */}
       <AboutUs />
       <StoryFlow />
       <Services />
-      <ShoppingDirectory />
+      <ShoppingDirectoryMarquee />
       
       <Testimonials />
       <ShopBanner />

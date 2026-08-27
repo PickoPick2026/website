@@ -56,6 +56,13 @@ const STEP_LABELS = [
   { step: 6, name: 'CONFIRM', title: 'Your Request Is With Us' },
 ];
 
+const toDateValue = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const BookingFlow: React.FC<BookingFlowProps> = ({
   formData,
   setFormData,
@@ -74,6 +81,13 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isCustomDate, setIsCustomDate] = useState(false);
+  const pickupDates = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + index);
+    return { value: toDateValue(date), date };
+  });
 
   useEffect(() => {
     if (startStep && startStep > 1) setCurrentStep(startStep);
@@ -296,37 +310,35 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
           </div>
 
           {/* Stepper Progress Bar */}
-          <div className="mt-8 grid grid-cols-3 sm:grid-cols-6 gap-2.5">
-            {STEP_LABELS.map((s) => {
-              const isCompleted = currentStep > s.step;
-              const isCurrent = currentStep === s.step;
-
-              return (
-                <div
-                  key={s.step}
-                  onClick={() => {
-                    if (isCompleted) setCurrentStep(s.step);
-                  }}
-                  className={`p-3 rounded-xl border transition-all ${
-                    isCompleted
-                      ? 'bg-[#0A1931] border-[#0A1931] text-white cursor-pointer'
-                      : isCurrent
-                      ? 'bg-orange-50/60 border-[#FF6321] text-[#0A1931] ring-2 ring-[#FF6321]/20'
-                      : 'bg-slate-50 border-slate-200 text-slate-400'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono font-bold">
-                      0{s.step}
+          <div className="mt-8 overflow-x-auto pb-2">
+            <div className="relative flex min-w-[680px] items-start justify-between px-3">
+              <div className="absolute left-10 right-10 top-4 h-0.5 bg-slate-200" />
+              <div
+                className="absolute left-10 top-4 h-0.5 bg-[#0B56D9] transition-all"
+                style={{ width: `calc(${Math.max(currentStep - 1, 0) / (STEP_LABELS.length - 1) * 100}% - 2.5rem)` }}
+              />
+              {STEP_LABELS.map((s) => {
+                const isCompleted = currentStep > s.step;
+                const isCurrent = currentStep === s.step;
+                return (
+                  <button
+                    key={s.step}
+                    type="button"
+                    disabled={!isCompleted}
+                    onClick={() => setCurrentStep(s.step)}
+                    aria-current={isCurrent ? 'step' : undefined}
+                    className={`relative z-10 flex w-24 flex-col items-center gap-2 text-center ${isCompleted ? 'cursor-pointer' : 'cursor-default'}`}
+                  >
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-black transition-all ${isCompleted ? 'bg-[#0B56D9] text-white' : isCurrent ? 'bg-white text-[#0B56D9] ring-4 ring-blue-100 border-2 border-[#0B56D9]' : 'bg-white text-slate-400 ring-1 ring-slate-300'}`}>
+                      {isCompleted ? <Check className="h-4 w-4" /> : `0${s.step}`}
                     </span>
-                    {isCompleted && <Check className="w-3.5 h-3.5 text-[#FF6321]" />}
-                  </div>
-                  <p className="mt-1 text-xs font-bold truncate">
-                    {s.name}
-                  </p>
-                </div>
-              );
-            })}
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isCurrent ? 'text-[#0B56D9]' : isCompleted ? 'text-slate-700' : 'text-slate-400'}`}>
+                      {s.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -373,7 +385,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     value={formData.requirementDescription}
                     onChange={(e) => setFormData((prev) => ({ ...prev, requirementDescription: e.target.value }))}
                     placeholder="Tell us what you want to send or source (e.g. 5kg homemade snacks from Chennai, 3 traditional outfits, college transcripts)..."
-                    className="w-full p-4 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931] focus:border-transparent transition-all placeholder:text-slate-400"
+                     className="w-full p-4 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent transition-all placeholder:text-slate-400"
                   />
                 </div>
 
@@ -387,7 +399,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       onClick={() => setFormData((prev) => ({ ...prev, alreadyPurchasing: 'yes' }))}
                       className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         formData.alreadyPurchasing === 'yes'
-                          ? 'bg-[#0A1931] text-white shadow'
+                           ? 'bg-[#0B56D9] text-white'
                           : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -398,7 +410,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       onClick={() => setFormData((prev) => ({ ...prev, alreadyPurchasing: 'no' }))}
                       className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         formData.alreadyPurchasing === 'no'
-                          ? 'bg-[#0A1931] text-white shadow'
+                           ? 'bg-[#0B56D9] text-white'
                           : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -432,7 +444,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                           onClick={() => setFormData((prev) => ({ ...prev, packageType: pt.id as PackageTypeId }))}
                           className={`p-3 rounded-xl text-xs font-bold border transition-all text-left cursor-pointer ${
                             isSelected
-                              ? 'bg-[#0A1931] text-white border-[#0A1931] shadow'
+                               ? 'bg-[#0B56D9] text-white border-[#0B56D9]'
                               : 'bg-white text-slate-700 border-slate-300 hover:border-slate-400'
                           }`}
                         >
@@ -658,7 +670,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                           onClick={() => setFormData((prev) => ({ ...prev, destinationCountry: c }))}
                           className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#0A1931] text-white border-[#0A1931] shadow-sm'
+                               ? 'bg-[#0B56D9] text-white border-[#0B56D9]'
                               : 'bg-white text-slate-700 border-slate-300 hover:border-slate-400'
                           }`}
                         >
@@ -751,7 +763,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       onClick={() => setFormData((prev) => ({ ...prev, isPermanentAddress: 'yes' }))}
                       className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         formData.isPermanentAddress === 'yes'
-                          ? 'bg-[#0A1931] text-white shadow'
+                           ? 'bg-[#0B56D9] text-white'
                           : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -762,7 +774,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       onClick={() => setFormData((prev) => ({ ...prev, isPermanentAddress: 'no' }))}
                       className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         formData.isPermanentAddress === 'no'
-                          ? 'bg-[#0A1931] text-white shadow'
+                           ? 'bg-[#0B56D9] text-white'
                           : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -783,17 +795,45 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
 
                   {/* Date Selector */}
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                    Select Preferred Pickup Date:
+                    Select Pickup Date:
                   </label>
-                  <div className="relative max-w-sm">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+                    {pickupDates.map(({ value, date }) => {
+                      const isSelected = formData.preferredPickupDate === value;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => {
+                            setIsCustomDate(false);
+                            setFormData((prev) => ({ ...prev, preferredPickupDate: value }));
+                          }}
+                          className={`rounded-xl border px-2 py-3 text-center transition-colors ${isSelected ? 'border-[#0B56D9] bg-[#0B56D9] text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'}`}
+                        >
+                          <span className="block text-[10px] font-bold uppercase opacity-80">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                          <span className="mt-1 block text-lg font-extrabold">{date.getDate()}</span>
+                          <span className="block text-[10px] opacity-80">{date.toLocaleDateString('en-US', { month: 'short' })}</span>
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomDate(true)}
+                      className={`rounded-xl border px-2 py-3 text-center text-xs font-bold transition-colors ${isCustomDate ? 'border-[#0B56D9] bg-blue-50 text-[#0B56D9]' : 'border-dashed border-slate-300 bg-white text-slate-600 hover:border-blue-300'}`}
+                    >
+                      Choose another date
+                    </button>
+                  </div>
+                  {isCustomDate && (
                     <input
                       type="date"
-                      min={new Date().toISOString().split('T')[0]}
+                      min={toDateValue(new Date())}
                       value={formData.preferredPickupDate}
                       onChange={(e) => setFormData((prev) => ({ ...prev, preferredPickupDate: e.target.value }))}
-                      className="w-full p-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#0A1931]"
+                      className="mt-3 w-full rounded-xl border border-[#0B56D9] bg-white p-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-100"
                     />
-                  </div>
+                  )}
+                  <p className="mt-2 text-[11px] text-slate-500">Choose today or any day in the next seven days.</p>
                 </div>
 
                 {/* Available Time Slots from real backend */}
@@ -859,14 +899,14 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                 </div>
 
                 {/* Option: Request a different time */}
-                <div className="p-4 rounded-xl bg-white border border-slate-200">
+                <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4">
                   <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       id="customTimeCheck"
                       checked={formData.customTimeRequested}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, customTimeRequested: e.target.checked }))}
-                      className="w-4 h-4 text-[#FF6321] rounded border-slate-300 focus:ring-[#FF6321]"
+                       onChange={(e) => setFormData((prev) => ({ ...prev, customTimeRequested: e.target.checked, preferredPickupSlotId: e.target.checked ? '' : prev.preferredPickupSlotId }))}
+                       className="h-4 w-4 rounded border-slate-300 text-[#0B56D9] focus:ring-[#0B56D9]"
                     />
                     <label htmlFor="customTimeCheck" className="text-xs font-bold text-[#0A1931] cursor-pointer">
                       Request a different time or weekend special dispatch
@@ -874,9 +914,9 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                   </div>
                   {formData.customTimeRequested && (
                     <div className="mt-3 pl-7">
-                      <input
-                        type="text"
-                        placeholder="Specify your preferred time (e.g. Saturday 8:00 PM or Early Sunday morning)..."
+                       <input
+                         type="text"
+                         placeholder="Enter a preferred time, e.g. Saturday 8:00 PM"
                         value={formData.customTimeNote}
                         onChange={(e) => setFormData((prev) => ({ ...prev, customTimeNote: e.target.value }))}
                         className="w-full p-3 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-[#0A1931]"
@@ -1102,7 +1142,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                         onClick={() => setFormData((prev) => ({ ...prev, someoneElseHandingOver: 'yes' }))}
                         className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                           formData.someoneElseHandingOver === 'yes'
-                            ? 'bg-[#0A1931] text-white'
+                             ? 'bg-[#0B56D9] text-white'
                             : 'bg-slate-100 text-slate-700'
                         }`}
                       >
@@ -1113,7 +1153,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                         onClick={() => setFormData((prev) => ({ ...prev, someoneElseHandingOver: 'no' }))}
                         className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                           formData.someoneElseHandingOver === 'no'
-                            ? 'bg-[#0A1931] text-white'
+                             ? 'bg-[#0B56D9] text-white'
                             : 'bg-slate-100 text-slate-700'
                         }`}
                       >
@@ -1289,6 +1329,13 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
 
           {/* RIGHT COLUMN: Sticky "YOUR REQUEST" Summary */}
           <div className="lg:col-span-4">
+            <div className="mb-4 overflow-hidden rounded-2xl border border-blue-100 bg-white">
+              <img
+                src="/images/nri-booking-summary-journey-v2.png"
+                alt="Colourful India-to-world shipment illustration with a packed parcel and flight route"
+                className="aspect-[4/5] w-full object-cover"
+              />
+            </div>
             <BookingSummary
               formData={formData}
               currentStep={currentStep}

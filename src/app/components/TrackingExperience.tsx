@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef, useState, useEffect } from 'react';
-import { Package, Plane, Ship, Search, Filter, MoreVertical, ArrowRight, Globe as GlobeIcon } from 'lucide-react';
+import { Package, Plane, Ship, Search, Filter, MoreVertical, ArrowRight, Globe as GlobeIcon, CheckCircle2, Rocket } from 'lucide-react';
 
 export function TrackingExperience() {
   const [trackingId, setTrackingId] = useState('');
@@ -9,10 +9,19 @@ export function TrackingExperience() {
   const [searchResult, setSearchResult] = useState<any>(null);
 
   const [showModal, setShowModal] = useState(false);
-const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     fetchActivities();
+  }, []);
+
+  useEffect(() => {
+    const prefillTrackingId = (event: Event) => {
+      const trackingEvent = event as CustomEvent<string>;
+      if (trackingEvent.detail) setTrackingId(trackingEvent.detail);
+    };
+    window.addEventListener('pickopick:prefill-tracking', prefillTrackingId);
+    return () => window.removeEventListener('pickopick:prefill-tracking', prefillTrackingId);
   }, []);
 
   const fetchActivities = async () => {
@@ -25,59 +34,36 @@ const [errorMsg, setErrorMsg] = useState("");
     }
   };
 
-//   const handleTrack = async () => {
-//     if (!trackingId) return;
-//     setIsSearching(true);
-//     setSearchResult(null);
-//     try {
-//       const response = await fetch(
-//   `https://admin.pickopick.com/api/tracking_api/get_tracking_data?api_company_id=20&customer_code=superadmin&tracking_no=${trackingId}`
-// );
-//       const data = await response.json();
-//       if (response.ok) {
-//         setSearchResult(data);
-//         // Scroll to activities section to show result if it's there
-//         const target = document.querySelector('#activities-table');
-//         if (target) target.scrollIntoView({ behavior: 'smooth' });
-//       } else {
-//         alert(data.error || 'Shipment not found');
-//       }
-//     } catch (error) {
-//       alert('Error tracking shipment');
-//     } finally {
-//       setIsSearching(false);
-//     }
-//   };
-const handleTrack = async () => {
-  if (!trackingId) return;
+  const handleTrack = async () => {
+    if (!trackingId) return;
 
-  setIsSearching(true);
-  setSearchResult(null);
-  setErrorMsg("");
+    setIsSearching(true);
+    setSearchResult(null);
+    setErrorMsg("");
 
-  try {
-    const response = await fetch(`/api/shipments/${trackingId}`);
-    const data = await response.json();
-    console.log("TRACK RESPONSE:", data);
-    if (response.ok) {
-      setSearchResult(data);
-    } else {
-      setErrorMsg(data.error || "Shipment not found");
+    try {
+      const response = await fetch(`/api/shipments/${trackingId}`);
+      const data = await response.json();
+      console.log("TRACK RESPONSE:", data);
+      if (response.ok) {
+        setSearchResult(data);
+      } else {
+        setErrorMsg(data.error || "Shipment not found");
+      }
+
+      setShowModal(true);
+    } catch (error) {
+      console.error("TRACK ERROR:", error);
+      setErrorMsg("Error tracking shipment");
+      setShowModal(true);
+      trackingId && setTrackingId("");
+    } finally {
+      setIsSearching(false);
+      trackingId && setTrackingId("");
     }
+  };
 
-    setShowModal(true); // ✅ open modal always
-  } catch (error) {
-    console.error("TRACK ERROR:", error);
-    setErrorMsg("Error tracking shipment");
-    setShowModal(true);
-    trackingId && setTrackingId("");
-  } finally {
-    setIsSearching(false);
-    trackingId && setTrackingId(""); // Clear input after search
-  }
-};  
-
-const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -89,129 +75,94 @@ const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <section id="track-shipment" ref={containerRef} className="bg-white scroll-mt-24">
-      {/* Immersive Globe Header Section */}
-      <div className="relative min-h-[800px] flex flex-col items-center justify-center overflow-hidden bg-[#050a24]">
-        {/* Background Globe Image - Full Section Background */}
+      {/* ===== SECTION 1 : Tracking Search Header ===== */}
+      <div className="relative overflow-hidden border-b border-blue-700 bg-[#0B56D9] pb-16 pt-28 sm:pb-20 sm:pt-32">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050a24] via-transparent to-[#050a24] z-10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#050a24] via-transparent to-[#050a24] z-10" />
-          <motion.div 
+          <motion.div
             style={{ opacity: globeOpacity, scale: globeScale, y: globeY }}
-            className="w-full h-full flex items-center justify-center"
+            className="flex h-full w-full items-center justify-center"
           >
-            <div className="relative w-full max-w-7xl aspect-square">
-              <img 
-                src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2072" 
-                alt="Global Network" 
-                className="w-full h-full object-contain opacity-60"
-                referrerPolicy="no-referrer"
-              />
-              {/* Atmosphere & Glow Effects */}
-              <div className="absolute inset-0 rounded-full shadow-[0_0_100px_rgba(59,130,246,0.3)]" />
-              <div className="absolute inset-0 bg-radial-gradient from-transparent to-[#050a24] opacity-40" />
-            </div>
+            <img
+              src="/images/nri-hero-logistics-v2.png"
+              alt="Global Network"
+              className="h-full w-full object-cover"
+            />
           </motion.div>
         </div>
 
-        {/* Background Grid Overlay */}
-        <div className="absolute inset-0 opacity-10 z-0" style={{ backgroundImage: 'radial-gradient(#3b82f6 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-20 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold mb-8 backdrop-blur-sm"
-          >
-            <GlobeIcon size={16} />
-            <span>AI-Powered Global Logistics</span>
-          </motion.div>
-          
-          <div className="relative mb-12">
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-              Real-time Global <br /> Tracking
-            </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Monitor your shipments across the globe with precision and transparency.
-            </p>
-          </div>
+        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-8">
+          {/* Eyebrow pill */}
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+            <GlobeIcon className="h-3.5 w-3.5" />
+            AI-Powered Real-Time Tracking
+          </span>
 
-          {/* Search Bar - Centered on Globe */}
-          <div className="max-w-2xl mx-auto relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-focus-within:opacity-100 transition duration-1000 group-focus-within:duration-200" />
-            <div className="relative flex items-center bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl">
-              <Search className="ml-4 text-slate-400" size={20} />
-              <input 
-                type="text" 
+          <h1 className="mt-6 whitespace-pre-line text-[clamp(1.9rem,6vw,4.5rem)] font-extrabold leading-[1.05] tracking-tight text-white">
+            Real-time Global Tracking
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-blue-50 sm:text-lg">
+            Monitor your shipments across the globe with precision and transparency — from our hub to your overseas doorstep.
+          </p>
+
+          {/* Search Bar */}
+          <div className="mx-auto mt-9 flex max-w-2xl flex-col items-center gap-3 sm:flex-row">
+            <div className="relative flex w-full items-center rounded-full border border-white/30 bg-white/15 px-5 backdrop-blur-sm">
+              <Search className="h-5 w-5 shrink-0 text-blue-100" />
+              <input
+                type="text"
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
-                placeholder="Enter Cargo ID (e.g. AA-845)" 
-                className="w-full bg-transparent px-4 py-4 outline-none text-white placeholder:text-slate-500 font-medium text-lg"
+                onKeyDown={(e) => e.key === 'Enter' && handleTrack()}
+                placeholder="Enter Cargo ID (e.g. AA-845)"
+                className="w-full bg-transparent px-3 py-4 text-left text-sm font-medium text-white outline-none placeholder:text-blue-100"
               />
-              <button 
-                onClick={handleTrack}
-                disabled={isSearching}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/40 disabled:opacity-50"
-              >
-                {isSearching ? 'Searching...' : 'Track Now'}
-              </button>
             </div>
-          </div>
-
-          {/* Floating Stats or Labels like in the image */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 opacity-60">
-            <div className="text-left">
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">X: 5.403478</p>
-              <p className="text-xs text-slate-500 uppercase tracking-widest">Y: -77.399377</p>
-            </div>
-            <div className="hidden md:block" />
-            <div className="hidden md:block" />
-            <div className="text-right">
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Zoom: 1.0x</p>
-              <p className="text-xs text-slate-500 uppercase tracking-widest">3D Mode Active</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Curved Flight Path Overlay */}
-        <div className="absolute inset-0 pointer-events-none z-10">
-          <svg className="w-full h-full" viewBox="0 0 1000 1000">
-            <motion.path
-              d="M300,400 Q500,200 700,600"
-              fill="none"
-              stroke="rgba(59, 130, 246, 0.4)"
-              strokeWidth="2"
-              strokeDasharray="10,10"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-            />
-            <motion.circle
-              r="4"
-              fill="#3b82f6"
-              initial={{ offset: 0 }}
-              animate={{ offset: 1 }}
+            <button
+              onClick={handleTrack}
+              disabled={isSearching}
+              className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-white px-7 py-4 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50 disabled:opacity-50 sm:w-auto"
             >
-              <animateMotion
-                dur="5s"
-                repeatCount="indefinite"
-                path="M300,400 Q500,200 700,600"
-              />
-            </motion.circle>
-          </svg>
+              {isSearching ? 'Searching...' : 'TRACK NOW'}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Assurance strip */}
+          <div className="mx-auto mt-10 flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-3 border-t border-white/25 pt-5 text-xs text-blue-50">
+            <span className="inline-flex items-center gap-2"><Plane className="h-4 w-4" /> 180+ global routes</span>
+            <span className="inline-flex items-center gap-2"><Package className="h-4 w-4" /> End-to-end visibility</span>
+            <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> WhatsApp event updates</span>
+          </div>
         </div>
       </div>
 
-      {/* White Background Activities Section */}
-      <div className="relative z-20 pt-24 pb-32 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div id="activities-table" className="lg:col-span-2 bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-              <div className="p-8 md:p-10">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900">Live Activities</h3>
+      {/* ===== SECTION 2 : Live Activities Dashboard ===== */}
+      <div className="bg-[#F7F9FF] py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8">
+          {/* Section header */}
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <span className="rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
+              Live Network Activity
+            </span>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-4xl">
+              Shipments in Motion, Right Now
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+              Live updates from parcels currently travelling across our global network — air and sea, headed to families everywhere.
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-3">
+            {/* Live Activities table */}
+            <div id="activities-table" className="overflow-hidden rounded-2xl border border-slate-200 bg-white lg:col-span-2">
+              <div className="p-6 sm:p-8">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-xl font-extrabold tracking-tight text-[#0A1931]">Live Activities</h3>
                   <div className="flex items-center gap-2">
-                    <button className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-400">
+                    <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-700">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" /> Live
+                    </span>
+                    <button className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-50">
                       <Filter size={20} />
                     </button>
                   </div>
@@ -220,66 +171,66 @@ const containerRef = useRef<HTMLDivElement>(null);
                 <div className="overflow-x-auto scrollbar-hide">
                   <table className="w-full border-collapse">
                     <thead>
-                      <tr className="text-left border-b border-slate-50">
-                        <th className="pb-6 font-semibold text-slate-400 text-sm uppercase tracking-wider">Cargo ID</th>
-                        <th className="pb-6 font-semibold text-slate-400 text-sm uppercase tracking-wider">Destination</th>
-                        <th className="pb-6 font-semibold text-slate-400 text-sm uppercase tracking-wider">Arrival date</th>
-                        <th className="pb-6 font-semibold text-slate-400 text-sm uppercase tracking-wider">Status</th>
-                        <th className="pb-6 w-10"></th>
+                      <tr className="border-b border-slate-100 text-left">
+                        <th className="pb-4 text-xs font-bold uppercase tracking-wider text-slate-400">Cargo ID</th>
+                        <th className="pb-4 text-xs font-bold uppercase tracking-wider text-slate-400">Destination</th>
+                        <th className="pb-4 text-xs font-bold uppercase tracking-wider text-slate-400">Arrival date</th>
+                        <th className="pb-4 text-xs font-bold uppercase tracking-wider text-slate-400">Status</th>
+                        <th className="w-10 pb-4"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody className="divide-y divide-slate-100">
                       {activities.map((item, index) => (
-                        <motion.tr 
+                        <motion.tr
                           key={item.id}
                           initial={{ opacity: 0, y: 10 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
-                          className="group hover:bg-slate-50/50 transition-colors"
+                          className="group transition-colors hover:bg-blue-50/40"
                         >
-                          <td className="py-6">
+                          <td className="py-5">
                             <div className="flex items-center gap-4">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                                item.status === 'Arrived' ? 'bg-amber-400 text-white' : 'bg-blue-600 text-white'
+                              <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                                item.status === 'Arrived' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-[#0B56D9]'
                               }`}>
                                 {item.type === 'air' ? <Plane size={18} /> : <Ship size={18} />}
                               </div>
-                              <span className="font-bold text-slate-900">{item.id}</span>
+                              <span className="font-bold text-[#0A1931]">{item.id}</span>
                             </div>
                           </td>
-                          <td className="py-6">
-                            <div className="flex flex-col gap-2 min-w-[200px]">
-                              <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                          <td className="py-5">
+                            <div className="flex min-w-[220px] flex-col gap-2">
+                              <div className="flex items-center justify-between text-xs font-bold text-[#0A1931]">
                                 <span>{item.from}</span>
-                                <span className="text-slate-300 font-medium">{item.distance}</span>
+                                <span className="font-medium text-slate-300">{item.distance}</span>
                                 <span>{item.to}</span>
                               </div>
-                              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden relative">
-                                <motion.div 
+                              <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                                <motion.div
                                   initial={{ width: 0 }}
                                   whileInView={{ width: `${item.progress}%` }}
                                   transition={{ duration: 1, delay: 0.5 }}
-                                  className="h-full bg-blue-600 rounded-full relative"
+                                  className="relative h-full rounded-full bg-[#0B56D9]"
                                 >
-                                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-600 border-2 border-white rounded-full shadow-sm" />
+                                  <div className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 border-white bg-[#0B56D9] shadow-sm" />
                                 </motion.div>
                               </div>
                             </div>
                           </td>
-                          <td className="py-6">
-                            <span className="font-bold text-slate-900">{item.arrivalDate}</span>
+                          <td className="py-5">
+                            <span className="font-bold text-[#0A1931]">{item.arrivalDate}</span>
                           </td>
-                          <td className="py-6">
-                            <span className={`px-4 py-1.5 rounded-full text-sm font-bold ${
-                              item.status === 'Arrived' 
-                                ? 'bg-amber-400 text-slate-900' 
-                                : 'bg-blue-600/10 text-blue-600'
+                          <td className="py-5">
+                            <span className={`rounded-full px-4 py-1.5 text-xs font-bold ${
+                              item.status === 'Arrived'
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-blue-50 text-[#0B56D9]'
                             }`}>
                               {item.status}
                             </span>
                           </td>
-                          <td className="py-6 text-right">
-                            <button className="text-slate-300 hover:text-slate-600 transition-colors">
+                          <td className="py-5 text-right">
+                            <button className="text-slate-300 transition-colors hover:text-slate-600">
                               <MoreVertical size={20} />
                             </button>
                           </td>
@@ -291,43 +242,66 @@ const containerRef = useRef<HTMLDivElement>(null);
               </div>
             </div>
 
-            <div className="space-y-8">
-              <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-8 text-white shadow-2xl border border-slate-700/50">
-                <h3 className="text-2xl font-bold mb-8">Main Statistics</h3>
-                
-                <div className="space-y-8">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium mb-2 uppercase tracking-wider">Monthly Delivered</p>
-                    <div className="flex items-end gap-3">
-                      <span className="text-4xl font-bold">1021</span>
-                      <span className="text-emerald-400 text-sm font-bold flex items-center gap-1 mb-1">
-                        <ArrowRight size={14} className="-rotate-45" />
-                        +32%
-                      </span>
+            {/* Right column: stats + CTA */}
+            <div className="space-y-6">
+              {/* Stats card */}
+              <div className="relative overflow-hidden rounded-2xl p-7 text-white">
+                <img
+                  src="/images/nri-hero-logistics-v2.png"
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover brightness-[0.65]"
+                />
+                <div className="relative z-10">
+                  <h3 className="text-base font-extrabold tracking-tight">Network Statistics</h3>
+
+                  <div className="mt-6 space-y-6">
+                    <div>
+                      <div className="flex items-baseline justify-between">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-50">Monthly Delivered</p>
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-300">
+                          <ArrowRight size={14} className="-rotate-45" /> +32%
+                        </span>
+                      </div>
+                      <p className="mt-2 text-4xl font-extrabold tracking-tight">1021</p>
+                      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/20">
+                        <div className="h-full w-[82%] rounded-full bg-white" />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="h-px bg-slate-700/50" />
+                    <div className="h-px bg-white/15" />
 
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium mb-2 uppercase tracking-wider">Yearly Delivered</p>
-                    <div className="flex items-end gap-3">
-                      <span className="text-4xl font-bold">4603</span>
-                      <span className="text-emerald-400 text-sm font-bold flex items-center gap-1 mb-1">
-                        <ArrowRight size={14} className="-rotate-45" />
-                        +12%
-                      </span>
+                    <div>
+                      <div className="flex items-baseline justify-between">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-50">Yearly Delivered</p>
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-300">
+                          <ArrowRight size={14} className="-rotate-45" /> +12%
+                        </span>
+                      </div>
+                      <p className="mt-2 text-4xl font-extrabold tracking-tight">4603</p>
+                      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/20">
+                        <div className="h-full w-[64%] rounded-full bg-white" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-blue-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-blue-900/20 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-150 transition-transform duration-700" />
+              {/* AI Route planner CTA card */}
+              <div className="relative overflow-hidden rounded-2xl p-7 text-white">
+                <img
+                  src="/images/nri-hero-logistics-v2.png"
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover brightness-[0.65]"
+                />
                 <div className="relative z-10">
-                  <h4 className="text-xl font-bold mb-4">Plan Your Route with AI ✨</h4>
-                  <p className="text-blue-100 text-sm mb-6">Get instant cost and time estimates for your global shipments.</p>
-                  <button className="w-full bg-white text-blue-600 py-4 rounded-2xl font-bold hover:bg-blue-50 transition-colors">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
+                    <Rocket className="h-5 w-5" />
+                  </div>
+                  <h4 className="mt-4 text-lg font-extrabold tracking-tight">Plan Your Route with AI</h4>
+                  <p className="mt-1.5 text-sm leading-relaxed text-blue-100">
+                    Get instant cost and time estimates for your global shipments.
+                  </p>
+                  <button className="mt-5 w-full rounded-full bg-white py-3.5 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50">
                     How It Works
                   </button>
                 </div>
@@ -336,88 +310,96 @@ const containerRef = useRef<HTMLDivElement>(null);
           </div>
         </div>
       </div>
+
+      {/* Tracking Result Modal */}
       {showModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-    <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 relative animate-fadeIn">
-
-      {/* Close Button */}
-      <button
-        onClick={() => setShowModal(false)}
-        className="absolute top-4 right-4 text-slate-400 hover:text-black"
-      >
-        ✕
-      </button>
-
-      {/* Title */}
-      <h2 className="text-2xl font-bold mb-4">
-        {errorMsg ? "Tracking Error" : "Shipment Details"}
-      </h2>
-
-      {/* Loading */}
-      {isSearching && (
-        <p className="text-slate-500">Loading...</p>
-      )}
-
-      {/* Error */}
-      {errorMsg && !isSearching && (
-        <div className="bg-red-100 text-red-600 p-4 rounded-lg font-medium">
-          {errorMsg}
-        </div>
-      )}
-
-      {/* Success Data */}
-      {searchResult && !isSearching && (
-  <div className="space-y-4 text-slate-700">
-
-    {/* Basic Info */}
-    <p><strong>ID:</strong> {searchResult.id}</p>
-    <p><strong>Status:</strong> {searchResult.status}</p>
-    <p><strong>From:</strong> {searchResult.from}</p>
-    <p><strong>To:</strong> {searchResult.to}</p>
-    <p><strong>Delivery:</strong> {searchResult.arrivalDate}</p>
-
-    {/* Progress */}
-    <div className="mt-3">
-      <div className="h-2 bg-slate-200 rounded-full">
-        <div
-          className="h-2 bg-blue-600 rounded-full"
-          style={{ width: `${searchResult.progress}%` }}
-        />
-      </div>
-    </div>
-
-    {/* 🚚 Timeline */}
-    <div className="mt-6">
-      <h3 className="font-bold mb-3">Tracking Timeline</h3>
-
-      <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
-        {searchResult.events.map((event: any, index: number) => (
-          <div key={index} className="flex gap-3 items-start">
-
-            <div className="w-3 h-3 mt-2 rounded-full bg-blue-600" />
-
-            <div>
-              <p className="font-semibold text-sm">
-                {event.event_description}
-              </p>
-              <p className="text-xs text-slate-500">
-                {event.event_location} • {event.event_at}
-              </p>
+        <div className="fixed inset-0 z-50 flex items-end bg-black/70 sm:items-center sm:justify-center sm:p-4">
+          <div className="w-full max-w-lg overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
+            <div className="flex items-center justify-between border-b border-slate-200 p-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-200 text-[#0B56D9]">
+                  <Package className="h-5 w-5" />
+                </div>
+                <h2 className="text-base font-extrabold text-[#0A1931]">
+                  {errorMsg ? "Tracking Error" : "Shipment Details"}
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900"
+              >
+                ✕
+              </button>
             </div>
 
-          </div>
-        ))}
-      </div>
-    </div>
+            <div className="p-5 sm:p-6">
+              {isSearching && <p className="text-sm text-slate-500">Loading...</p>}
 
-  </div>
-)}
-    </div>
-  </div>
-)}
+              {errorMsg && !isSearching && (
+                <div className="rounded-lg bg-red-50 p-4 text-xs font-semibold text-red-700">
+                  {errorMsg}
+                </div>
+              )}
+
+              {searchResult && !isSearching && (
+                <div className="space-y-4 text-slate-700">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ID</p>
+                      <p className="mt-0.5 text-sm font-bold text-[#0A1931]">{searchResult.id}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</p>
+                      <p className="mt-0.5 text-sm font-bold text-[#0B56D9]">{searchResult.status}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">From</p>
+                      <p className="mt-0.5 text-sm font-bold text-[#0A1931]">{searchResult.from}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">To</p>
+                      <p className="mt-0.5 text-sm font-bold text-[#0A1931]">{searchResult.to}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">Delivery</p>
+                    <div className="h-2 rounded-full bg-slate-100">
+                      <div className="h-2 rounded-full bg-[#0B56D9]" style={{ width: `${searchResult.progress}%` }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="mb-3 text-sm font-extrabold text-[#0A1931]">Tracking Timeline</h3>
+                    <div className="max-h-60 space-y-4 overflow-y-auto pr-2">
+                      {searchResult.events.map((event: any, index: number) => (
+                        <div key={index} className="flex gap-3 items-start">
+                          <div className="mt-2 h-3 w-3 rounded-full bg-[#0B56D9]" />
+                          <div>
+                            <p className="text-sm font-semibold text-[#0A1931]">{event.event_description}</p>
+                            <p className="text-xs text-slate-500">
+                              {event.event_location} • {event.event_at}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-slate-200 bg-slate-50 p-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="w-full rounded-full bg-[#0A1931] py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#162847]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
-    
   );
 }
-
-

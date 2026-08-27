@@ -36,18 +36,21 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="py-32 bg-slate-50 scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6">
+    <section id="services" className="py-20 sm:py-24 bg-[#F1F5F9] scroll-mt-24 border-b border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <span className="inline-block px-3.5 py-1.5 rounded-full bg-slate-200 border border-slate-300 text-xs font-bold uppercase tracking-widest text-[#0A1931]">
             Premium Services
+          </span>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
+            Everything you need to shop <span className="text-[#0B56D9]">from India</span> seamlessly.
           </h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Everything you need to shop from India seamlessly.
+          <p className="mt-3 text-sm sm:text-base text-slate-600">
+            Shop, consolidate, inspect, store, and ship — all under one trusted roof.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
             <motion.div
               key={index}
@@ -55,25 +58,13 @@ export function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-gradient-to-br from-blue-600 to-indigo-800 p-8 rounded-3xl shadow-sm border border-blue-500 hover:shadow-2xl hover:shadow-blue-900/20 hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden"
+              className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 hover:border-[#0B56D9]/40 transition-colors duration-200"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-14 h-14 bg-white/10 text-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-white group-hover:text-blue-600 transition-all duration-300">
-                <motion.div
-                  animate={{ 
-                    y: [0, -4, 0],
-                  }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    duration: 2 + index * 0.2, 
-                    ease: "easeInOut" 
-                  }}
-                >
-                  <service.icon size={28} />
-                </motion.div>
+              <div className="w-14 h-14 mb-5 flex items-center justify-center rounded-xl bg-[#0B56D9]/10 text-[#0B56D9]">
+                <service.icon className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">{service.title}</h3>
-              <p className="text-blue-50 leading-relaxed">
+              <h3 className="text-base font-extrabold tracking-tight text-[#0A1931]">{service.title}</h3>
+              <p className="mt-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
                 {service.desc}
               </p>
             </motion.div>

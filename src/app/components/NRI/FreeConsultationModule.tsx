@@ -1,274 +1,37 @@
-import React, { useState } from 'react';
-import { 
-  Headphones, 
-  MessageSquare, 
-  CheckCircle2, 
-  Calendar, 
-  Clock, 
-  Globe2, 
-  User, 
-  Sparkles,
-  ArrowRight,
-  ShieldCheck
-} from 'lucide-react';
+import React from 'react';
+import { ArrowRight, Headphones, PackageCheck, ShoppingBag, Sparkles } from 'lucide-react';
 
 interface FreeConsultationModuleProps {
-  onSuccessBooked?: (id: string) => void;
+  onOpenConsultation: () => void;
 }
 
-export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({
-  onSuccessBooked,
-}) => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    whatsappNumber: '',
-    currentCountry: 'USA',
-    email: '',
-    requirementHelp: '',
-    preferredDate: '',
-    preferredTime: 'Evening (IST)',
-  });
+const reasons = [
+  { icon: Headphones, title: 'Speak to shipping experts', text: 'Get clear guidance on what can travel and how to prepare it.' },
+  { icon: ShoppingBag, title: 'Buy & ship with confidence', text: 'Share shopping links or requests and let our India team coordinate.' },
+  { icon: PackageCheck, title: 'Consolidate one smarter shipment', text: 'Bring purchases, gifts and family parcels together before dispatch.' },
+];
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedResult, setSubmittedResult] = useState<{
-    consultationId: string;
-    whatsappUrl: string;
-  } | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.fullName.trim() || !formData.whatsappNumber.trim()) {
-      setErrorMessage('Please provide your name and WhatsApp number.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setErrorMessage(null);
-
-    try {
-      const res = await fetch('/api/nri-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestType: 'consultation', payload: formData }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to submit consultation');
-
-      setSubmittedResult({
-        consultationId: data.requestId,
-        whatsappUrl: data.whatsappUrl,
-      });
-
-      if (onSuccessBooked) onSuccessBooked(data.requestId);
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Error occurred. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <section id="consultation-section" className="py-16 sm:py-20 bg-[#0A1931] text-white border-y border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          
-          {/* Left Column: Concierge Value Proposition */}
-          <div className="lg:col-span-5 space-y-5">
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-200 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0B56D9]">
-              <Headphones className="h-3.5 w-3.5" />
-              NRI Concierge Advisory Desk
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              Not Sure What You Need?
-            </h2>
-
-            <p className="text-base text-slate-300 leading-relaxed">
-              Tell us what you're planning to send or source. Our team will help you choose the right option before you book.
-            </p>
-
-            <div className="space-y-3 pt-3">
-              <div className="flex items-start gap-3 text-xs text-slate-300">
-                <div className="w-5 h-5 rounded-full bg-[#FF6321]/20 text-[#FF6321] flex items-center justify-center shrink-0 mt-0.5">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                </div>
-                <span>Customs and restricted items guidance (spices, liquids, gold, medicines).</span>
-              </div>
-              <div className="flex items-start gap-3 text-xs text-slate-300">
-                <div className="w-5 h-5 rounded-full bg-[#FF6321]/20 text-[#FF6321] flex items-center justify-center shrink-0 mt-0.5">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                </div>
-                <span>Volumetric packaging advice to save up to 70% freight charges.</span>
-              </div>
-              <div className="flex items-start gap-3 text-xs text-slate-300">
-                <div className="w-5 h-5 rounded-full bg-[#FF6321]/20 text-[#FF6321] flex items-center justify-center shrink-0 mt-0.5">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                </div>
-                <span>Sourcing coordination for Indian ethnic wear and regional sweets.</span>
-              </div>
-            </div>
-
-            <p className="text-xs font-semibold text-slate-400 pt-2 italic">
-              No commitment. Just clear guidance.
-            </p>
-          </div>
-
-          {/* Right Column: Interactive Consultation Booking Card */}
-          <div className="lg:col-span-7 bg-[#102342] rounded-3xl border border-slate-700/80 p-6 sm:p-8 shadow-2xl">
-            {submittedResult ? (
-              <div className="text-center py-6 space-y-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-7 h-7" />
-                </div>
-                <h3 className="text-xl font-bold text-white">
-                  Consultation Request Confirmed
-                </h3>
-                <p className="text-xs text-slate-300 max-w-md mx-auto">
-                  Your reference ID is <span className="font-mono font-bold text-[#FF6321]">{submittedResult.consultationId}</span>. Our NRI coordinator will message or call you on WhatsApp.
-                </p>
-                <div className="pt-3">
-                  <a
-                    href={submittedResult.whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-md"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span>Connect Immediately on WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <h3 className="text-base font-extrabold text-white pb-2 border-b border-slate-700/80">
-                  Schedule Free 1-on-1 Consultation Call
-                </h3>
-
-                {errorMessage && (
-                  <p className="text-xs font-semibold text-red-400 bg-red-500/10 p-2.5 rounded-lg border border-red-500/20">
-                    {errorMessage}
-                  </p>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                      WhatsApp Number (with Country Code) *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.whatsappNumber}
-                      onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                      Current Country of Residence
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.currentCountry}
-                      onChange={(e) => setFormData({ ...formData, currentCountry: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                      Email Address (Optional)
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                    What do you need help with?
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="e.g. Planning to ship 15kg sweets and bridal clothes from Bengaluru to London before Diwali..."
-                    value={formData.requirementHelp}
-                    onChange={(e) => setFormData({ ...formData, requirementHelp: e.target.value })}
-                    className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#FF6321]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                      Preferred Consultation Date
-                    </label>
-                    <input
-                      type="date"
-                      min={new Date().toISOString().split('T')[0]}
-                      value={formData.preferredDate}
-                      onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs focus:outline-none focus:border-[#FF6321]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
-                      Preferred Time Window
-                    </label>
-                    <select
-                      value={formData.preferredTime}
-                      onChange={(e) => setFormData({ ...formData, preferredTime: e.target.value })}
-                      className="w-full p-3 rounded-xl bg-[#0A1931] border border-slate-700 text-white text-xs focus:outline-none focus:border-[#FF6321]"
-                    >
-                      <option value="Morning (09:00 AM - 12:00 PM IST)">Morning (09:00 AM - 12:00 PM IST)</option>
-                      <option value="Afternoon (12:00 PM - 04:00 PM IST)">Afternoon (12:00 PM - 04:00 PM IST)</option>
-                      <option value="Evening (04:00 PM - 08:00 PM IST)">Evening (04:00 PM - 08:00 PM IST)</option>
-                      <option value="US/Canada Evening Friendly (09:00 PM - 11:30 PM IST)">US/Canada Evening Friendly (09:00 PM - 11:30 PM IST)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full mt-3 py-3.5 px-6 rounded-full bg-[#FF6321] hover:bg-orange-600 text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-lg shadow-[#FF6321]/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <span>Booking Consultation...</span>
-                  ) : (
-                    <>
-                      <span>BOOK MY FREE CONSULTATION</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
-
-        </div>
+export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({ onOpenConsultation }) => (
+  <section id="consultation-section" className="border-y border-blue-100 bg-[#F7F9FF] py-20 sm:py-28">
+    <div className="mx-auto max-w-7xl px-4 sm:px-8">
+      <div className="mx-auto max-w-3xl text-center">
+        <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#0B56D9]"><Headphones className="h-4 w-4" /> Premium NRI support</span>
+        <h2 className="mt-5 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-5xl">NRI Concierge Desk</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">A dedicated India-side team for the things that are harder to arrange from abroad. Start with a quick, no-obligation conversation before you ship.</p>
       </div>
-    </section>
-  );
-};
+
+      <div className="mt-12 grid items-center gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
+        <div className="order-2 lg:order-1">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B56D9]">Why a consultation helps</p>
+          <h3 className="mt-3 text-2xl font-extrabold leading-tight text-[#0A1931] sm:text-3xl">Plan your India shipment once, with the right answers from the start.</h3>
+          <div className="mt-7 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            {reasons.map(({ icon: Icon, title, text }) => <div key={title} className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-4"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#0B56D9]"><Icon className="h-5 w-5" /></div><div><h4 className="text-sm font-bold text-[#0A1931]">{title}</h4><p className="mt-1 text-xs leading-relaxed text-slate-600">{text}</p></div></div>)}
+          </div>
+          <div className="mt-7 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm text-[#0A1931]"><Sparkles className="mr-2 inline h-4 w-4 text-[#0B56D9]" /><strong>Travelling soon?</strong> Ask what you can and cannot send, then visit our page for a free consultation.</div>
+          <button onClick={onOpenConsultation} className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-6 py-3.5 text-xs font-extrabold tracking-wide text-white hover:bg-[#0849B7]">BOOK FREE SHIPPING CONSULTATION <ArrowRight className="h-4 w-4" /></button>
+        </div>
+        <div className="order-1 overflow-hidden rounded-3xl border border-blue-100 bg-white lg:order-2"><img src="/images/nri-concierge-call-center-v1.png" loading="lazy" alt="Pick O Pick NRI concierge support agent" className="aspect-[4/5] h-full w-full object-cover" /></div>
+      </div>
+    </div>
+  </section>
+);

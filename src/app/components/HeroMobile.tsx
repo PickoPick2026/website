@@ -1,15 +1,42 @@
-import { useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
+import { ArrowRight, Search } from "lucide-react";
 
 export function HeroMobile() {
- 
+  const [cargoId, setCargoId] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleTrack = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trackingId = cargoId.trim();
+    if (!trackingId) {
+      inputRef.current?.focus();
+      return;
+    }
+
+    window.dispatchEvent(new CustomEvent('pickopick:prefill-tracking', { detail: trackingId }));
+    document.querySelector('#track-shipment')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-     <section className="relative w-full overflow-hidden mt-[60px]" >
-      <img
-        src="/banner.jpeg"
-        alt="Banner"
-        className="w-full h-auto block"
-      />
+    <section id="home" className="relative mt-[60px] min-h-[420px] overflow-hidden bg-white scroll-mt-24">
+      <img src="/images/hero-global-delivery-v4.png" alt="Pick O Pick connecting India to the world by air cargo" className="absolute inset-0 h-full w-full object-cover object-bottom" />
+
+      <div className="relative z-10 mx-auto flex min-h-[420px] w-full max-w-md flex-col items-center px-5 pb-6 pt-12 text-center">
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#0B56D9]">India to the world</p>
+        <h1 className="mt-3 max-w-sm text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#073E96]">From your hometown to the world.</h1>
+        <p className="mt-3 max-w-xs text-sm font-medium leading-relaxed text-slate-600">Pick O Pick delivers across India and the world.</p>
+
+        <form onSubmit={handleTrack} className="mt-5 flex w-full flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2">
+          <label className="sr-only" htmlFor="hero-mobile-cargo-id">Cargo ID</label>
+          <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
+            <Search className="h-4 w-4 shrink-0 text-[#0B56D9]" />
+            <input ref={inputRef} id="hero-mobile-cargo-id" value={cargoId} onChange={(event) => setCargoId(event.target.value)} placeholder="Enter Cargo ID" className="h-11 min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#0A1931] outline-none placeholder:text-slate-400" />
+          </div>
+          <button type="submit" className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0B56D9] px-6 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7]">
+            Track now <ArrowRight className="h-4 w-4" />
+          </button>
+        </form>
+      </div>
     </section>
   );
 }

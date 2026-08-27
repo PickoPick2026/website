@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, Mail, UserRound, ShieldCheck } from 'lucide-react';
 import { CalculateShippingModal } from './CalculateShippingModal';
 import { LoginModal } from './LoginModal';
 import { RegisterModal } from './RegisterModal';
@@ -10,86 +10,77 @@ export function CTA() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   return (
-    <section id="contact" className="py-32 bg-white relative overflow-hidden">
-      <div className="max-w-5xl mx-auto px-6 relative z-10">
-        <div className="bg-gradient-to-br from-blue-600 to-indigo-800 rounded-[3rem] p-12 md:p-20 text-white shadow-2xl shadow-blue-900/20 overflow-hidden relative">
-          
-          {/* Background decoration */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-[3rem] pointer-events-none">
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
+    <section id="contact" className="bg-[#F7F9FF] px-4 py-12 sm:py-16">
+      <div
+        className="mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#0B56D9] bg-cover bg-center px-5 py-10 text-center sm:px-10 sm:py-14"
+        style={{ backgroundImage: "url('/images/nri-cta-closer-v1.png')" }}
+      >
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+            Ready to shop globally?
+          </h2>
+
+          <p className="mx-auto mt-4 max-w-xl text-base font-normal leading-relaxed text-blue-50 sm:text-lg">
+            Create your free PickoPick account today and get your virtual Indian shipping address instantly.
+          </p>
+
+          {/* Primary and Secondary CTA buttons */}
+          <div className="flex flex-col items-center justify-center gap-4 pt-6 sm:flex-row">
+            <button
+              onClick={() => setIsRegisterOpen(true)}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50 sm:w-auto"
+            >
+              <span>Create Free Account</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+
+            <button
+              onClick={() => setIsLoginOpen(true)}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white bg-[#0B56D9] px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-[#0849B7] sm:w-auto"
+            >
+              <span>Login</span>
+              <UserRound className="h-4 w-4" />
+            </button>
           </div>
 
-          <div className="relative z-10 text-center">
-            
-            {/* Heading */}
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-              Ready to shop globally?
-            </h2>
-
-            {/* Description */}
-            <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-              Create your free PickoPick account today and get your virtual Indian shipping address instantly.
-            </p>
-
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-              <button 
-                onClick={() => setIsRegisterOpen(true)}
-                className="relative overflow-hidden rounded-full bg-white px-8 py-3 font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] group"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-50 via-white to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <span className="relative z-10 flex items-center gap-2">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-800 text-base">
-                    Create Free Account
-                  </span>
-                  <ArrowRight size={18} className="text-blue-600" />
+          {/* Contact Channels: Address, Phone, Email */}
+          <div className="mt-10 grid grid-cols-1 gap-4 border-t border-white/30 pt-10 text-xs sm:grid-cols-3">
+            <div className="flex items-center justify-center gap-3 rounded-2xl bg-white/10 p-4 text-left text-white">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white">
+                <MapPin className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold uppercase text-white">Head Office</span>
+                <span className="font-bold">Pickopick Private Limited</span>
+                <span className="block text-blue-100">
+                  No : 49 &amp; 51, 2nd Sector, Thiru Vi Ka Industrial Estate, Guindy, Chennai - 600032
                 </span>
-              </button>
-
-              <button 
-                onClick={() => setIsLoginOpen(true)}
-                className="px-8 py-4 bg-blue-700/50 text-white border border-blue-500/50 rounded-full font-bold text-lg hover:bg-blue-700/80 transition-colors backdrop-blur-sm"
-              >
-                Login
-              </button>
-            </div>
-
-            {/* Address + Contact Split */}
-            <div className="border-t border-white/20 pt-8 mt-6">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 text-left">
-                
-                {/* LEFT - Address */}
-                <div>
-                  <p className="font-semibold text-white text-lg mb-2">
-                    Pickopick Private Limited
-                  </p>
-                  <p className="text-blue-100 leading-relaxed">
-                    No : 49 & 51, 2nd Sector,<br />
-                    Thiru Vi Ka Industrial Estate, Guindy,<br />
-                    Chennai - 600032
-                  </p>
-                </div>
-
-                {/* RIGHT - Contact */}
-                <div className="md:text-right">
-                  <p className="text-white font-semibold text-lg mb-2">
-                    Contact
-                  </p>
-                  <p className="text-2xl md:text-3xl font-bold text-white">
-                    📞 9790361222
-                  </p>
-                  <p className="text-lg text-blue-200 mt-1">
-                    9003715617
-                  </p>
-                  <p>
-                    sales@pickopick.com
-                  </p>
-                </div>
-
               </div>
             </div>
 
+            <div className="flex items-center justify-center gap-3 rounded-2xl bg-white/10 p-4 text-left text-white">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white">
+                <Phone className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold uppercase text-white">Direct Phone Desk</span>
+                <span className="block font-bold">9790 361 222</span>
+                <span className="block text-blue-100">9003 715 617</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-3 rounded-2xl bg-white/10 p-4 text-left text-white">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white">
+                <Mail className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold uppercase text-white">Email Inquiries</span>
+                <a href="mailto:sales@pickopick.com" className="font-bold hover:underline">sales@pickopick.com</a>
+                <span className="block text-blue-100 flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5" /> Secure &amp; responsive support
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -83,6 +83,27 @@ const mailClient = new SendMailClient({
   token: mailToken
 });
 
+const transactionalMailClient = new SendMailClient({
+  url: "https://api.zeptomail.in/v1.1/email",
+  token: mailToken
+});
+
+async function sendNriConsultationConfirmation(email: string, name: string, requestCode: string) {
+  if (!email || !process.env.ZEPTO_TOKEN) return false;
+  try {
+    await transactionalMailClient.sendMail({
+      from: { address: "noreply@pickopick.com", name: "Pick O Pick" },
+      to: [{ email_address: { address: email, name } }],
+      subject: "Your Pick O Pick NRI consultation is booked",
+      htmlbody: `<p>Hi ${name},</p><p>Your free Pick O Pick NRI shipping consultation has been booked.</p><p>Your reference ID is <strong>${requestCode}</strong>.</p><p>Our concierge team will contact you at your selected time.</p><p>— Pick O Pick</p>`,
+    });
+    return true;
+  } catch (error) {
+    console.error("NRI consultation email error:", error);
+    return false;
+  }
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3006;
@@ -647,7 +668,7 @@ app.post("/api/auth/login", async (req, res) => {
   app.post("/api/nri-requests", async (req, res) => {
     try {
       const { requestType, payload } = req.body || {};
-      const allowedTypes = ["consultation", "slot_reservation", "pickup_request"];
+      const allowedTypes = ["consultation", "slot_reservation", "pickup_request", "estimate_request"];
       if (!allowedTypes.includes(requestType) || !payload || typeof payload !== "object") {
         return res.status(400).json({ error: "A valid NRI request type and form data are required." });
       }
@@ -655,15 +676,16 @@ app.post("/api/auth/login", async (req, res) => {
       const text = (value: unknown) => typeof value === "string" ? value.trim() : "";
       const consultation = requestType === "consultation";
       const slotReservation = requestType === "slot_reservation";
-      const name = text(consultation ? payload.fullName : (slotReservation ? payload.customerName : (payload.customerName || payload.pickupName)));
-      const phone = text(consultation || slotReservation ? payload.whatsappNumber : (payload.customerWhatsapp || payload.pickupPhone));
+      const estimateRequest = requestType === "estimate_request";
+      const name = text(consultation ? payload.fullName : ((slotReservation || estimateRequest) ? payload.customerName : (payload.customerName || payload.pickupName)));
+      const phone = text((consultation || slotReservation || estimateRequest) ? payload.whatsappNumber : (payload.customerWhatsapp || payload.pickupPhone));
       const country = text(consultation ? payload.currentCountry : payload.destinationCountry);
 
       if (!phone || (consultation && !name) || (!consultation && !country)) {
         return res.status(400).json({ error: "Please complete the required contact and request details." });
       }
 
-      const prefix = consultation ? "NRI-CON" : slotReservation ? "NRI-SLOT" : "NRI-PICK";
+      const prefix = consultation ? "NRI-CON" : slotReservation ? "NRI-SLOT" : estimateRequest ? "NRI-EST" : "NRI-PICK";
       const requestCode = `${prefix}-${Date.now().toString().slice(-8)}-${Math.floor(100 + Math.random() * 900)}`;
       const record = {
         request_code: requestCode,
@@ -684,11 +706,13 @@ app.post("/api/auth/login", async (req, res) => {
         return res.status(500).json({ error: "We could not save your request. Please try again shortly.", details: process.env.NODE_ENV === "production" ? undefined : error.message });
       }
 
+      const emailSent = consultation ? await sendNriConsultationConfirmation(record.email || "", record.customer_name, data.request_code) : false;
       const message = encodeURIComponent(`Hello Pick O Pick! I submitted an NRI ${requestType.replace(/_/g, " ")} request.\nReference: ${data.request_code}`);
       return res.status(201).json({
         success: true,
         requestId: data.request_code,
         createdAt: data.created_at,
+        emailSent,
         whatsappUrl: `https://wa.me/919876543210?text=${message}`,
         noticeText: slotReservation ? "Slot request received — our team will confirm availability shortly." : "Your request has been received. Our NRI team will contact you on WhatsApp.",
       });

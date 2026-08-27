@@ -1,88 +1,76 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star } from 'lucide-react';
 
-const testimonials = [
+interface Testimonial {
+  id: string;
+  name: string;
+  cityDestination: string;
+  country: string;
+  serviceUsed: string;
+  quote: string;
+}
+
+const testimonials: Testimonial[] = [
   {
-    name: "Sarah Jenkins",
-    country: "USA",
-    flag: "🇺🇸",
-    text: "PickoPick made it incredibly easy to buy traditional Indian wear for my wedding. The consolidation saved me a fortune on shipping!",
-    avatar: "https://i.pravatar.cc/150?u=1"
+    id: 't-1',
+    name: 'Sarah Jenkins',
+    cityDestination: 'New York',
+    country: 'USA',
+    serviceUsed: 'Wedding Outfits & Consolidation',
+    quote: 'PickoPick made it incredibly easy to buy traditional Indian wear for my wedding. The consolidation saved me a fortune on shipping!',
   },
   {
-    name: "David Chen",
-    country: "Australia",
-    flag: "🇦🇺",
-    text: "Fast, reliable, and transparent. The photos they send when items arrive at their warehouse give me total peace of mind.",
-    avatar: "https://i.pravatar.cc/150?u=2"
+    id: 't-2',
+    name: 'David Chen',
+    cityDestination: 'Sydney',
+    country: 'Australia',
+    serviceUsed: 'Personal Items & Documents',
+    quote: 'Fast, reliable, and transparent. The photos they send when items arrive at their warehouse give me total peace of mind.',
   },
   {
-    name: "Priya Patel",
-    country: "UK",
-    flag: "🇬🇧",
-    text: "I missed my favorite Indian snacks and brands. Now I just order them online and PickoPick delivers them to London in days.",
-    avatar: "https://i.pravatar.cc/150?u=3"
-  }
+    id: 't-3',
+    name: 'Priya Patel',
+    cityDestination: 'London',
+    country: 'UK',
+    serviceUsed: 'Food & Groceries',
+    quote: 'I missed my favorite Indian snacks and brands. Now I just order them online and PickoPick delivers them to London in days.',
+  },
 ];
 
 export function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
+  const stories = [...testimonials, ...testimonials];
   return (
-    <section id="about" className="py-32 bg-white text-slate-900 overflow-hidden scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+    <section className="overflow-hidden border-b border-slate-200 bg-[#F1F5F9] py-14 sm:py-16">
+      <style>{`@keyframes nri-story-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } } .nri-story-marquee { animation: nri-story-marquee 38s linear infinite; animation-iteration-count: infinite; } .nri-story-marquee:hover { animation-play-state: paused; } @media (prefers-reduced-motion: reduce) { .nri-story-marquee { animation: none; } }`}</style>
+      <div className="mx-auto max-w-7xl px-4 sm:px-8">
+        <div className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
+          <span className="rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
             Loved Globally
+          </span>
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-4xl">
+            Trusted by Happy Customers Worldwide
           </h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="mt-3 text-sm text-slate-600 sm:text-base">
             Join thousands of happy customers shipping from India to the world.
           </p>
         </div>
-
-        <div className="relative max-w-4xl mx-auto">
-          <div className="overflow-hidden relative min-h-[300px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentIndex}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-800 p-8 md:p-12 rounded-3xl shadow-xl flex flex-col justify-center text-white"
-              >
-                <div className="flex items-center gap-4 mb-8">
-                  <img src={testimonials[currentIndex].avatar} alt={testimonials[currentIndex].name} className="w-16 h-16 rounded-full border-2 border-white/20" />
-                  <div>
-                    <h4 className="font-bold text-xl text-white">{testimonials[currentIndex].name}</h4>
-                    <div className="flex items-center gap-2 text-blue-100 mt-1">
-                      <span className="text-xl">{testimonials[currentIndex].flag}</span>
-                      <span>{testimonials[currentIndex].country}</span>
-                    </div>
-                  </div>
+      </div>
+      <div className="overflow-hidden">
+        <div className="nri-story-marquee flex w-max gap-4 px-4 sm:gap-5 sm:px-8">
+          {stories.map((item, index) => (
+            <article key={`${item.id}-${index}`} className="flex aspect-square w-64 shrink-0 flex-col rounded-2xl bg-white p-5 sm:w-72 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-[#0A1931]">{item.cityDestination}, {item.country}</span>
+                <div className="flex shrink-0 gap-0.5 text-amber-500">
+                  {[0, 1, 2, 3, 4].map((star) => <Star key={star} className="h-3 w-3 fill-current" />)}
                 </div>
-                <p className="text-white leading-relaxed text-xl md:text-2xl italic">
-                  "{testimonials[currentIndex].text}"
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+              </div>
+              <p className="mt-4 line-clamp-6 text-xs leading-relaxed text-slate-700 italic">“{item.quote}”</p>
+              <div className="mt-auto border-t border-slate-100 pt-3">
+                <h3 className="text-xs font-bold text-[#0A1931]">{item.name}</h3>
+                <p className="mt-1 truncate text-[11px] text-slate-500">{item.serviceUsed}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

@@ -13,6 +13,9 @@ import PrivacyPolicyPage from "./app/privacy/page";
 import ProhibitedItemsPage from "./app/prohibited/page";
 import RefundPage from "./app/refund/page";
 import NriPage from "./app/pages/Nri";
+import ShippingEstimatePage from "./app/pages/ShippingEstimate";
+import ContactPage from "./app/pages/Contact";
+import ShopPage from "./app/pages/Shop";
 
 
 export default function App() {
@@ -33,6 +36,9 @@ export default function App() {
            <Route path="prohibited" element={<ProhibitedItemsPage />} />
            <Route path="refund" element={<RefundPage />} />
            <Route path="nri" element={<NriPage />} />
+           <Route path="shipping-estimate" element={<ShippingEstimatePage />} />
+           <Route path="contact" element={<ContactPage />} />
+           <Route path="shop" element={<ShopPage />} />
 
           {/* After login pages */}
           <Route path="cart" element={<Cart />} />
