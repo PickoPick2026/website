@@ -20,7 +20,7 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
     <section className="bg-[#F7F9FF] px-4 py-12 text-white sm:py-16">
       <div
         className="mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#0B56D9] bg-cover bg-center px-5 py-10 text-center sm:px-10 sm:py-14"
-        style={{ backgroundImage: "url('/images/nri-cta-closer-v1.png')" }}
+        style={{ backgroundImage: "url('/images/nri-cta-closer-v1.webp')" }}
       >
         <div className="mx-auto max-w-3xl">
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">

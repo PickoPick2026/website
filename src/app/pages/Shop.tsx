@@ -23,7 +23,7 @@ export default function ShopPage() {
   return (
     <main className="bg-white pt-[68px] sm:pt-[76px]">
       <section className="relative overflow-hidden bg-white">
-        <img src="/images/shop-bg.png" alt="Pick O Pick global marketplace" className="absolute inset-0 h-full w-full object-cover object-bottom" />
+        <img src="/images/shop-bg.webp" alt="Pick O Pick global marketplace" className="absolute inset-0 h-full w-full object-cover object-bottom" />
         <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-8 text-center sm:px-6 sm:py-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0B56D9]">
             <Sparkles className="h-3 w-3" />Pick O Pick marketplace

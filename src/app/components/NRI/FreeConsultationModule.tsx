@@ -30,7 +30,7 @@ export const FreeConsultationModule: React.FC<FreeConsultationModuleProps> = ({ 
           <div className="mt-7 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm text-[#0A1931]"><Sparkles className="mr-2 inline h-4 w-4 text-[#0B56D9]" /><strong>Travelling soon?</strong> Ask what you can and cannot send, then visit our page for a free consultation.</div>
           <button onClick={onOpenConsultation} className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-6 py-3.5 text-xs font-extrabold tracking-wide text-white hover:bg-[#0849B7]">BOOK FREE SHIPPING CONSULTATION <ArrowRight className="h-4 w-4" /></button>
         </div>
-        <div className="order-1 overflow-hidden rounded-3xl border border-blue-100 bg-white lg:order-2"><img src="/images/nri-concierge-call-center-v1.png" loading="lazy" alt="Pick O Pick NRI concierge support agent" className="aspect-[4/5] h-full w-full object-cover" /></div>
+        <div className="order-1 overflow-hidden rounded-3xl border border-blue-100 bg-white lg:order-2"><img src="/images/nri-concierge-call-center-v1.webp" loading="lazy" alt="Pick O Pick NRI concierge support agent" className="aspect-[4/5] h-full w-full object-cover" /></div>
       </div>
     </div>
   </section>

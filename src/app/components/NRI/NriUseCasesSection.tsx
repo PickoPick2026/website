@@ -15,7 +15,7 @@ export const NriUseCasesSection: React.FC<NriUseCasesSectionProps> = ({ onOpenCo
         <div className="mt-6 space-y-3 text-sm text-slate-700"><p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#0B56D9]" /> Shop, collect, consolidate and ship in one place</p><p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#0B56D9]" /> Support for gifts, groceries, personal items and business orders</p><p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#0B56D9]" /> Guidance before you book, at no cost</p></div>
         <button onClick={onOpenConsultation} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#0849B7]"><span>Book for this requirement</span><ArrowRight className="h-4 w-4" /></button>
       </div>
-      <div className="overflow-hidden rounded-2xl border border-blue-100 bg-blue-50"><img src="/images/nri-life-scenarios-v1.png" alt="Pick O Pick concierge carrying Indian goods for international delivery" className="h-full w-full object-cover" /></div>
+      <div className="overflow-hidden rounded-2xl border border-blue-100 bg-blue-50"><img src="/images/nri-life-scenarios-v1.webp" alt="Pick O Pick concierge carrying Indian goods for international delivery" className="h-full w-full object-cover" /></div>
     </div>
   </section>
 );

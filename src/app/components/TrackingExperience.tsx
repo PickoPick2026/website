@@ -83,7 +83,7 @@ export function TrackingExperience() {
             className="flex h-full w-full items-center justify-center"
           >
             <img
-              src="/images/nri-hero-logistics-v2.png"
+              src="/images/nri-hero-logistics-v2.webp"
               alt="Global Network"
               className="h-full w-full object-cover"
             />
@@ -247,7 +247,7 @@ export function TrackingExperience() {
               {/* Stats card */}
               <div className="relative overflow-hidden rounded-2xl p-7 text-white">
                 <img
-                  src="/images/nri-hero-logistics-v2.png"
+                  src="/images/nri-hero-logistics-v2.webp"
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover brightness-[0.65]"
                 />
@@ -287,7 +287,7 @@ export function TrackingExperience() {
               </div>
 
               {/* AI Route planner CTA card */}
-              <div className="relative overflow-hidden rounded-2xl bg-[#0B56D9] p-7 text-white" style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+              <div className="relative overflow-hidden rounded-2xl bg-[#0B56D9] p-7 text-white" style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="relative z-10">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
                     <Rocket className="h-5 w-5" />

@@ -93,7 +93,7 @@ export function AboutUs() {
             </p>
           </div>
 
-          <div className="relative overflow-hidden rounded-3xl bg-[#0A1931] p-10 text-white" style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className="relative overflow-hidden rounded-3xl bg-[#0A1931] p-10 text-white" style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="relative z-10"><h4 className="text-2xl font-bold mb-6">
               What We Do
             </h4>
@@ -182,7 +182,7 @@ export function AboutUs() {
         </div>
 
         {/* Commitment */}
-        <div className="relative overflow-hidden rounded-3xl bg-[#0B56D9] p-10 text-white mb-20 sm:p-14" style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="relative overflow-hidden rounded-3xl bg-[#0B56D9] p-10 text-white mb-20 sm:p-14" style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className="relative z-10 mx-auto max-w-4xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest">
               <HeartHandshake className="h-3.5 w-3.5" />

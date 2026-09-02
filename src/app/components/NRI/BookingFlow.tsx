@@ -1331,7 +1331,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
           <div className="lg:col-span-4">
             <div className="mb-4 overflow-hidden rounded-2xl border border-blue-100 bg-white">
               <img
-                src="/images/nri-booking-summary-journey-v2.png"
+                src="/images/nri-booking-summary-journey-v2.webp"
                 alt="Colourful India-to-world shipment illustration with a packed parcel and flight route"
                 className="aspect-[4/5] w-full object-cover"
               />

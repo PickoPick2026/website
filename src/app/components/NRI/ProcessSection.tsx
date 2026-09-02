@@ -59,7 +59,7 @@ export const ProcessSection: React.FC = () => (
               {index < steps.length - 1 && (
                 <div className="flex h-8 shrink-0 items-center justify-center lg:w-16 lg:self-center">
                   <img
-                    src="/images/nri-process-route-arrow-v1.png"
+                    src="/images/nri-process-route-arrow-v1.webp"
                     alt=""
                     aria-hidden="true"
                     className="h-10 w-16 rotate-90 object-contain lg:h-12 lg:w-16 lg:rotate-0"

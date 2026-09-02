@@ -2,12 +2,12 @@ import React from 'react';
 import { TRUST_PILLARS } from './data/mockData';
 
 const trustIllustrations: Record<string, string> = {
-  'Shop From India': '/images/nri-trust/shop-from-india.png',
-  'Source With Confidence': '/images/nri-trust/source-with-confidence.png',
-  'Consolidate Multiple Purchases': '/images/nri-trust/consolidate-purchases.png',
-  'Professional Packing': '/images/nri-trust/professional-packing.png',
-  'International Shipping': '/images/nri-trust/international-shipping.png',
-  'Personal Support': '/images/nri-trust/personal-support.png',
+  'Shop From India': '/images/nri-trust/shop-from-india.webp',
+  'Source With Confidence': '/images/nri-trust/source-with-confidence.webp',
+  'Consolidate Multiple Purchases': '/images/nri-trust/consolidate-purchases.webp',
+  'Professional Packing': '/images/nri-trust/professional-packing.webp',
+  'International Shipping': '/images/nri-trust/international-shipping.webp',
+  'Personal Support': '/images/nri-trust/personal-support.webp',
 };
 
 export const WhyChooseUsSection: React.FC = () => {
