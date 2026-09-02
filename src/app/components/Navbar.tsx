@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Calculator, ChevronDown, ContactRound, MapPinned, Menu, PackageCheck, ScanSearch, ShoppingBag, UserRound, X } from 'lucide-react';
+import { Calculator, ChevronDown, ContactRound, Menu, PackageCheck, ScanSearch, ShoppingBag, UserRound, X } from 'lucide-react';
 import { RegisterModal } from './RegisterModal';
 import { LoginModal } from './LoginModal';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -21,9 +21,9 @@ const navGroups: NavGroup[] = [
 ];
 
 const globalOffices = [
-  { country: 'Singapore', location: 'Singapore Operations Desk' },
-  { country: 'United Kingdom', location: 'London, United Kingdom' },
-  { country: 'Dubai', location: 'Dubai, United Arab Emirates' },
+  { country: 'Singapore', location: 'Singapore Operations Desk', flag: '/images/flags/sg.svg' },
+  { country: 'United Kingdom', location: 'London, United Kingdom', flag: '/images/flags/gb.svg' },
+  { country: 'Dubai', location: 'Dubai, United Arab Emirates', flag: '/images/flags/ae.svg' },
 ];
 
 export function Navbar() {
@@ -118,7 +118,7 @@ export function Navbar() {
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       {globalOffices.map((office) => <div key={office.country} className="rounded-xl border border-slate-200 bg-white p-4">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-[#0B56D9]"><MapPinned className="h-4 w-4" /></div>
+                        <div className="flex h-9 w-11 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white"><img src={office.flag} alt={`${office.country} flag`} className="h-full w-full object-cover" /></div>
                         <p className="mt-4 text-sm font-extrabold text-[#0A1931]">{office.country}</p>
                         <p className="mt-1 text-xs leading-relaxed text-slate-500">{office.location}</p>
                       </div>)}
@@ -160,7 +160,7 @@ export function Navbar() {
                   <div>
                     <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0B56D9]">Global offices</p>
                     <div className="grid grid-cols-3 gap-2">
-                      {globalOffices.map((office) => <div key={office.country} className="rounded-lg bg-slate-50 p-2.5"><p className="text-[11px] font-extrabold text-[#0A1931]">{office.country}</p><p className="mt-0.5 text-[10px] leading-snug text-slate-500">{office.location}</p></div>)}
+                      {globalOffices.map((office) => <div key={office.country} className="rounded-lg bg-slate-50 p-2.5"><div className="flex items-center gap-1.5"><img src={office.flag} alt="" className="h-3.5 w-5 rounded-[2px] border border-slate-200 object-cover" /><p className="text-[11px] font-extrabold text-[#0A1931]">{office.country}</p></div><p className="mt-1 text-[10px] leading-snug text-slate-500">{office.location}</p></div>)}
                     </div>
                   </div>
                   <button onClick={handleEstimate} className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-[#0B56D9] px-3 py-3 text-[10px] font-extrabold uppercase text-[#0B56D9]"><Calculator className="h-3.5 w-3.5" />Get estimate</button>

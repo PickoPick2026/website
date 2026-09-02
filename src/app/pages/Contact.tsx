@@ -12,13 +12,26 @@ export default function ContactPage() {
   return (
     <main className="min-h-screen bg-[#F7F9FF] pt-[100px] sm:pt-[112px]">
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#0B56D9]">Contact Pick O Pick</p>
-          <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-[#0A1931] sm:text-5xl">We are here to help.</h1>
-          <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">Talk to our India logistics team about shopping, pickup, consolidation, or international delivery.</p>
+        <div className="overflow-hidden rounded-3xl bg-[#0B56D9]" style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className="grid gap-8 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:px-14">
+            <div className="max-w-2xl">
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-blue-100">Contact Pick O Pick</p>
+              <h1 className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-white sm:text-5xl">We are here to help.</h1>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-blue-50 sm:text-lg">Talk to our India logistics team about shopping, pickup, consolidation, or international delivery.</p>
+            </div>
+            <div className="rounded-2xl border border-white/30 bg-white p-5 text-[#0A1931] sm:p-6">
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#0B56D9]">Need a quick answer?</p>
+              <h2 className="mt-2 text-2xl font-extrabold tracking-tight">Speak with our India desk.</h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">Call or email us for help with a shipment, sourcing request, or pickup plan.</p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a href="tel:+919790361222" className="inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-4 py-2.5 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7]"><Phone className="h-4 w-4" />Call us</a>
+                <a href="mailto:support@pickopick.com" className="inline-flex items-center gap-2 rounded-full border border-[#0B56D9] px-4 py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#0B56D9] transition-colors hover:bg-blue-50"><Mail className="h-4 w-4" />Email us</a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="space-y-4">
             <a href="tel:+919790361222" className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition-colors hover:border-blue-200 hover:bg-blue-50">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#0B56D9]"><Phone className="h-5 w-5" /></div>

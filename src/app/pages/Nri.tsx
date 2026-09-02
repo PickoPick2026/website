@@ -179,7 +179,6 @@ export default function App() {
         {/* 4 Quick Action Cards */}
         <QuickActions
           onOpenConsultation={() => setIsConsultationModalOpen(true)}
-          onOpenEstimator={() => window.location.assign('/shipping-estimate')}
         />
 
 
