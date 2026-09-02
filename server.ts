@@ -106,7 +106,7 @@ async function sendNriConsultationConfirmation(email: string, name: string, requ
 
 async function startServer() {
   const app = express();
-  const PORT = 3006;
+  const PORT = 3000;
 
  
   app.use(express.json({ limit: "50mb" }));
