@@ -28,6 +28,8 @@ export default function ShopPage() {
           <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0B56D9]">
             <Sparkles className="h-3 w-3" />Pick O Pick marketplace
           </span>
+          <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-[#073E96] sm:text-3xl">Shop from India online</h1>
+          <p className="mt-1 max-w-xl text-sm text-slate-600">Find Indian products, then request personal shopping and international delivery support in one place.</p>
           <form id="shop-search" onSubmit={handleSearch} className="mt-4 flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 sm:flex-row sm:rounded-full">
             <label htmlFor="shop-search-input" className="sr-only">Search the marketplace</label>
             <div className="flex flex-1 items-center gap-2 px-3">

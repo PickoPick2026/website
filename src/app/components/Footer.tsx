@@ -8,13 +8,13 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 mb-12">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
-            <a href="#" className="inline-block mb-6">
+            <Link to="/" className="inline-block mb-6" aria-label="Pick O Pick home">
               <img
                 src="/PICKLogo.png"
                 alt="PickoPick"
                 className="w-[150px] sm:w-[180px] object-contain"
               />
-            </a>
+            </Link>
             <p className="mb-6 max-w-sm text-sm leading-relaxed">
               Your premium global logistics partner. Buy from any Indian store and we'll ship it to your doorstep anywhere in the world.
             </p>
@@ -29,10 +29,10 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-5">Services</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Personal Shopper</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Package Consolidation</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">International Shipping</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">B2B Logistics</a></li>
+              <li><Link to="/nri#booking-portal" className="hover:text-blue-400 transition-colors">Personal Shopper</Link></li>
+              <li><Link to="/nri#booking-portal" className="hover:text-blue-400 transition-colors">Package Consolidation</Link></li>
+              <li><Link to="/shipping-estimate" className="hover:text-blue-400 transition-colors">International Shipping</Link></li>
+              <li><Link to="/nri#booking-portal" className="hover:text-blue-400 transition-colors">B2B Logistics</Link></li>
             </ul>
           </div>
 

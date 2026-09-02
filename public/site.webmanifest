@@ -1,0 +1,12 @@
+{
+  "name": "Pick O Pick",
+  "short_name": "Pick O Pick",
+  "description": "Shop from India and ship worldwide.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#0B56D9",
+  "icons": [
+    { "src": "/pickfav.png", "sizes": "192x192", "type": "image/png" }
+  ]
+}

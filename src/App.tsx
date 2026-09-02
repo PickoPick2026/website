@@ -1,29 +1,34 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./app/components/Layout";
 import Home from "./app/pages/Home";
-import Cart from "./app/pages/Cart";
-import Orders from "./app/pages/Orders";
-import Addresses from "./app/pages/Adresses";
-import Wallet from "./app/pages/Wallet";
-import Profile from "./app/pages/Profile";
 import { Toaster } from "sonner";
-import TermsPage from "./app/terms/page";
 import WhatsAppButton from "./app/components/WhatsAppButton";
-import PrivacyPolicyPage from "./app/privacy/page";
-import ProhibitedItemsPage from "./app/prohibited/page";
-import RefundPage from "./app/refund/page";
-import NriPage from "./app/pages/Nri";
-import ShippingEstimatePage from "./app/pages/ShippingEstimate";
-import ContactPage from "./app/pages/Contact";
-import ShopPage from "./app/pages/Shop";
+import { SeoHead } from "./app/components/SeoHead";
+
+const Cart = lazy(() => import("./app/pages/Cart"));
+const Orders = lazy(() => import("./app/pages/Orders"));
+const Addresses = lazy(() => import("./app/pages/Adresses"));
+const Wallet = lazy(() => import("./app/pages/Wallet"));
+const Profile = lazy(() => import("./app/pages/Profile"));
+const TermsPage = lazy(() => import("./app/terms/page"));
+const PrivacyPolicyPage = lazy(() => import("./app/privacy/page"));
+const ProhibitedItemsPage = lazy(() => import("./app/prohibited/page"));
+const RefundPage = lazy(() => import("./app/refund/page"));
+const NriPage = lazy(() => import("./app/pages/Nri"));
+const ShippingEstimatePage = lazy(() => import("./app/pages/ShippingEstimate"));
+const ContactPage = lazy(() => import("./app/pages/Contact"));
+const ShopPage = lazy(() => import("./app/pages/Shop"));
 
 
 export default function App() {
   return (
     <BrowserRouter>
+      <SeoHead />
       <WhatsAppButton />
     
       <Toaster position="bottom-right" richColors closeButton />
+      <Suspense fallback={<main className="min-h-screen bg-white" aria-label="Loading page" />}>
       <Routes>
       
         {/* Layout wrapper */}
@@ -53,6 +58,7 @@ export default function App() {
       
 
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
