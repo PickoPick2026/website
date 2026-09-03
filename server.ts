@@ -685,6 +685,52 @@ app.post("/api/auth/login", async (req, res) => {
         return res.status(400).json({ error: "Please complete the required contact and request details." });
       }
 
+      // Shipping estimate requests get their own table + admin queue (estimate_leads).
+      // The request_code is the verification code the customer confirms with our team.
+      if (estimateRequest) {
+        if (!name) {
+          return res.status(400).json({ error: "Please tell us your name so we can verify the request." });
+        }
+        const weightRaw = payload.approxWeightKg ?? payload.weightKg;
+        const approxWeightKg = weightRaw !== undefined && weightRaw !== null && String(weightRaw).trim() !== "" && !Number.isNaN(Number(weightRaw))
+          ? Number(weightRaw)
+          : null;
+        const estimateCode = `POP-EST-${Date.now().toString().slice(-8)}-${Math.floor(100 + Math.random() * 900)}`;
+        const estimateRecord = {
+          request_code: estimateCode,
+          status: "NEW",
+          customer_name: name,
+          whatsapp_number: phone,
+          email: text(payload.customerEmail || payload.email) || null,
+          destination_country: country,
+          package_type: text(payload.packageType) || null,
+          approx_weight_kg: approxWeightKg,
+          dimensions: text(payload.dimensions) || null,
+          requirement_description: text(payload.requirementDescription) || null,
+          payload,
+        };
+
+        const { data: estimateData, error: estimateError } = await supabase
+          .from("estimate_leads")
+          .insert(estimateRecord)
+          .select("id, request_code, created_at")
+          .single();
+
+        if (estimateError) {
+          console.error("Estimate lead insert error:", estimateError);
+          return res.status(500).json({ error: "We could not save your request. Please try again shortly.", details: process.env.NODE_ENV === "production" ? undefined : estimateError.message });
+        }
+
+        const estimateMessage = encodeURIComponent(`Hello Pick O Pick! I requested a shipping estimate.\nVerification code: ${estimateData.request_code}\nDestination: ${country}`);
+        return res.status(201).json({
+          success: true,
+          requestId: estimateData.request_code,
+          createdAt: estimateData.created_at,
+          whatsappUrl: `https://wa.me/919876543210?text=${estimateMessage}`,
+          noticeText: "Your estimate request has been received. Our team will verify your code and share your quotation.",
+        });
+      }
+
       const prefix = consultation ? "NRI-CON" : slotReservation ? "NRI-SLOT" : estimateRequest ? "NRI-EST" : "NRI-PICK";
       const requestCode = `${prefix}-${Date.now().toString().slice(-8)}-${Math.floor(100 + Math.random() * 900)}`;
       const record = {
