@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router";
+import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Package, MapPin, CreditCard, Truck, CheckCircle, Clock } from "lucide-react";
 
 const mockTransaction = {

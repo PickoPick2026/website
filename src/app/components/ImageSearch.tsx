@@ -110,11 +110,19 @@ export function ImageSearch() {
     }
     const user = JSON.parse(userStr);
 
+    const price = parseFloat(String(product.price).replace(/[₹,]/g, '')) || 0;
+
+    // ❌ Never allow zero / invalid priced products into the cart
+    if (!Number.isFinite(price) || price < 1) {
+      toast.error("This product isn't available for purchase yet ❌");
+      return;
+    }
+
     const { error } = await supabase.from("cart").insert([{
       customer_id: user.customerID,
       product_id: product.id,
       name: product.name,
-      price: parseFloat(String(product.price).replace(/[₹,]/g, '')) || 0,
+      price,
       image: product.image || "",
       quantity: 1,
     }]);

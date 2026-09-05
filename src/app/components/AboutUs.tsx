@@ -47,7 +47,7 @@ export function AboutUs() {
   return (
     <section
       id="about"
-      className="py-24 bg-gradient-to-b from-slate-50 to-white overflow-hidden"
+      className="py-24 bg-[#F7F9FF] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
 

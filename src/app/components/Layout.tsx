@@ -135,20 +135,20 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/*  HEADER SWITCH */}
       {isLoggedIn ? (
-        <header className="bg-white shadow-sm sticky top-0 z-50">
+        <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
-              <Link to="/" className="flex items-center gap-3">
+              <Link to="/" className="flex shrink-0 items-center" aria-label="Pick O Pick products">
                 <img
                   src="/PICKLogo.png"
                   alt="PickoPick"
-                  className="h-24 md:h-32 lg:h-40 object-contain hover:scale-105 transition"
+                  className="h-9 w-auto object-contain sm:h-10"
                 />
               </Link>
 
               {/* Right */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <Link
                   to="/cart"
                   className="relative p-2 hover:bg-gray-100 rounded-full"
@@ -165,7 +165,7 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg"
+                    className="flex items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-slate-50 sm:px-4"
                   >
                     <div className="size-8 bg-blue-600 rounded-full flex items-center justify-center">
                       <User className="size-5 text-white" />
@@ -177,7 +177,7 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2">
+                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-200 bg-white py-2">
                       <Link
                         to="/profile"
                         className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50"

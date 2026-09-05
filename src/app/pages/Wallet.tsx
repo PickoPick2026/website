@@ -30,12 +30,17 @@ export default function Wallet() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Wallet</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-[#0A1931] mb-8">My Wallet</h1>
 
       <div className="grid lg:grid-cols-3 gap-6 mb-8">
         {/* Wallet Balance Card */}
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-xl">
+          <div
+            className="relative overflow-hidden rounded-2xl bg-[#0B56D9] bg-cover bg-center p-8 text-white shadow-xl"
+            style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')" }}
+          >
+            <div className="absolute inset-0 bg-[#0A1931]/70" />
+            <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="size-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -48,7 +53,7 @@ export default function Wallet() {
               </div>
               <button
                 onClick={() => setShowAddMoney(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-white text-[#0B56D9] rounded-xl font-semibold hover:bg-blue-50 transition-colors"
               >
                 <Plus className="size-5" />
                 Add Money
@@ -69,57 +74,58 @@ export default function Wallet() {
                 <p className="text-xl font-bold">00</p>
               </div>
             </div>
+            </div>
           </div>
         </div>
 
         {/* Quick Stats */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="size-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="size-10 bg-green-100 rounded-xl flex items-center justify-center">
                 <ArrowDownLeft className="size-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Money Received</p>
+                <p className="text-sm text-slate-500">Money Received</p>
                 <p className="text-xl font-bold text-green-600">00</p>
               </div>
             </div>
-            <p className="text-sm text-gray-500">This month</p>
+            <p className="text-sm text-slate-500">This month</p>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="size-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <div className="size-10 bg-red-100 rounded-xl flex items-center justify-center">
                 <ArrowUpRight className="size-5 text-red-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Money Spent</p>
+                <p className="text-sm text-slate-500">Money Spent</p>
                 <p className="text-xl font-bold text-red-600">00</p>
               </div>
             </div>
-            <p className="text-sm text-gray-500">This month</p>
+            <p className="text-sm text-slate-500">This month</p>
           </div>
         </div>
       </div>
 
       {/* Add Money Modal */}
       {showAddMoney && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6">
-            <h3 className="text-2xl font-bold mb-6">Add Money to Wallet</h3>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6">
+            <h3 className="text-2xl font-extrabold tracking-tight text-[#0A1931] mb-6">Add Money to Wallet</h3>
 
             <form onSubmit={handleAddMoney}>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Enter Amount
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
+                  <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
                   <input
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 border-2 border-gray-300 rounded-lg text-2xl font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                    className="w-full pl-12 pr-4 py-4 border-2 border-slate-300 rounded-xl text-2xl font-bold focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none"
                     placeholder="0.00"
                     min="10"
                     step="0.01"
@@ -129,14 +135,14 @@ export default function Wallet() {
               </div>
 
               <div className="mb-6">
-                <p className="text-sm font-medium text-gray-700 mb-3">Quick Select</p>
+                <p className="text-sm font-semibold text-slate-700 mb-3">Quick Select</p>
                 <div className="grid grid-cols-4 gap-2">
                   {quickAmounts.map((quickAmount) => (
                     <button
                       key={quickAmount}
                       type="button"
                       onClick={() => setAmount(quickAmount.toString())}
-                      className="px-4 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-colors"
+                      className="px-4 py-3 border-2 border-slate-300 rounded-xl font-semibold text-[#0A1931] hover:border-[#0B56D9] hover:text-[#0B56D9] transition-colors"
                     >
                       ${quickAmount}
                     </button>
@@ -145,14 +151,14 @@ export default function Wallet() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Payment Method
                 </label>
-                <div className="flex items-center gap-3 p-4 border-2 border-gray-300 rounded-lg">
-                  <CreditCard className="size-6 text-gray-600" />
+                <div className="flex items-center gap-3 p-4 border-2 border-slate-300 rounded-xl">
+                  <CreditCard className="size-6 text-slate-600" />
                   <div>
-                    <p className="font-semibold">Credit Card</p>
-                    <p className="text-sm text-gray-600">Visa •••• 4242</p>
+                    <p className="font-semibold text-[#0A1931]">Credit Card</p>
+                    <p className="text-sm text-slate-500">Visa •••• 4242</p>
                   </div>
                 </div>
               </div>
@@ -160,14 +166,14 @@ export default function Wallet() {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="flex-1 bg-[#0B56D9] text-white py-3 rounded-xl font-semibold hover:bg-[#0849B7] transition-colors"
                 >
                   Add Money
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddMoney(false)}
-                  className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                  className="flex-1 bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors"
                 >
                   Cancel
                 </button>
@@ -178,14 +184,14 @@ export default function Wallet() {
       )}
 
       {/* Transaction History */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b">
-          <h2 className="text-xl font-bold">Transaction History</h2>
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200">
+          <h2 className="text-xl font-extrabold tracking-tight text-[#0A1931]">Transaction History</h2>
         </div>
 
-        <div className="divide-y">
+        <div className="divide-y divide-slate-100">
           {transactions.map((transaction) => (
-            <div key={transaction.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+            <div key={transaction.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div
@@ -202,8 +208,8 @@ export default function Wallet() {
                     )}
                   </div>
                   <div>
-                    <p className="font-semibold">{transaction.description}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-semibold text-[#0A1931]">{transaction.description}</p>
+                    <p className="text-sm text-slate-500">
                       {new Date(transaction.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",

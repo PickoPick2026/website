@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { Package, ChevronRight, Search, Calendar } from "lucide-react";
 
 interface Order {

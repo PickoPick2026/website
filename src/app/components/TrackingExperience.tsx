@@ -28,7 +28,7 @@ export function TrackingExperience() {
     try {
       const response = await fetch('/api/shipments');
       const data = await response.json();
-      setActivities(data);
+      setActivities(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching activities:", error);
     }

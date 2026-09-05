@@ -115,18 +115,24 @@ if (imageUrl.startsWith("blob:")) {
 }, []);
   
 const handleAddToCart = async (product: any) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const price = Number(product.price ?? product.price_value ?? 0);
 
-  console.log("PRODUCT:", product);
+  // ❌ Never allow zero / invalid priced products into the cart
+  if (!Number.isFinite(price) || price < 1) {
+    toast.error("This product isn't available for purchase yet ❌");
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const { error } = await supabase.from("cart").insert([
     {
       customer_id: user.customerID,
       product_id: product.id,
 
-     
+
       name: product.name || product.title,
-      price: product.price || product.price_value || 0,
+      price,
       image: product.image || product.image_url || "",
 
       quantity: 1,
@@ -158,11 +164,32 @@ const handleAddToCart = async (product: any) => {
     });
 
     if (loading) {
-  return <div className="p-10 text-center">Loading products...</div>;
+  return (
+    <div className="min-h-full bg-[#F7F9FF]">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
+            >
+              <div className="h-56 w-full animate-pulse bg-slate-100" />
+              <div className="space-y-3 p-4">
+                <div className="h-3 w-1/3 animate-pulse rounded bg-slate-100" />
+                <div className="h-4 w-3/4 animate-pulse rounded bg-slate-100" />
+                <div className="h-6 w-1/4 animate-pulse rounded bg-slate-100" />
+                <div className="h-10 w-full animate-pulse rounded-xl bg-slate-100" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
   return (
-    <div className="bg-gray-50">
+    <div className="min-h-full bg-[#F7F9FF]">
       {/* Discount Banner */}
       {/* <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -183,35 +210,53 @@ const handleAddToCart = async (product: any) => {
 
       
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Image Section */}
-        <div className="w-full">
-          <img
-            src="/Artboard.jpeg"
-            alt="Sale Banner"
-            className="w-full h-auto object-cover"
-          />
-        </div>
-        <br />
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        {/* Marketplace hero */}
+        <section className="relative pt-10 sm:pt-14 lg:pt-20">
+          <div
+            className="relative min-h-[470px] overflow-hidden rounded-[28px] border border-blue-700 bg-cover bg-center px-6 py-8 sm:px-10 sm:py-10 lg:min-h-[285px] lg:px-14 lg:py-12"
+            style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')" }}
+          >
+            <div className="relative z-10 max-w-xl lg:max-w-[48%]">
+              <p className="mb-4 text-xs font-extrabold uppercase tracking-[0.22em] text-[#FFC13D]">Shop from India</p>
+              <h1 className="max-w-lg text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
+                Shop India. <span className="text-[#FFC13D]">Send it your way.</span>
+              </h1>
+              <p className="mt-5 max-w-md text-sm leading-6 text-blue-100 sm:text-base">
+                Indian essentials, festive favourites and thoughtful finds — sourced, packed and delivered to your doorstep.
+              </p>
+            </div>
+          </div>
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 top-10 z-20 sm:top-14 lg:top-20"
+            style={{ clipPath: "inset(-10rem 0 0 0)" }}
+          >
+            <img
+              src="/images/marketplace-concierge-v1.png"
+              alt="Pick O Pick concierge with Indian products ready to ship"
+              className="absolute bottom-0 right-[-1.5rem] h-[355px] w-auto max-w-[105%] object-contain sm:right-[-2.5rem] sm:h-[425px] lg:right-[-3rem] lg:h-[420px]"
+            />
+          </div>
+        </section>
         {/* Search and Filters */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="mb-6 mt-5 rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
+          <div className="flex flex-col gap-3 md:flex-row">
             {/* Search Bar */}
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products..."
-                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm text-[#0A1931] outline-none focus:border-[#0B56D9] focus:ring-2 focus:ring-blue-100"
               />
             </div>
 
             {/* Filter Toggle (Mobile) */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="md:hidden flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-[#0A1931] transition-colors hover:bg-slate-50 md:hidden"
             >
               <SlidersHorizontal className="size-5" />
               Filters
@@ -221,7 +266,7 @@ const handleAddToCart = async (product: any) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[#0A1931] outline-none focus:border-[#0B56D9] focus:ring-2 focus:ring-blue-100"
             >
               <option value="featured">Featured</option>
               <option value="price-low">Price: Low to High</option>
@@ -232,9 +277,9 @@ const handleAddToCart = async (product: any) => {
 
           {/* Mobile Filters Panel */}
           {showFilters && (
-            <div className="md:hidden mt-4 p-4 bg-white rounded-lg border border-gray-200">
+            <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:hidden">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Filters</h3>
+                <h3 className="font-extrabold tracking-tight text-[#0A1931]">Filters</h3>
                 <button onClick={() => setShowFilters(false)}>
                   <X className="size-5" />
                 </button>
@@ -242,16 +287,16 @@ const handleAddToCart = async (product: any) => {
 
               {/* Category Filter */}
               <div className="mb-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Category</h4>
+                <h4 className="text-sm font-semibold text-slate-700 mb-2">Category</h4>
                 <div className="flex flex-wrap gap-2">
                   {categories.map((category) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
-                      className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                         selectedCategory === category
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          ? "bg-[#0B56D9] text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                       }`}
                     >
                       {category}
@@ -262,7 +307,7 @@ const handleAddToCart = async (product: any) => {
 
               {/* Price Filter */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Price Range</h4>
+                <h4 className="text-sm font-semibold text-slate-700 mb-2">Price Range</h4>
                 <div className="space-y-2">
                   {priceRanges.map((range) => (
                     <label key={range.label} className="flex items-center gap-2 cursor-pointer">
@@ -282,15 +327,15 @@ const handleAddToCart = async (product: any) => {
           )}
         </div>
 
-        <div className="flex gap-8">
+        <div className="flex gap-5 lg:gap-7">
           {/* Desktop Sidebar Filters */}
-          <aside className="hidden md:block w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg p-6 sticky top-24">
-              <h3 className="font-semibold text-lg mb-4">Filters</h3>
+          <aside className="hidden w-64 shrink-0 md:block">
+            <div className="sticky top-20 rounded-2xl border border-slate-200 bg-white p-5">
+              <h3 className="mb-4 text-base font-extrabold text-[#0A1931]">Filters</h3>
 
               {/* Category Filter */}
               <div className="mb-6">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Category</h4>
+                <h4 className="text-sm font-semibold text-slate-700 mb-3">Category</h4>
                 <div className="space-y-2">
                   {categories.map((category) => (
                     <button
@@ -310,7 +355,7 @@ const handleAddToCart = async (product: any) => {
 
               {/* Price Filter */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Price Range</h4>
+                <h4 className="text-sm font-semibold text-slate-700 mb-3">Price Range</h4>
                 <div className="space-y-2">
                   {priceRanges.map((range) => (
                     <label key={range.label} className="flex items-center gap-2 cursor-pointer text-sm">
@@ -331,21 +376,21 @@ const handleAddToCart = async (product: any) => {
 
           {/* Product Grid */}
           <div className="flex-1">
-            <div className="mb-4 text-gray-600">
+            <div className="mb-4 text-sm font-medium text-slate-500">
               {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"} found
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
+                  className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition-colors hover:border-[#0B56D9]"
                 >
                   <div className="relative">
                     <img
                       src={product.image || "/no-image.png"}
                       alt={product.name}
-                      className="w-full h-64 object-cover"
+                      className="h-56 w-full object-cover"
                     />
                     {product.discount && (
                       <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-semibold">
@@ -362,8 +407,8 @@ const handleAddToCart = async (product: any) => {
                   </div>
 
                   <div className="p-4">
-                    <div className="text-sm text-gray-500 mb-1">{product.category}</div>
-                    <h3 className="font-semibold mb-2 line-clamp-2">{product.name}</h3>
+                    <div className="mb-1 text-xs font-medium text-slate-500">{product.category}</div>
+                    <h3 className="mb-2 line-clamp-2 min-h-10 font-extrabold text-[#0A1931]">{product.name}</h3>
              
                  {/*
                     <div className="flex items-center gap-2 mb-3">
@@ -377,8 +422,8 @@ const handleAddToCart = async (product: any) => {
 
                     */}
 
-                    <div className="flex items-baseline gap-2 mb-4">
-                      <span className="text-2xl font-bold text-blue-600">
+                    <div className="mb-4 flex items-baseline gap-2">
+                      <span className="text-xl font-extrabold text-[#0B56D9]">
                         Rs{product.price}
                       </span>
                       {product.originalPrice && (
@@ -390,11 +435,11 @@ const handleAddToCart = async (product: any) => {
 
                     <button
                       onClick={() => handleAddToCart(product)}
-                      disabled={!product.inStock}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      disabled={!product.inStock || Number(product.price) < 1}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B56D9] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0849B7] disabled:cursor-not-allowed disabled:bg-slate-300"
                     >
                       <ShoppingCart className="size-5" />
-                      Add to Cart
+                      {Number(product.price) < 1 ? "Unavailable" : "Add to Cart"}
                     </button>
                     
                   </div>
