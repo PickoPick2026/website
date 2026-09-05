@@ -18,10 +18,10 @@ export function HeroMobile() {
   };
 
   return (
-    <section id="home" className="relative mt-[60px] min-h-[420px] overflow-hidden bg-white scroll-mt-24">
-      <img src="/images/hero-global-delivery-v5.webp" alt="Pick O Pick connecting India to the world by air cargo" className="absolute inset-0 h-full w-full object-cover object-bottom" />
+    <section id="home" className="relative mt-[60px] min-h-[680px] overflow-hidden bg-white scroll-mt-24">
+      <img src="/images/hero-global-delivery-mobile-v1.webp" alt="Pick O Pick connecting India to the world by air cargo" className="absolute inset-0 h-full w-full object-cover object-bottom" />
 
-      <div className="relative z-10 mx-auto flex min-h-[420px] w-full max-w-md flex-col items-center px-5 pb-6 pt-12 text-center">
+      <div className="relative z-10 mx-auto flex min-h-[680px] w-full max-w-md flex-col items-center px-5 pb-6 pt-12 text-center">
         <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#0B56D9]">India to the world</p>
         <h1 className="mt-3 max-w-sm text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#073E96]">To move from your hometown.</h1>
         <p className="mt-3 max-w-xs text-sm font-medium leading-relaxed text-slate-600">Pick O Pick delivers across India and the world.</p>
