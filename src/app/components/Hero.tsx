@@ -19,7 +19,7 @@ export function Hero() {
 
   return (
     <section id="home" className="relative mt-[68px] min-h-[420px] overflow-hidden bg-white scroll-mt-24 sm:mt-[76px] sm:min-h-[90vh]">
-      <img src="/images/hero-global-delivery-v4.webp" alt="Pick O Pick connecting India to the world by air cargo" className="absolute inset-0 h-full w-full object-cover object-bottom" />
+      <img src="/images/hero-global-delivery-v5.webp" alt="Pick O Pick connecting India to the world by air cargo" className="absolute inset-0 h-full w-full object-cover object-bottom" />
 
       <div className="relative z-10 mx-auto flex min-h-[420px] max-w-6xl flex-col items-center px-5 pt-14 text-center sm:h-full sm:min-h-[90vh] sm:px-8">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#0B56D9]">India to the world</p>
