@@ -14,16 +14,26 @@ export function WelcomePopup() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    if (sessionStorage.getItem("pickopick-welcome-popup-seen")) return;
     const timer = window.setTimeout(() => setOpen(true), 250);
     return () => window.clearTimeout(timer);
   }, []);
+
+  const dismiss = () => {
+    sessionStorage.setItem("pickopick-welcome-popup-seen", "true");
+    setOpen(false);
+  };
 
   const toggleVideo = async () => {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
       video.muted = false;
-      await video.play();
+      try {
+        await video.play();
+      } catch {
+        setIsPlaying(false);
+      }
     } else {
       video.pause();
     }
@@ -36,7 +46,7 @@ export function WelcomePopup() {
           <motion.button
             type="button"
             aria-label="Close welcome offer"
-            onClick={() => setOpen(false)}
+            onClick={dismiss}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -54,7 +64,7 @@ export function WelcomePopup() {
           >
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={dismiss}
               className="absolute right-4 top-4 z-20 rounded-lg p-2 text-slate-500 hover:bg-slate-100"
               aria-label="Close"
             >
@@ -85,7 +95,7 @@ export function WelcomePopup() {
                   <button
                     type="button"
                     onClick={() => {
-                      setOpen(false);
+                      dismiss();
                       openRegister();
                     }}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0B56D9] px-5 py-3.5 text-xs font-extrabold text-white transition-colors hover:bg-[#0849B7]"
@@ -95,7 +105,7 @@ export function WelcomePopup() {
                   <button
                     type="button"
                     onClick={() => {
-                      setOpen(false);
+                      dismiss();
                       openConsultation();
                     }}
                     className="rounded-full border border-[#0B56D9] px-5 py-3.5 text-xs font-extrabold text-[#0B56D9] transition-colors hover:bg-blue-50"
@@ -106,7 +116,7 @@ export function WelcomePopup() {
                 <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold">
                   <Link
                     to="/contact"
-                    onClick={() => setOpen(false)}
+                    onClick={dismiss}
                     className="text-slate-600 hover:text-[#0B56D9]"
                   >
                     For more details, Contact Us
@@ -114,7 +124,7 @@ export function WelcomePopup() {
                   <button
                     type="button"
                     onClick={() => {
-                      setOpen(false);
+                      dismiss();
                       openConsultation();
                     }}
                     className="text-[#0B56D9] hover:underline"

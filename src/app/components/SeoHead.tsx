@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { FAQS } from './NRI/data/mockData';
 
 const SITE_URL = 'https://pickopick.com';
-const DEFAULT_IMAGE = `${SITE_URL}/images/hero-global-delivery-v4.webp`;
+const DEFAULT_IMAGE = `${SITE_URL}/images/hero-global-delivery-v5.webp`;
 
 const PAGE_DATA: Record<string, { title: string; description: string; keywords: string; noIndex?: boolean }> = {
   '/': { title: 'Shop from India & Ship Worldwide | Pick O Pick', description: 'Shop from India, arrange parcel pickup, consolidate purchases and ship internationally from India with Pick O Pick.', keywords: 'shop from India, international shipping from India, courier from India, parcel delivery from India, package forwarding India' },
