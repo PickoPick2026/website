@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./app/components/Layout";
 import Home from "./app/pages/Home";
 import { Toaster } from "sonner";
@@ -8,6 +8,7 @@ import { SeoHead } from "./app/components/SeoHead";
 
 const Cart = lazy(() => import("./app/pages/Cart"));
 const Orders = lazy(() => import("./app/pages/Orders"));
+const TransactionDetail = lazy(() => import("./app/pages/TransactionDetail"));
 const Addresses = lazy(() => import("./app/pages/Adresses"));
 const Wallet = lazy(() => import("./app/pages/Wallet"));
 const Profile = lazy(() => import("./app/pages/Profile"));
@@ -48,10 +49,14 @@ export default function App() {
           {/* After login pages */}
           <Route path="cart" element={<Cart />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="transaction/:id" element={<TransactionDetail />} />
           <Route path="addresses" element={<Addresses />} />
           <Route path="wallet" element={<Wallet />} />
            <Route path="profile" element={<Profile />} />
-           
+
+          {/* Unknown routes → home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+
         </Route>
          
          

@@ -26,6 +26,7 @@ export default function Layout() {
   const [cartCount, setCartCount] = useState(3);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [userData, setUserData] = useState<any>(null);
   
@@ -147,6 +148,45 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
                 />
               </Link>
 
+              <nav className="hidden items-center gap-1 md:flex" aria-label="Signed-in navigation">
+                <Link
+                  to="/"
+                  className={`rounded-full px-3 py-2 text-sm font-bold transition-colors ${location.pathname === "/" ? "bg-blue-50 text-[#0B56D9]" : "text-slate-600 hover:bg-slate-50 hover:text-[#0B56D9]"}`}
+                >
+                  Shop
+                </Link>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setServicesMenuOpen((open) => !open)}
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-bold transition-colors ${servicesMenuOpen || ["/nri", "/contact", "/shipping-estimate"].includes(location.pathname) ? "bg-blue-50 text-[#0B56D9]" : "text-slate-600 hover:bg-slate-50 hover:text-[#0B56D9]"}`}
+                    aria-expanded={servicesMenuOpen}
+                  >
+                    Services <ChevronDown className={`size-4 transition-transform ${servicesMenuOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {servicesMenuOpen && (
+                    <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2">
+                      <Link to="/#track-shipment" onClick={() => setServicesMenuOpen(false)} className="block rounded-xl px-3 py-3 transition-colors hover:bg-blue-50">
+                        <span className="block text-sm font-extrabold text-[#0A1931]">Track a shipment</span>
+                        <span className="mt-0.5 block text-xs text-slate-500">Check your cargo status in real time.</span>
+                      </Link>
+                      <Link to="/shipping-estimate" onClick={() => setServicesMenuOpen(false)} className="block rounded-xl px-3 py-3 transition-colors hover:bg-blue-50">
+                        <span className="block text-sm font-extrabold text-[#0A1931]">Get shipping estimate</span>
+                        <span className="mt-0.5 block text-xs text-slate-500">Send details and receive a verified quote.</span>
+                      </Link>
+                      <Link to="/nri" onClick={() => setServicesMenuOpen(false)} className="block rounded-xl px-3 py-3 transition-colors hover:bg-blue-50">
+                        <span className="block text-sm font-extrabold text-[#0A1931]">NRI services</span>
+                        <span className="mt-0.5 block text-xs text-slate-500">Shop, consolidate and ship from India.</span>
+                      </Link>
+                      <Link to="/contact" onClick={() => setServicesMenuOpen(false)} className="block rounded-xl px-3 py-3 transition-colors hover:bg-blue-50">
+                        <span className="block text-sm font-extrabold text-[#0A1931]">Contact us</span>
+                        <span className="mt-0.5 block text-xs text-slate-500">Speak to the Pick O Pick team.</span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </nav>
+
               {/* Right */}
               <div className="flex items-center gap-2 sm:gap-4">
                 <Link
@@ -160,6 +200,16 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
                     </span>
                   )}
                 </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen((open) => !open)}
+                  className="rounded-lg p-2 text-slate-700 transition-colors hover:bg-slate-50 md:hidden"
+                  aria-label="Toggle navigation"
+                  aria-expanded={mobileMenuOpen}
+                >
+                  {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+                </button>
 
                 {/* USER MENU */}
                 <div className="relative" ref={userMenuRef}>
@@ -205,13 +255,6 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
                         <MapPin className="size-5" /> Addresses
                       </Link>
 
-                      <Link
-                        to="/wallet"
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50"
-                      >
-                        <Wallet className="size-5" /> Wallet
-                      </Link>
-
                       <button
                         onClick={handleLogout}
                         className="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 w-full"
@@ -224,6 +267,18 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
               </div>
             </div>
           </div>
+          {mobileMenuOpen && (
+            <nav className="border-t border-slate-100 bg-white px-4 py-3 md:hidden" aria-label="Signed-in mobile navigation">
+              <div className="mx-auto flex max-w-7xl flex-col gap-1">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-2.5 text-sm font-bold ${location.pathname === "/" ? "bg-blue-50 text-[#0B56D9]" : "text-slate-700 hover:bg-slate-50"}`}>Shop</Link>
+                <p className="px-3 pt-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">Services</p>
+                <Link to="/#track-shipment" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Track a shipment</Link>
+                <Link to="/shipping-estimate" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Get shipping estimate</Link>
+                <Link to="/nri" onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-2.5 text-sm font-bold ${location.pathname === "/nri" ? "bg-blue-50 text-[#0B56D9]" : "text-slate-700 hover:bg-slate-50"}`}>NRI Services</Link>
+                <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-2.5 text-sm font-bold ${location.pathname === "/contact" ? "bg-blue-50 text-[#0B56D9]" : "text-slate-700 hover:bg-slate-50"}`}>Contact Us</Link>
+              </div>
+            </nav>
+          )}
         </header>
       ) : (
         //  HERO NAVBAR

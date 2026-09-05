@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { MapPin, Plus, Edit, Trash2, Home, Briefcase, X } from "lucide-react";
 import { supabase } from "@/src/lib/supabase";
+import { toast } from "sonner";
 
-interface Address {
-  id: number;
-  type: "home" | "work" | "other";
+interface AddressForm {
+  addressID?: number | string;
+  type: string;
   name: string;
   phone: string;
   street: string;
@@ -14,126 +15,190 @@ interface Address {
   isDefault: boolean;
 }
 
-
+const emptyForm: AddressForm = {
+  type: "home",
+  name: "",
+  phone: "",
+  street: "",
+  city: "",
+  state: "",
+  zipCode: "",
+  isDefault: false,
+};
 
 export default function Addresses() {
-  
-  const [addresses, setAddresses] = useState<any[]>([]);
+  const [addresses, setAddresses] = useState<AddressForm[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const [formData, setFormData] = useState<Partial<Address>>({
-    type: "home",
-    name: "",
-    phone: "",
-    street: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    isDefault: false,
-  });
+  const [editingId, setEditingId] = useState<number | string | null>(null);
+  const [formData, setFormData] = useState<AddressForm>(emptyForm);
+
+  const getUser = () => JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
-  fetchAddresses();
-}, []);
+    fetchAddresses();
+  }, []);
 
-const fetchAddresses = async () => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const fetchAddresses = async () => {
+    const user = getUser();
+    if (!user?.customerID) {
+      setLoading(false);
+      return;
+    }
 
-  const { data, error } = await supabase
-    .from("addressTable")
-    .select("*")
-    .eq("customerID", user.customerID);
+    const [{ data, error }, { data: customer }] = await Promise.all([
+      supabase.from("addressTable").select("*").eq("customerID", user.customerID),
+      supabase.from("customerList").select("firstName, phoneNumber").eq("customerID", user.customerID).maybeSingle(),
+    ]);
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+    if (error) {
+      console.error(error);
+      toast.error("Could not load your addresses");
+      setLoading(false);
+      return;
+    }
 
-  const { data: customer } = await supabase
-  .from("customerList")
-  .select("*")
-  .eq("customerID", user.customerID)
-  .single();
+    const formatted: AddressForm[] = (data || []).map((item) => {
+      const parts = (item.addressDetails || "").split(",");
+      return {
+        addressID: item.addressID,
+        type: item.addressType || "home",
+        isDefault: !!item.isDefault,
+        street: parts[0]?.trim() || "",
+        city: parts[1]?.trim() || "",
+        state: parts[2]?.trim() || "",
+        zipCode: parts[3]?.trim() || "",
+        name: item.recipient_name || customer?.firstName || "",
+        phone: item.recipient_phone || customer?.phoneNumber || "",
+      };
+    });
 
-  // 🔥 ADD THIS PART (VERY IMPORTANT)
-  const formatted = data.map((item) => {
-    const parts = item.addressDetails?.split(",") || [];
-
-    return {
-      addressID: item.addressID,
-      type: item.addressType,
-      isDefault: item.isDefault,
-
-      street: parts[0]?.trim() || "",
-      city: parts[1]?.trim() || "",
-      state: parts[2]?.trim() || "",
-      zipCode: parts[3]?.trim() || "",
-
-    name: customer?.firstName || "User",
-    phone: customer?.phoneNumber || "N/A",
-    };
-  });
-
-  // ✅ SET FORMATTED DATA
-  setAddresses(formatted);
-};
+    setAddresses(formatted);
+    setLoading(false);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    });
+    }));
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  const addressDetails = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.zipCode}`;
-
-  if (!editingAddress) {
-    const { error } = await supabase.from("addressTable").insert([
-      {
-        addressType: formData.type,
-        addressDetails,
-        addressStatus: true,
-        isDefault: formData.isDefault,
-        customerID: user.customerID ,
-      },
-    ]);
-
-    if (!error) {
-      fetchAddresses();
-    }
-  }
-
-  setShowAddForm(false);
-};
-
-  const handleEdit = (address: Address) => {
-    setEditingAddress(address);
-    setFormData(address);
+  const openAdd = () => {
+    setEditingId(null);
+    setFormData(emptyForm);
     setShowAddForm(true);
   };
 
- const handleDelete = async (id: string) => {
-  await supabase
-    .from("addressTable")
-    .delete()
-    .eq("addressID", id);
+  const handleEdit = (address: AddressForm) => {
+    setEditingId(address.addressID ?? null);
+    setFormData({ ...emptyForm, ...address });
+    setShowAddForm(true);
+  };
 
-  fetchAddresses();
-};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (saving) return;
 
-  const setAsDefault = (id: number) => {
-    setAddresses(
-      addresses.map((addr) => ({
-        ...addr,
-        isDefault: addr.addressID === id 
-      }))
-    );
+    const user = getUser();
+    if (!user?.customerID) {
+      toast.error("Please log in to manage addresses");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const addressDetails = [formData.street, formData.city, formData.state, formData.zipCode]
+        .map((p) => (p || "").trim())
+        .join(", ");
+
+      const payload = {
+        addressType: formData.type,
+        addressDetails,
+        addressStatus: true,
+        isDefault: !!formData.isDefault,
+        customerID: user.customerID,
+        recipient_name: formData.name || null,
+        recipient_phone: formData.phone || null,
+      };
+
+      let savedId = editingId;
+
+      if (editingId != null) {
+        const { error } = await supabase
+          .from("addressTable")
+          .update(payload)
+          .eq("addressID", editingId);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from("addressTable")
+          .insert([payload])
+          .select("addressID")
+          .single();
+        if (error) throw error;
+        savedId = data?.addressID ?? null;
+      }
+
+      // Only one address can be default.
+      if (formData.isDefault && savedId != null) {
+        await supabase
+          .from("addressTable")
+          .update({ isDefault: false })
+          .eq("customerID", user.customerID)
+          .neq("addressID", savedId);
+      }
+
+      await fetchAddresses();
+      setShowAddForm(false);
+      setEditingId(null);
+      setFormData(emptyForm);
+      toast.success(editingId != null ? "Address updated" : "Address added");
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not save the address. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: number | string) => {
+    if (!window.confirm("Delete this address?")) return;
+
+    const { error } = await supabase.from("addressTable").delete().eq("addressID", id);
+    if (error) {
+      console.error(error);
+      toast.error("Could not delete the address");
+      return;
+    }
+    await fetchAddresses();
+    toast.success("Address removed");
+  };
+
+  const setAsDefault = async (id: number | string) => {
+    const user = getUser();
+    if (!user?.customerID) return;
+
+    const { error: clearError } = await supabase
+      .from("addressTable")
+      .update({ isDefault: false })
+      .eq("customerID", user.customerID);
+
+    const { error: setError } = await supabase
+      .from("addressTable")
+      .update({ isDefault: true })
+      .eq("addressID", id);
+
+    if (clearError || setError) {
+      console.error(clearError || setError);
+      toast.error("Could not update the default address");
+      return;
+    }
+
+    await fetchAddresses();
+    toast.success("Default address updated");
   };
 
   const getTypeIcon = (type: string) => {
@@ -152,20 +217,7 @@ const fetchAddresses = async () => {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-extrabold tracking-tight text-[#0A1931]">My Addresses</h1>
         <button
-          onClick={() => {
-            setEditingAddress(null);
-            setFormData({
-              type: "home",
-              name: "",
-              phone: "",
-              street: "",
-              city: "",
-              state: "",
-              zipCode: "",
-              isDefault: false,
-            });
-            setShowAddForm(true);
-          }}
+          onClick={openAdd}
           className="flex items-center gap-2 px-4 py-2 bg-[#0B56D9] text-white rounded-xl hover:bg-[#0849B7] transition-colors"
         >
           <Plus className="size-5" />
@@ -179,7 +231,7 @@ const fetchAddresses = async () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
               <h2 className="text-2xl font-extrabold tracking-tight text-[#0A1931]">
-                {editingAddress ? "Edit Address" : "Add New Address"}
+                {editingId != null ? "Edit Address" : "Add New Address"}
               </h2>
               <button
                 onClick={() => setShowAddForm(false)}
@@ -219,7 +271,7 @@ const fetchAddresses = async () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                  placeholder="John Doe"
+                  placeholder="Recipient name"
                   required
                 />
               </div>
@@ -235,7 +287,7 @@ const fetchAddresses = async () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+91 98765 43210"
                   required
                 />
               </div>
@@ -251,7 +303,7 @@ const fetchAddresses = async () => {
                   value={formData.street}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                  placeholder="123 Main Street, Apt 4B"
+                  placeholder="House / flat, street, area"
                   required
                 />
               </div>
@@ -268,7 +320,7 @@ const fetchAddresses = async () => {
                     value={formData.city}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                    placeholder="San Francisco"
+                    placeholder="Chennai"
                     required
                   />
                 </div>
@@ -282,13 +334,13 @@ const fetchAddresses = async () => {
                     value={formData.state}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                    placeholder="CA"
+                    placeholder="Tamil Nadu"
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    ZIP Code
+                    PIN Code
                   </label>
                   <input
                     type="text"
@@ -296,7 +348,7 @@ const fetchAddresses = async () => {
                     value={formData.zipCode}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                    placeholder="94102"
+                    placeholder="600001"
                     required
                   />
                 </div>
@@ -318,9 +370,10 @@ const fetchAddresses = async () => {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-[#0B56D9] text-white py-3 rounded-xl font-semibold hover:bg-[#0849B7] transition-colors"
+                  disabled={saving}
+                  className="flex-1 bg-[#0B56D9] text-white py-3 rounded-xl font-semibold hover:bg-[#0849B7] transition-colors disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {editingAddress ? "Update Address" : "Add Address"}
+                  {saving ? "Saving…" : editingId != null ? "Update Address" : "Add Address"}
                 </button>
                 <button
                   type="button"
@@ -336,7 +389,13 @@ const fetchAddresses = async () => {
       )}
 
       {/* Addresses Grid */}
-      {addresses.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-52 animate-pulse rounded-2xl border border-slate-200 bg-white" />
+          ))}
+        </div>
+      ) : addresses.length === 0 ? (
         <div className="text-center py-16">
           <MapPin className="size-24 mx-auto text-slate-300 mb-6" />
           <h2 className="text-2xl font-extrabold tracking-tight text-[#0A1931] mb-4">No addresses yet</h2>
@@ -373,7 +432,7 @@ const fetchAddresses = async () => {
                     <Edit className="size-4" />
                   </button>
                   <button
-                    onClick={() =>handleDelete(address.addressID)}
+                    onClick={() => address.addressID != null && handleDelete(address.addressID)}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors"
                   >
                     <Trash2 className="size-4" />
@@ -386,13 +445,13 @@ const fetchAddresses = async () => {
                 <p className="text-sm">{address.phone}</p>
                 <p className="text-sm">{address.street}</p>
                 <p className="text-sm">
-                  {address.city}, {address.state} {address.zipCode}
+                  {[address.city, address.state, address.zipCode].filter(Boolean).join(", ")}
                 </p>
               </div>
 
               {!address.isDefault && (
                 <button
-                  onClick={() => setAsDefault(address.addressID)}
+                  onClick={() => address.addressID != null && setAsDefault(address.addressID)}
                   className="w-full px-4 py-2 font-semibold text-[#0B56D9] border border-[#0B56D9] rounded-xl hover:bg-[#0B56D9]/5 transition-colors"
                 >
                   Set as Default

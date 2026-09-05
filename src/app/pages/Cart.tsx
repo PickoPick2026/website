@@ -121,6 +121,9 @@ const subtotal = cartItems.reduce(
         return;
       }
       const address = addresses.find((a) => a.isDefault) || addresses[0];
+      const recipientName =
+        address.recipient_name || [user.firstName, user.lastName].filter(Boolean).join(" ") || null;
+      const recipientPhone = address.recipient_phone || user.phoneNumber || null;
 
       const orderCode = `POP-ORD-${Date.now().toString().slice(-8)}-${Math.floor(100 + Math.random() * 900)}`;
 
@@ -136,8 +139,8 @@ const subtotal = cartItems.reduce(
           shipping: Number(shipping.toFixed(2)),
           tax: Number(tax.toFixed(2)),
           total: Number(total.toFixed(2)),
-          customer_name: [user.firstName, user.lastName].filter(Boolean).join(" ") || null,
-          customer_phone: user.phoneNumber || null,
+          customer_name: recipientName,
+          customer_phone: recipientPhone,
           customer_email: user.emailID || null,
           shipping_address: address.addressDetails || null,
         })

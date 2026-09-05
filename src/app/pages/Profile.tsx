@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { User, Mail, Phone, Calendar, MapPin, Lock, Edit2, Save, X, Camera } from "lucide-react";
 import { supabase } from "@/src/lib/supabase";
-import toast from 'react-hot-toast';
+import { toast } from "sonner";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // 🔥 MAIN DATA (USED BY UI)
   const [profileData, setProfileData] = useState({
@@ -79,28 +80,58 @@ export default function Profile() {
 
   // ✅ SAVE → UPDATE DB
   const handleSave = async () => {
+    if (saving) return;
+
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-    const { error } = await supabase
-      .from("customerList")
-      .update({
-        firstName: editData.firstName,
-        lastName: editData.lastName,
-        phoneNumber: editData.phone,
-        gender: editData.gender,
-        dob: editData.dateOfBirth,
-        updated_at: new Date(),
-      })
-      .eq("customerID", user.customerID);
-
-    if (error) {
-      console.error(error);
+    if (!user?.customerID) {
+      toast.error("Please log in again");
       return;
     }
 
-    setProfileData(editData);
-    setIsEditing(false);
-    toast.success("Profile updated ✅");
+    if (!editData.firstName.trim()) {
+      toast.error("First name is required");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("customerList")
+        .update({
+          firstName: editData.firstName.trim(),
+          lastName: editData.lastName.trim(),
+          phoneNumber: editData.phone.trim(),
+          gender: editData.gender || null,
+          dob: editData.dateOfBirth || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("customerID", user.customerID);
+
+      if (error) {
+        console.error(error);
+        toast.error("Could not save your profile. Please try again.");
+        return;
+      }
+
+      // Keep the cached user (navbar greeting, checkout name/phone) in sync.
+      const nextUser = {
+        ...user,
+        firstName: editData.firstName.trim(),
+        lastName: editData.lastName.trim(),
+        phoneNumber: editData.phone.trim(),
+      };
+      localStorage.setItem("user", JSON.stringify(nextUser));
+      window.dispatchEvent(new Event("auth-change"));
+
+      setProfileData(editData);
+      setIsEditing(false);
+      toast.success("Profile updated ✅");
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -181,11 +212,6 @@ export default function Profile() {
               <div className="size-32 mx-auto bg-[#0B56D9] rounded-full flex items-center justify-center">
                 <User className="size-16 text-white" />
               </div>
-              {isEditing && (
-                <button className="absolute bottom-0 right-1/2 translate-x-16 size-10 bg-[#0B56D9] text-white rounded-full flex items-center justify-center hover:bg-[#0849B7] transition-colors shadow-lg">
-                  <Camera className="size-5" />
-                </button>
-              )}
             </div>
 
             <div className="text-center mb-6">
@@ -232,10 +258,11 @@ export default function Profile() {
                   </button>
                   <button
                     onClick={handleSave}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#0B56D9] text-white rounded-xl hover:bg-[#0849B7] transition-colors"
+                    disabled={saving}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#0B56D9] text-white rounded-xl hover:bg-[#0849B7] transition-colors disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Save className="size-4" />
-                    Save Changes
+                    {saving ? "Saving…" : "Save Changes"}
                   </button>
                 </div>
               )}
@@ -284,25 +311,15 @@ export default function Profile() {
                 )}
               </div>
 
-              {/* Email */}
+              {/* Email (login identifier — not editable) */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Email Address
                 </label>
-                {isEditing ? (
-                  <input
-                    type="email"
-                    name="email"
-                    value={editData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                  />
-                ) : (
-                  <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <Mail className="size-5 text-slate-400" />
-                    <span className="text-[#0A1931]">{profileData.email}</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <Mail className="size-5 text-slate-400" />
+                  <span className="text-[#0A1931]">{profileData.email}</span>
+                </div>
               </div>
 
               {/* Phone */}
@@ -367,65 +384,24 @@ export default function Profile() {
                   <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
                     <Calendar className="size-5 text-slate-400" />
                     <span className="text-[#0A1931]">
-                      {new Date(profileData.dateOfBirth).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {profileData.dateOfBirth
+                        ? new Date(profileData.dateOfBirth).toLocaleDateString("en-IN", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "Not set"}
                     </span>
                   </div>
                 )}
               </div>
-
-              {/* Address */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  City / State
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="address"
-                    value={editData.address}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                  />
-                ) : (
-                  <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <MapPin className="size-5 text-slate-400" />
-                    <span className="text-[#0A1931]">{profileData.address}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Country */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Country
-                </label>
-                {isEditing ? (
-                  <select
-                    name="country"
-                    value={editData.country}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0B56D9] focus:border-transparent outline-none transition"
-                  >
-                    <option value="India">India</option>
-                    <option value="USA">United States</option>
-                    <option value="UK">United Kingdom</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="Japan">Japan</option>
-                  </select>
-                ) : (
-                  <div className="px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <span className="text-[#0A1931]">{profileData.country}</span>
-                  </div>
-                )}
-              </div>
             </div>
+
+            <p className="mt-6 text-xs text-slate-500">
+              Manage your delivery addresses on the{" "}
+              <a href="/addresses" className="font-semibold text-[#0B56D9] hover:underline">Addresses</a>{" "}
+              page.
+            </p>
 
             {/* Bio 
             <div className="mt-6">
