@@ -11,8 +11,8 @@ export default function WhatsAppButton() {
     <div className="fixed bottom-5 right-5 z-50 group">
       
       {/* Tooltip */}
-      <span className="absolute right-14 bottom-3 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black text-white text-sm px-3 py-1 rounded-md whitespace-nowrap shadow-md">
-        Chat with us
+      <span className="absolute right-14 bottom-3 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-[#0A1931] text-white text-xs font-bold px-3 py-2 rounded-md whitespace-nowrap shadow-md">
+        Chat for free consultation
       </span>
 
       {/* Button */}

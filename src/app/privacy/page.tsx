@@ -1,7 +1,7 @@
 export default function PrivacyPolicyPage() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
-      <h1 className="text-4xl font-bold text-orange-600 mb-8">
+      <h1 className="text-4xl font-bold text-[#FF6321] mb-8">
         PICK O PICK – Privacy Policy
       </h1>
 

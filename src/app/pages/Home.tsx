@@ -17,9 +17,13 @@ import { LiveActivity } from "../components/LiveActivity";
 import Products from "./Products";
 import { HeroMobile } from "../components/HeroMobile";
 import { AboutUs } from "../components/AboutUs";
+import { ConsultationModal } from "../components/NRI/ConsultationModal";
+import { HomeConversionActions } from "../components/HomeConversionActions";
+import { WelcomePopup } from "../components/WelcomePopup";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isConsultationOpen, setIsConsultationOpen] = useState(false);
 
   // 🔐 CHECK LOGIN STATE
   useEffect(() => {
@@ -56,6 +60,12 @@ export default function Home() {
     return () => lenis.destroy();
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    const openConsultation = () => setIsConsultationOpen(true);
+    window.addEventListener('pickopick:open-consultation', openConsultation);
+    return () => window.removeEventListener('pickopick:open-consultation', openConsultation);
+  }, []);
+
   // 🎯 CONDITIONAL RENDER
   if (isLoggedIn) {
     return <Products />; // SHOW PRODUCTS AFTER LOGIN
@@ -63,6 +73,7 @@ export default function Home() {
 
   return (
     <main className="bg-white text-slate-900">
+      <WelcomePopup />
       {/* MOBILE HERO */}
       <div className="block sm:hidden">
         <HeroMobile />
@@ -72,6 +83,7 @@ export default function Home() {
       <div className="hidden sm:block ">
         <Hero />
       </div>
+      <HomeConversionActions />
       <ImageSearch />
       <TrackingExperience />
       {/* <TrustMetrics /> */}
@@ -84,6 +96,7 @@ export default function Home() {
       <ShopBanner />
       <CTA />
       <LiveActivity />
+      <ConsultationModal isOpen={isConsultationOpen} onClose={() => setIsConsultationOpen(false)} />
     </main>
   );
 }

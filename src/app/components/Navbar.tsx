@@ -40,6 +40,12 @@ export function Navbar() {
     }
   }, [location]);
 
+  useEffect(() => {
+    const openRegister = () => setIsRegisterOpen(true);
+    window.addEventListener('pickopick:open-register', openRegister);
+    return () => window.removeEventListener('pickopick:open-register', openRegister);
+  }, []);
+
   const handleNavigation = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     event.preventDefault();
     setIsMobileMenuOpen(false);
@@ -62,16 +68,17 @@ export function Navbar() {
     <>
       <header className="fixed inset-x-0 top-0 z-50">
         <nav
-          className="relative w-full border-b border-slate-200 bg-white"
+          className="relative w-full border-b border-[#E85717] bg-[#FF6321]"
           onMouseLeave={() => setActiveMenu(null)}
         >
-          <div className="flex h-[68px] items-center justify-between gap-3 px-4 sm:h-[76px] sm:px-6">
-            <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="flex shrink-0 items-center" aria-label="Pick O Pick home">
-              <img src="/PICKLogo.png" alt="Pick O Pick" className="h-11 w-auto object-contain sm:h-12" />
+          <div className="mx-auto flex h-[68px] max-w-[1600px] items-center justify-between gap-3 px-4 sm:h-[76px] sm:px-6">
+            <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="flex shrink-0 items-center rounded-xl bg-white px-2 py-1" aria-label="Pick O Pick home">
+              <img src="/PICKLogo.png" alt="Pick O Pick" className="h-9 w-auto object-contain sm:h-10" />
             </a>
 
             <div className="hidden h-full items-center gap-1 lg:flex">
-              <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="rounded-lg px-3 py-2 text-sm font-bold text-[#0A1931] transition-colors hover:bg-blue-50 hover:text-[#0B56D9]">Home</a>
+              <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="rounded-lg px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-white/15">Home</a>
+              <a href="#track-shipment" onClick={(event) => handleNavigation(event, '#track-shipment')} className="rounded-lg px-3 py-2 text-sm font-extrabold text-white transition-colors hover:bg-white/15">Tracking</a>
               {navGroups.map((group) => (
                 <button
                   key={group.name}
@@ -79,28 +86,28 @@ export function Navbar() {
                   onMouseEnter={() => setActiveMenu(group.name)}
                   onFocus={() => setActiveMenu(group.name)}
                   onClick={() => setActiveMenu((current) => current === group.name ? null : group.name)}
-                  className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeMenu === group.name ? 'bg-blue-50 text-[#0B56D9]' : 'text-[#0A1931] hover:bg-blue-50 hover:text-[#0B56D9]'}`}
+                  className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeMenu === group.name ? 'bg-white text-[#0B56D9]' : 'text-white hover:bg-white/15'}`}
                   aria-expanded={activeMenu === group.name}
                 >
                   {group.name}<ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === group.name ? 'rotate-180' : ''}`} />
                 </button>
               ))}
-              <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className={`rounded-lg px-3 py-2 text-sm font-bold transition-colors ${location.pathname === '/nri' ? 'bg-[#0B56D9] text-white' : 'text-[#0A1931] hover:bg-blue-50 hover:text-[#0B56D9]'}`}>NRI Services</a>
-              <button type="button" onMouseEnter={() => setActiveMenu('Global Offices')} onFocus={() => setActiveMenu('Global Offices')} onClick={() => setActiveMenu((current) => current === 'Global Offices' ? null : 'Global Offices')} className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeMenu === 'Global Offices' ? 'bg-blue-50 text-[#0B56D9]' : 'text-[#0A1931] hover:bg-blue-50 hover:text-[#0B56D9]'}`} aria-expanded={activeMenu === 'Global Offices'}>
+              <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className={`rounded-lg px-3 py-2 text-sm font-extrabold transition-colors ${location.pathname === '/nri' ? 'bg-white text-[#0B56D9]' : 'bg-[#0B56D9] text-white hover:bg-[#0849B7]'}`}>NRI Services</a>
+              <button type="button" onMouseEnter={() => setActiveMenu('Global Offices')} onFocus={() => setActiveMenu('Global Offices')} onClick={() => setActiveMenu((current) => current === 'Global Offices' ? null : 'Global Offices')} className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeMenu === 'Global Offices' ? 'bg-white text-[#0B56D9]' : 'text-white hover:bg-white/15'}`} aria-expanded={activeMenu === 'Global Offices'}>
                 Global Offices <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === 'Global Offices' ? 'rotate-180' : ''}`} />
               </button>
             </div>
 
             <div className="hidden items-center gap-2 lg:flex">
-              <button onClick={handleEstimate} className="inline-flex items-center gap-1.5 rounded-full border border-[#0B56D9] px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-[#0B56D9] transition-colors hover:bg-blue-50">
+              <button onClick={handleEstimate} className="inline-flex items-center gap-1.5 rounded-full border border-white px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white/15">
                 <Calculator className="h-3.5 w-3.5" /> Get estimate
               </button>
-              <button onClick={() => setIsLoginOpen(true)} className="rounded-full bg-[#0B56D9] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7]">Log in</button>
+              <button onClick={() => setIsRegisterOpen(true)} className="rounded-full bg-white px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-[#0B56D9] transition-colors hover:bg-blue-50">Register</button>
             </div>
 
             <div className="flex items-center gap-2 lg:hidden">
-              <button onClick={handleEstimate} className="rounded-full border border-[#0B56D9] px-3 py-2 text-[10px] font-extrabold uppercase tracking-wide text-[#0B56D9]">Estimate</button>
-              <button type="button" onClick={() => setIsMobileMenuOpen((open) => !open)} className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-[#0A1931]" aria-expanded={isMobileMenuOpen} aria-label={isMobileMenuOpen ? 'Close navigation' : 'Open navigation'}>
+              <button onClick={() => setIsRegisterOpen(true)} className="rounded-full bg-white px-3 py-2 text-[10px] font-extrabold uppercase tracking-wide text-[#0B56D9]">Register</button>
+              <button type="button" onClick={() => setIsMobileMenuOpen((open) => !open)} className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/70 text-white" aria-expanded={isMobileMenuOpen} aria-label={isMobileMenuOpen ? 'Close navigation' : 'Open navigation'}>
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
@@ -147,27 +154,25 @@ export function Navbar() {
 
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden border-t border-slate-200 bg-white lg:hidden">
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden border-t border-white/30 bg-[#FF6321] lg:hidden">
                 <div className="space-y-5 px-4 py-5 sm:px-6">
-                  <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="block text-sm font-extrabold text-[#0A1931]">Home</a>
+                  <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="block text-sm font-extrabold text-white">Home</a>
+                  <a href="#track-shipment" onClick={(event) => handleNavigation(event, '#track-shipment')} className="block text-sm font-extrabold text-white">Tracking</a>
                   {navGroups.map((group) => <div key={group.name}>
-                    <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0B56D9]">{group.name}</p>
+                    <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">{group.name}</p>
                     <div className="grid grid-cols-2 gap-2">
-                      {group.links.map((link) => <a key={link.name} href={link.href} onClick={(event) => handleNavigation(event, link.href)} className="rounded-lg bg-slate-50 px-3 py-2.5 text-xs font-bold text-[#0A1931]">{link.name}</a>)}
+                      {group.links.map((link) => <a key={link.name} href={link.href} onClick={(event) => handleNavigation(event, link.href)} className="rounded-lg bg-white/15 px-3 py-2.5 text-xs font-bold text-white">{link.name}</a>)}
                     </div>
                   </div>)}
-                  <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="block rounded-lg bg-blue-50 px-3 py-3 text-sm font-extrabold text-[#0B56D9]">NRI Services</a>
+                  <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="block rounded-lg bg-white px-3 py-3 text-sm font-extrabold text-[#0B56D9]">NRI Services</a>
                   <div>
-                    <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0B56D9]">Global offices</p>
+                    <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">Global offices</p>
                     <div className="grid grid-cols-3 gap-2">
                       {globalOffices.map((office) => <div key={office.country} className="rounded-lg bg-slate-50 p-2.5"><div className="flex items-center gap-1.5"><img src={office.flag} alt="" className="h-3.5 w-5 rounded-[2px] border border-slate-200 object-cover" /><p className="text-[11px] font-extrabold text-[#0A1931]">{office.country}</p></div><p className="mt-1 text-[10px] leading-snug text-slate-500">{office.location}</p></div>)}
                     </div>
                   </div>
-                  <button onClick={handleEstimate} className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-[#0B56D9] px-3 py-3 text-[10px] font-extrabold uppercase text-[#0B56D9]"><Calculator className="h-3.5 w-3.5" />Get estimate</button>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button onClick={() => { setIsMobileMenuOpen(false); setIsLoginOpen(true); }} className="rounded-full bg-[#0B56D9] px-4 py-3 text-xs font-extrabold text-white">Log in</button>
-                    <button onClick={() => { setIsMobileMenuOpen(false); setIsRegisterOpen(true); }} className="rounded-full bg-[#0B56D9] px-4 py-3 text-xs font-extrabold text-white">Get started</button>
-                  </div>
+                  <button onClick={handleEstimate} className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white px-3 py-3 text-[10px] font-extrabold uppercase text-white"><Calculator className="h-3.5 w-3.5" />Get estimate</button>
+                  <button onClick={() => { setIsMobileMenuOpen(false); setIsRegisterOpen(true); }} className="w-full rounded-full bg-white px-4 py-3 text-xs font-extrabold text-[#0B56D9]">Register</button>
                 </div>
               </motion.div>
             )}
