@@ -191,14 +191,12 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
                         <Home className="size-5" /> Products
                       </Link>
                  
-                 {/* 
                       <Link
                         to="/orders"
                         className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50"
                       >
                         <Package className="size-5" /> Orders
                       </Link>
-                      */}
 
                       <Link
                         to="/addresses"

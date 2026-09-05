@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/src/lib/supabase";
 import { toast } from "sonner";
 
 interface CartItem {
   id: string;
+  productId: string | number | null;
   name: string;
   price: number;
   quantity: number;
@@ -16,6 +17,8 @@ interface CartItem {
 export default function Cart() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [placing, setPlacing] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState<{ code: string } | null>(null);
 
 useEffect(() => {
   fetchCart();
@@ -33,6 +36,7 @@ const fetchCart = async () => {
     setCartItems(
       data.map((item) => ({
         id: item.id,
+        productId: item.product_id ?? null,
         name: item.name,
         price: item.price ?? 0,
         quantity: item.quantity,
@@ -91,10 +95,129 @@ const subtotal = cartItems.reduce(
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
 
-  const handleCheckout = () => {
-    // Create a mock order and navigate to transaction details
-    //navigate("/transaction/ORD-2026-0001");
+  const handleCheckout = async () => {
+    if (placing) return;
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!user?.customerID) {
+      toast.error("Please log in to place an order");
+      return;
+    }
+    if (cartItems.length === 0) return;
+
+    const customerId = String(user.customerID);
+    setPlacing(true);
+
+    try {
+      // Delivery address — prefer the default, else the first one on file.
+      const { data: addresses } = await supabase
+        .from("addressTable")
+        .select("*")
+        .eq("customerID", user.customerID);
+
+      if (!addresses || addresses.length === 0) {
+        toast.error("Add a delivery address before checkout");
+        navigate("/addresses");
+        return;
+      }
+      const address = addresses.find((a) => a.isDefault) || addresses[0];
+
+      const orderCode = `POP-ORD-${Date.now().toString().slice(-8)}-${Math.floor(100 + Math.random() * 900)}`;
+
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          order_code: orderCode,
+          customer_id: customerId,
+          status: "PLACED",
+          payment_status: "PENDING",
+          payment_method: "OFFLINE",
+          subtotal: Number(subtotal.toFixed(2)),
+          shipping: Number(shipping.toFixed(2)),
+          tax: Number(tax.toFixed(2)),
+          total: Number(total.toFixed(2)),
+          customer_name: [user.firstName, user.lastName].filter(Boolean).join(" ") || null,
+          customer_phone: user.phoneNumber || null,
+          customer_email: user.emailID || null,
+          shipping_address: address.addressDetails || null,
+        })
+        .select("id, order_code")
+        .single();
+
+      if (orderError || !order) {
+        console.error(orderError);
+        toast.error("Could not place your order. Please try again.");
+        return;
+      }
+
+      const { error: itemsError } = await supabase.from("order_items").insert(
+        cartItems.map((item) => ({
+          order_id: order.id,
+          product_id: item.productId != null ? String(item.productId) : null,
+          name: item.name,
+          price: Number((item.price || 0).toFixed(2)),
+          quantity: item.quantity,
+          image: item.image || null,
+        }))
+      );
+
+      if (itemsError) {
+        console.error(itemsError);
+        // Roll back the order row so we don't leave an empty order behind.
+        await supabase.from("orders").delete().eq("id", order.id);
+        toast.error("Could not save the order items. Please try again.");
+        return;
+      }
+
+      // Order is stored — empty the cart.
+      await supabase.from("cart").delete().eq("customer_id", user.customerID);
+
+      setCartItems([]);
+      setPlacedOrder({ code: order.order_code });
+      window.dispatchEvent(new Event("cart-updated"));
+      toast.success("Order placed 🎉");
+    } catch (err) {
+      console.error("CHECKOUT ERROR:", err);
+      toast.error("Something went wrong while placing your order");
+    } finally {
+      setPlacing(false);
+    }
   };
+
+  if (placedOrder) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+          <div className="mx-auto mb-5 flex size-14 items-center justify-center rounded-full bg-green-100 text-green-600">
+            <CheckCircle2 className="size-7" />
+          </div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#0A1931]">Order placed</h1>
+          <p className="mt-2 text-slate-500">
+            Your order reference is{" "}
+            <span className="font-bold text-[#0A1931]">{placedOrder.code}</span>.
+          </p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600">
+            Our team will confirm the details and share payment and delivery information with you on WhatsApp.
+          </p>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              to="/orders"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0B56D9] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#0849B7]"
+            >
+              View My Orders
+            </Link>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+            >
+              <ArrowLeft className="size-5" />
+              Continue Shopping
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -241,9 +364,10 @@ const subtotal = cartItems.reduce(
 
             <button
               onClick={handleCheckout}
-              className="w-full bg-[#0B56D9] text-white py-3 rounded-xl font-semibold hover:bg-[#0849B7] transition-colors mb-4"
+              disabled={placing}
+              className="w-full bg-[#0B56D9] text-white py-3 rounded-xl font-semibold hover:bg-[#0849B7] transition-colors mb-4 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Proceed to Checkout
+              {placing ? "Placing order…" : "Place Order"}
             </button>
 
             <div className="space-y-2 text-sm text-slate-600">
@@ -251,7 +375,7 @@ const subtotal = cartItems.reduce(
                 <svg className="size-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Secure checkout
+                Our team confirms every order on WhatsApp
               </div>
               <div className="flex items-center gap-2">
                 <svg className="size-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
