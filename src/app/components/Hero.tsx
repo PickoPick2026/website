@@ -24,7 +24,7 @@ export function Hero() {
       <div className="relative z-10 mx-auto flex min-h-[420px] max-w-6xl flex-col items-center px-5 pt-14 text-center sm:h-full sm:min-h-[90vh] sm:px-8">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#0B56D9]">India to the world</p>
         <h1 className="mt-4 max-w-4xl text-3xl font-bold tracking-tight text-[#073E96] sm:text-5xl sm:whitespace-nowrap lg:text-6xl">To move from your hometown.</h1>
-        <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-slate-600 sm:text-lg">Pick O Pick delivers across India and the world.</p>
+        <p className="mt-4 max-w-2xl text-xl font-semibold leading-relaxed text-[#0B56D9] sm:text-2xl lg:text-3xl">India Has It. We'll Deliver It.</p>
 
         <form onSubmit={handleTrack} className="mt-6 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 sm:flex-row sm:rounded-full">
           <label className="sr-only" htmlFor="hero-cargo-id">Cargo ID</label>
