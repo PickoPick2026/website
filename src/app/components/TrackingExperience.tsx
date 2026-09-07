@@ -27,11 +27,54 @@ export function TrackingExperience() {
   const fetchActivities = async () => {
     try {
       const response = await fetch('/api/shipments');
-      const data = await response.json();
-      setActivities(Array.isArray(data) ? data : []);
+      const text = await response.text();
+      try {
+        const data = JSON.parse(text);
+        setActivities(Array.isArray(data) ? data : []);
+      } catch {
+        setActivities([]);
+      }
     } catch (error) {
       console.error("Error fetching activities:", error);
     }
+  };
+
+  const parseTrackingResponse = (raw: any) => {
+    const info = Array.isArray(raw.docket_info)
+      ? Object.fromEntries(raw.docket_info)
+      : {};
+    return {
+      id: raw.tracking_no,
+      status: info?.["Status"] || "Unknown",
+      from: info?.["Origin"] || "-",
+      to: info?.["Destination"] || "-",
+      arrivalDate: info?.["Delivery Date and Time"] || "Not Delivered",
+      consigneeName: info?.["Consignee Name"] || "",
+      shipperName: info?.["Shipper Name"] || "",
+      shipperCity: info?.["Shipper City"] || "",
+      consigneeCity: info?.["Consignee City"] || "",
+      bookingDate: info?.["Booking Date"] || "",
+      weight: raw.chargeable_weight || "",
+      originHub: info?.["Origin Hub"] || "",
+      progress: raw?.docket_events?.length > 1 ? 70 : 30,
+      events: raw?.docket_events || []
+    };
+  };
+
+  const fetchFromExternalAPI = async (id: string) => {
+    const url = `https://admin.pickopick.com/api/tracking_api/get_tracking_data?api_company_id=20&customer_code=superadmin&tracking_no=${id}`;
+    const response = await fetch(url);
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("External API returned invalid response");
+    }
+    if (!data || !Array.isArray(data) || data.length === 0 || data[0].errors === true) {
+      throw new Error("Shipment not found");
+    }
+    return parseTrackingResponse(data[0]);
   };
 
   const handleTrack = async () => {
@@ -43,7 +86,20 @@ export function TrackingExperience() {
 
     try {
       const response = await fetch(`/api/shipments/${trackingId}`);
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.warn("Local API returned HTML, falling back to external API");
+        data = await fetchFromExternalAPI(trackingId);
+        setSearchResult(data);
+        setShowModal(true);
+        setIsSearching(false);
+        setTrackingId("");
+        return;
+      }
+
       console.log("TRACK RESPONSE:", data);
       if (response.ok) {
         setSearchResult(data);
@@ -350,12 +406,40 @@ export function TrackingExperience() {
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">From</p>
                       <p className="mt-0.5 text-sm font-bold text-[#0A1931]">{searchResult.from}</p>
+                      {searchResult.shipperCity && <p className="mt-0.5 text-[11px] text-slate-500">{searchResult.shipperCity}</p>}
                     </div>
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">To</p>
                       <p className="mt-0.5 text-sm font-bold text-[#0A1931]">{searchResult.to}</p>
+                      {searchResult.consigneeCity && <p className="mt-0.5 text-[11px] text-slate-500">{searchResult.consigneeCity}</p>}
                     </div>
                   </div>
+
+                  {(searchResult.bookingDate || searchResult.weight || searchResult.originHub) && (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Shipment Info</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {searchResult.bookingDate && (
+                          <div>
+                            <p className="text-[10px] text-slate-400">Booked</p>
+                            <p className="text-xs font-semibold text-[#0A1931]">{searchResult.bookingDate}</p>
+                          </div>
+                        )}
+                        {searchResult.weight && (
+                          <div>
+                            <p className="text-[10px] text-slate-400">Weight</p>
+                            <p className="text-xs font-semibold text-[#0A1931]">{searchResult.weight} kg</p>
+                          </div>
+                        )}
+                        {searchResult.originHub && (
+                          <div>
+                            <p className="text-[10px] text-slate-400">Origin Hub</p>
+                            <p className="text-xs font-semibold text-[#0A1931]">{searchResult.originHub}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">Delivery</p>
@@ -369,11 +453,11 @@ export function TrackingExperience() {
                     <div className="max-h-60 space-y-4 overflow-y-auto pr-2">
                       {searchResult.events.map((event: any, index: number) => (
                         <div key={index} className="flex gap-3 items-start">
-                          <div className="mt-2 h-3 w-3 rounded-full bg-[#0B56D9]" />
+                          <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#0B56D9]" />
                           <div>
                             <p className="text-sm font-semibold text-[#0A1931]">{event.event_description}</p>
                             <p className="text-xs text-slate-500">
-                              {event.event_location} • {event.event_at}
+                              {event.event_location} &bull; {event.event_at}
                             </p>
                           </div>
                         </div>

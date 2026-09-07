@@ -45,6 +45,13 @@ export default async function handler(req, res) {
       from: info?.["Origin"] || "-",
       to: info?.["Destination"] || "-",
       arrivalDate: info?.["Delivery Date and Time"] || "Not Delivered",
+      consigneeName: info?.["Consignee Name"] || "",
+      shipperName: info?.["Shipper Name"] || "",
+      shipperCity: info?.["Shipper City"] || "",
+      consigneeCity: info?.["Consignee City"] || "",
+      bookingDate: info?.["Booking Date"] || "",
+      weight: raw.chargeable_weight || "",
+      originHub: info?.["Origin Hub"] || "",
       progress: raw?.docket_events?.length > 1 ? 70 : 30,
       events: raw?.docket_events || []
     };
