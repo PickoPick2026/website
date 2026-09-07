@@ -27,11 +27,6 @@ export function TrackingExperience() {
   const fetchActivities = async () => {
     try {
       const response = await fetch('/api/shipments');
-      const contentType = response.headers.get("content-type") || "";
-      if (!contentType.includes("application/json")) {
-        setActivities([]);
-        return;
-      }
       const data = await response.json();
       setActivities(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -48,14 +43,6 @@ export function TrackingExperience() {
 
     try {
       const response = await fetch(`/api/shipments/${trackingId}`);
-      const contentType = response.headers.get("content-type") || "";
-      if (!contentType.includes("application/json")) {
-        setErrorMsg("Server returned an invalid response. Please try again.");
-        setShowModal(true);
-        setTrackingId("");
-        setIsSearching(false);
-        return;
-      }
       const data = await response.json();
       console.log("TRACK RESPONSE:", data);
       if (response.ok) {

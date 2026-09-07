@@ -126,14 +126,15 @@ async function startServer() {
       `https://admin.pickopick.com/api/tracking_api/get_tracking_data?api_company_id=20&customer_code=superadmin&tracking_no=${trackingNo}`
     );
 
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-      const text = await response.text();
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
       console.error("External API returned non-JSON:", text.slice(0, 200));
       return res.status(502).json({ error: "External API returned invalid response" });
     }
 
-    const data = await response.json();
     console.log("API RESPONSE:", JSON.stringify(data, null, 2));
 
     if (!data || data.length === 0 || data[0].errors === true) {

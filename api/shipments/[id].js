@@ -14,14 +14,14 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "External API failed" });
     }
 
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-      const text = await response.text();
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
       console.error("External API returned non-JSON:", text.slice(0, 200));
       return res.status(502).json({ error: "External API returned invalid response" });
     }
-
-    const data = await response.json();
 
     console.log("API RESPONSE:", JSON.stringify(data));
 
