@@ -365,7 +365,7 @@ export function TrackingExperience() {
       {/* Tracking Result Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-end bg-black/70 sm:items-center sm:justify-center sm:p-4">
-          <div className="w-full max-w-lg overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
+          <div className="w-full max-w-3xl overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
             <div className="flex items-center justify-between border-b border-slate-200 p-5">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-200 text-[#0B56D9]">
@@ -393,8 +393,8 @@ export function TrackingExperience() {
               )}
 
               {searchResult && !isSearching && (
-                <div className="space-y-4 text-slate-700">
-                  <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-5 text-slate-700">
+                  <div className="grid grid-cols-4 gap-3">
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ID</p>
                       <p className="mt-0.5 text-sm font-bold text-[#0A1931]">{searchResult.id}</p>
@@ -415,32 +415,6 @@ export function TrackingExperience() {
                     </div>
                   </div>
 
-                  {(searchResult.bookingDate || searchResult.weight || searchResult.originHub) && (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                      <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Shipment Info</p>
-                      <div className="grid grid-cols-3 gap-2">
-                        {searchResult.bookingDate && (
-                          <div>
-                            <p className="text-[10px] text-slate-400">Booked</p>
-                            <p className="text-xs font-semibold text-[#0A1931]">{searchResult.bookingDate}</p>
-                          </div>
-                        )}
-                        {searchResult.weight && (
-                          <div>
-                            <p className="text-[10px] text-slate-400">Weight</p>
-                            <p className="text-xs font-semibold text-[#0A1931]">{searchResult.weight} kg</p>
-                          </div>
-                        )}
-                        {searchResult.originHub && (
-                          <div>
-                            <p className="text-[10px] text-slate-400">Origin Hub</p>
-                            <p className="text-xs font-semibold text-[#0A1931]">{searchResult.originHub}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
                   <div>
                     <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">Delivery</p>
                     <div className="h-2 rounded-full bg-slate-100">
@@ -450,11 +424,11 @@ export function TrackingExperience() {
 
                   <div>
                     <h3 className="mb-3 text-sm font-extrabold text-[#0A1931]">Tracking Timeline</h3>
-                    <div className="max-h-60 space-y-4 overflow-y-auto pr-2">
+                    <div className="max-h-72 space-y-3 overflow-y-auto pr-2">
                       {searchResult.events.map((event: any, index: number) => (
                         <div key={index} className="flex gap-3 items-start">
-                          <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#0B56D9]" />
-                          <div>
+                          <div className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-[#0B56D9]" />
+                          <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-[#0A1931]">{event.event_description}</p>
                             <p className="text-xs text-slate-500">
                               {event.event_location} &bull; {event.event_at}
