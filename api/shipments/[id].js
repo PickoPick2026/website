@@ -14,6 +14,13 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "External API failed" });
     }
 
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      const text = await response.text();
+      console.error("External API returned non-JSON:", text.slice(0, 200));
+      return res.status(502).json({ error: "External API returned invalid response" });
+    }
+
     const data = await response.json();
 
     console.log("API RESPONSE:", JSON.stringify(data));
@@ -28,7 +35,6 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Shipment not found" });
     }
 
-    // ✅ SAFE parsing
     const info = Array.isArray(raw.docket_info)
       ? Object.fromEntries(raw.docket_info)
       : {};
