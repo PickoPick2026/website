@@ -23,7 +23,7 @@ export function HeroMobile() {
 
       <div className="relative z-10 mx-auto flex min-h-[680px] w-full max-w-md flex-col items-center px-5 pb-6 pt-12 text-center">
         <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#0B56D9]">India to the world</p>
-        <h1 className="mt-3 max-w-sm text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#073E96]">To move from your hometown.</h1>
+        <h1 className="mt-3 max-w-sm text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#073E96]">Home From Your Hometown.</h1>
         <p className="mt-3 max-w-xs text-lg font-semibold leading-relaxed text-[#0B56D9]">India Has It. We'll Deliver It.</p>
 
         <form onSubmit={handleTrack} className="mt-5 flex w-full flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2">

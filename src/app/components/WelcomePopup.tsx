@@ -71,11 +71,12 @@ export function WelcomePopup() {
               <X className="h-5 w-5" />
             </button>
             <div className="grid md:grid-cols-[1.08fr_.92fr]">
-              <div className="flex min-h-[500px] flex-col justify-center p-7 sm:p-10">
+              <div className="order-2 flex min-h-[500px] flex-col justify-center p-7 sm:p-10">
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#0B56D9]">Home From Your Hometown.</p>
                 <img
                   src="/PICKLogo.png"
                   alt="Pick O Pick"
-                  className="h-11 w-fit object-contain"
+                  className="mt-5 h-11 w-fit object-contain"
                 />
                 <p className="mt-8 text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#FF6321]">
                   India to the world
@@ -133,7 +134,7 @@ export function WelcomePopup() {
                   </button>
                 </div>
               </div>
-              <div className="relative flex min-h-[500px] items-center bg-[#F4F8FF] p-5 pt-10 sm:p-7 sm:pt-10">
+              <div className="order-1 relative flex min-h-[500px] items-center bg-[#F4F8FF] p-5 sm:p-7">
                 <div className="group relative h-[58dvh] min-h-[420px] w-full overflow-hidden rounded-2xl border border-blue-100 bg-white md:h-[560px] md:max-h-[72dvh]">
                   <video
                     ref={videoRef}

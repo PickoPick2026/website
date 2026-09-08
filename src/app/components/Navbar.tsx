@@ -13,6 +13,7 @@ const navGroups: NavGroup[] = [
     { name: 'Shop Directory', href: '/shop', description: 'Browse stores and categories from India.', icon: ShoppingBag },
     { name: 'Search Marketplace', href: '/shop#shop-search', description: 'Search products, brands, and categories.', icon: ScanSearch },
     { name: 'Exclusive Finds', href: '/shop#exclusive', description: 'Discover curated Indian products.', icon: PackageCheck },
+    { name: 'Get Shipping Estimate', href: '/shipping-estimate', description: 'Request a verified shipping quote.', icon: Calculator },
   ] },
   { name: 'Company', links: [
     { name: 'About Pick O Pick', href: '#about', description: 'Learn about our India-to-world service.', icon: UserRound },
@@ -56,12 +57,6 @@ export function Navbar() {
     window.history.pushState(null, '', href);
   };
 
-  const handleEstimate = () => {
-    setIsMobileMenuOpen(false);
-    setActiveMenu(null);
-    navigate('/shipping-estimate');
-  };
-
   const activeGroup = navGroups.find((group) => group.name === activeMenu);
 
   return (
@@ -93,15 +88,19 @@ export function Navbar() {
                 </button>
               ))}
               <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className={`rounded-lg px-3 py-2 text-sm font-extrabold transition-colors ${location.pathname === '/nri' ? 'bg-white text-[#0B56D9]' : 'bg-[#0B56D9] text-white hover:bg-[#0849B7]'}`}>NRI Services</a>
+              <button type="button" onClick={() => setIsRegisterOpen(true)} className="relative inline-flex items-center justify-center rounded-full bg-white px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-[#0B56D9] shadow-[0_0_0_4px_rgba(255,255,255,0.16)] transition-transform hover:scale-[1.03]">
+                <span className="absolute inset-0 rounded-full border border-white/70 animate-ping" />
+                <span className="relative">Buy &amp; Ship</span>
+              </button>
+              <button type="button" onClick={() => navigate('/nri#booking-portal')} className="relative inline-flex items-center justify-center rounded-full border border-white/65 bg-white/10 px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white/20">
+                <span>Order &amp; Send</span>
+              </button>
               <button type="button" onMouseEnter={() => setActiveMenu('Global Offices')} onFocus={() => setActiveMenu('Global Offices')} onClick={() => setActiveMenu((current) => current === 'Global Offices' ? null : 'Global Offices')} className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeMenu === 'Global Offices' ? 'bg-white text-[#0B56D9]' : 'text-white hover:bg-white/15'}`} aria-expanded={activeMenu === 'Global Offices'}>
                 Global Offices <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === 'Global Offices' ? 'rotate-180' : ''}`} />
               </button>
             </div>
 
             <div className="hidden items-center gap-2 lg:flex">
-              <button onClick={handleEstimate} className="inline-flex items-center gap-1.5 rounded-full border border-white px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white/15">
-                <Calculator className="h-3.5 w-3.5" /> Get estimate
-              </button>
               <button onClick={() => setIsRegisterOpen(true)} className="rounded-full bg-white px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-[#0B56D9] transition-colors hover:bg-blue-50">Register</button>
             </div>
 
@@ -165,13 +164,16 @@ export function Navbar() {
                     </div>
                   </div>)}
                   <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="block rounded-lg bg-white px-3 py-3 text-sm font-extrabold text-[#0B56D9]">NRI Services</a>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button type="button" onClick={() => { setIsMobileMenuOpen(false); setIsRegisterOpen(true); }} className="rounded-lg bg-white px-3 py-3 text-xs font-extrabold text-[#0B56D9]">Buy &amp; Ship</button>
+                    <button type="button" onClick={() => { setIsMobileMenuOpen(false); navigate('/nri#booking-portal'); }} className="rounded-lg border border-white/60 px-3 py-3 text-xs font-extrabold text-white">Order &amp; Send</button>
+                  </div>
                   <div>
                     <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">Global offices</p>
                     <div className="grid grid-cols-3 gap-2">
                       {globalOffices.map((office) => <div key={office.country} className="rounded-lg bg-slate-50 p-2.5"><div className="flex items-center gap-1.5"><img src={office.flag} alt="" className="h-3.5 w-5 rounded-[2px] border border-slate-200 object-cover" /><p className="text-[11px] font-extrabold text-[#0A1931]">{office.country}</p></div><p className="mt-1 text-[10px] leading-snug text-slate-500">{office.location}</p></div>)}
                     </div>
                   </div>
-                  <button onClick={handleEstimate} className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white px-3 py-3 text-[10px] font-extrabold uppercase text-white"><Calculator className="h-3.5 w-3.5" />Get estimate</button>
                   <button onClick={() => { setIsMobileMenuOpen(false); setIsRegisterOpen(true); }} className="w-full rounded-full bg-white px-4 py-3 text-xs font-extrabold text-[#0B56D9]">Register</button>
                 </div>
               </motion.div>
