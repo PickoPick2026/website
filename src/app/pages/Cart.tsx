@@ -26,11 +26,17 @@ useEffect(() => {
 
 const fetchCart = async () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const customerId = user?.customerID ?? user?.customerId ?? user?.id;
+
+  if (!customerId) {
+    setCartItems([]);
+    return;
+  }
 
   const { data, error } = await supabase
     .from("cart")
     .select("*")
-    .eq("customer_id", user.customerID);
+    .eq("customer_id", customerId);
 
   if (!error && data) {
     setCartItems(
@@ -99,13 +105,14 @@ const subtotal = cartItems.reduce(
     if (placing) return;
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!user?.customerID) {
+    const currentCustomerId = user?.customerID ?? user?.customerId ?? user?.id;
+    if (!currentCustomerId) {
       toast.error("Please log in to place an order");
       return;
     }
     if (cartItems.length === 0) return;
 
-    const customerId = String(user.customerID);
+    const customerId = String(currentCustomerId);
     setPlacing(true);
 
     try {
@@ -113,7 +120,7 @@ const subtotal = cartItems.reduce(
       const { data: addresses } = await supabase
         .from("addressTable")
         .select("*")
-        .eq("customerID", user.customerID);
+        .eq("customerID", customerId);
 
       if (!addresses || addresses.length === 0) {
         toast.error("Add a delivery address before checkout");
@@ -173,7 +180,7 @@ const subtotal = cartItems.reduce(
       }
 
       // Order is stored — empty the cart.
-      await supabase.from("cart").delete().eq("customer_id", user.customerID);
+      await supabase.from("cart").delete().eq("customer_id", customerId);
 
       setCartItems([]);
       setPlacedOrder({ code: order.order_code });

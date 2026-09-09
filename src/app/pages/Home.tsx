@@ -14,7 +14,6 @@ import { Testimonials } from "../components/Testimonials";
 import { ShopBanner } from "../components/ShopBanner";
 import { CTA } from "../components/CTA";
 import { LiveActivity } from "../components/LiveActivity";
-import Products from "./Products";
 import { HeroMobile } from "../components/HeroMobile";
 import { AboutUs } from "../components/AboutUs";
 import { ConsultationModal } from "../components/NRI/ConsultationModal";
@@ -66,10 +65,6 @@ export default function Home() {
   }, []);
 
   // 🎯 CONDITIONAL RENDER
-  if (isLoggedIn) {
-    return <Products />; // SHOW PRODUCTS AFTER LOGIN
-  }
-
   return (
     <main className="bg-white text-slate-900">
       <WelcomePopup />

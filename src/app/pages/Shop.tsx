@@ -1,22 +1,33 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { ArrowRight, Search, Sparkles } from 'lucide-react';
 import { ShoppingDirectory } from '../components/ShoppingDirectory';
-
-const quickCategories = ['Fashion', 'Groceries', 'Home & Living', 'Gifts', 'Beauty', 'Electronics'];
+import { supabase } from '@/src/lib/supabase';
 
 export default function ShopPage() {
   const [query, setQuery] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const { data } = await supabase.from('category').select('categoryID, categoryName');
+      setCategories((data || []).filter((category) => category.categoryName !== 'Exclusive'));
+    };
+    void loadCategories();
+  }, []);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setQuery(searchInput.trim());
+    setSelectedCategoryId('');
     document.querySelector('#shop-directory')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleQuickCategory = (category: string) => {
-    setSearchInput(category);
-    setQuery(category);
+  const handleQuickCategory = (categoryId: string) => {
+    setSearchInput('');
+    setQuery('');
+    setSelectedCategoryId(categoryId);
     document.querySelector('#shop-directory')?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -41,14 +52,14 @@ export default function ShopPage() {
             </button>
           </form>
           <div className="mt-4 flex max-w-3xl flex-wrap justify-center gap-2">
-            {quickCategories.map((category) => (
-              <button key={category} onClick={() => handleQuickCategory(category)} className="rounded-full border border-blue-100 bg-white px-3 py-1.5 text-[11px] font-bold text-[#0B56D9] transition-colors hover:bg-blue-50">{category}</button>
+            {categories.map((category) => (
+              <button key={category.categoryID} onClick={() => handleQuickCategory(String(category.categoryID))} className="rounded-full border border-blue-100 bg-white px-3 py-1.5 text-[11px] font-bold text-[#0B56D9] transition-colors hover:bg-blue-50">{category.categoryName}</button>
             ))}
           </div>
         </div>
       </section>
 
-      <ShoppingDirectory searchQuery={query} />
+      <ShoppingDirectory searchQuery={query} categoryFilter={selectedCategoryId} />
     </main>
   );
 }
