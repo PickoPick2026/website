@@ -1,6 +1,6 @@
 {
   "routes": [
-    { "src": "/api/shipments/([^/]+)", "dest": "/api/shipments/[id].js" },
+    { "src": "/api/shipments/(?<id>[^/]+)", "dest": "/api/shipments/[id].js?id=$id" },
     { "src": "/api/shipments", "dest": "/api/shipments/index.js" },
     { "src": "/api/auth/register", "dest": "/api/auth/register.js" },
     { "src": "/api/analyze-image", "dest": "/api/analyze-image.js" },
