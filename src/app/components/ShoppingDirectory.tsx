@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 interface ShoppingDirectoryProps {
   searchQuery?: string;
   categoryFilter?: string;
+  onClearFilters?: () => void;
 }
 
 const getImageUrl = (imageField: unknown) => {
@@ -23,7 +24,7 @@ const getImageUrl = (imageField: unknown) => {
   }
 };
 
-export function ShoppingDirectory({ searchQuery = '', categoryFilter = '' }: ShoppingDirectoryProps) {
+export function ShoppingDirectory({ searchQuery = '', categoryFilter = '', onClearFilters }: ShoppingDirectoryProps) {
   const [activeTab, setActiveTab] = useState<'directory' | 'exclusive'>('directory');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState<any[]>([]);
@@ -75,14 +76,10 @@ export function ShoppingDirectory({ searchQuery = '', categoryFilter = '' }: Sho
     }
 
     setIsAdding(String(product.productID));
-    const { error } = await supabase.from('cart').insert([{
-      customer_id: customerId,
-      product_id: product.productID,
-      name: product.productName,
-      price: Number(product.price ?? product.price_value ?? 0) || 0,
-      image: getImageUrl(product.imageURL),
-      quantity: 1,
-    }]);
+    const { data: existingItem, error: lookupError } = await supabase.from('cart').select('id, quantity').eq('customer_id', customerId).eq('product_id', product.productID).maybeSingle();
+    const { error } = lookupError ? { error: lookupError } : existingItem
+      ? await supabase.from('cart').update({ quantity: (Number(existingItem.quantity) || 0) + 1 }).eq('id', existingItem.id)
+      : await supabase.from('cart').insert([{ customer_id: customerId, product_id: product.productID, name: product.productName, price: 0, image: getImageUrl(product.imageURL), quantity: 1 }]);
     setIsAdding(null);
     if (error) {
       console.error('Unable to add directory item to cart:', error);
@@ -90,7 +87,7 @@ export function ShoppingDirectory({ searchQuery = '', categoryFilter = '' }: Sho
       return;
     }
     window.dispatchEvent(new Event('cart-updated'));
-    toast.success(`${product.productName} added to your cart.`);
+    toast.success(existingItem ? `${product.productName} quantity increased.` : `${product.productName} added to your cart.`);
   };
 
   const submitExclusiveRequest = (event: FormEvent<HTMLFormElement>) => {
@@ -103,6 +100,11 @@ export function ShoppingDirectory({ searchQuery = '', categoryFilter = '' }: Sho
     setExclusiveList('');
     setExclusiveQuantity('1');
     setIsThankYouOpen(true);
+  };
+
+  const clearDirectoryFilters = () => {
+    setSelectedCategory('');
+    onClearFilters?.();
   };
 
   return (
@@ -125,7 +127,7 @@ export function ShoppingDirectory({ searchQuery = '', categoryFilter = '' }: Sho
               <div className="p-3.5 sm:p-4"><p className="min-h-[2.5rem] text-sm font-bold leading-snug text-[#0A1931] line-clamp-2">{product.productName}</p><button type="button" disabled={isAdding === String(product.productID)} onClick={() => void addToCart(product)} className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#0B56D9] to-[#2877ED] px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-colors hover:from-[#0849B7] hover:to-[#0B56D9] disabled:opacity-60"><PackagePlus className="h-3.5 w-3.5" /> {isAdding === String(product.productID) ? 'Adding…' : 'Add to cart'}</button></div>
             </motion.article>)}
           </div>
-          {directoryProducts.length === 0 && <div className="py-16 text-center"><p className="text-sm font-bold text-[#0A1931]">No products found</p><p className="mt-1 text-xs text-slate-500">Try selecting a different category or search term.</p></div>}
+          {directoryProducts.length === 0 && <div className="py-16 text-center"><p className="text-sm font-bold text-[#0A1931]">No products found</p><p className="mt-1 text-xs text-slate-500">Try selecting a different category or search term.</p><button type="button" onClick={clearDirectoryFilters} className="mt-4 cursor-pointer rounded-full border border-[#0B56D9] px-4 py-2 text-xs font-extrabold text-[#0B56D9] transition-colors hover:bg-blue-50">Clear filters</button></div>}
         </> : <div className="mx-auto max-w-3xl rounded-3xl border border-blue-100 bg-white p-6 sm:p-9"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0B56D9]"><Sparkles className="h-5 w-5" /></div><h2 className="mt-4 text-2xl font-extrabold tracking-tight text-[#0A1931]">Exclusive Picks</h2><p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">Can’t find what you need? Tell us what you are looking for and our team will source it from India for you.</p><form onSubmit={submitExclusiveRequest} className="mt-7 space-y-5"><label className="block text-sm font-extrabold text-[#0A1931]">Share your list below :<textarea required value={exclusiveList} onChange={(event) => setExclusiveList(event.target.value)} rows={5} placeholder="Example: 2 silk sarees, brass pooja lamps, regional snacks…" className="mt-2 block w-full resize-none rounded-2xl border border-slate-300 p-4 text-sm font-medium outline-none transition-colors placeholder:text-slate-400 focus:border-[#0B56D9] focus:ring-4 focus:ring-blue-50" /></label><label className="block max-w-xs text-sm font-extrabold text-[#0A1931]">Quantity<input required min="1" type="number" value={exclusiveQuantity} onChange={(event) => setExclusiveQuantity(event.target.value)} className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9] focus:ring-4 focus:ring-blue-50" /></label>{exclusiveError && <p className="rounded-xl bg-red-50 p-3 text-xs font-bold text-red-700">{exclusiveError}</p>}<button type="submit" className="rounded-full bg-[#0B56D9] px-6 py-3 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7]">Submit your list</button></form></div>}
       </div>
 

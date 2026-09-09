@@ -31,6 +31,18 @@ export default function ShopPage() {
     document.querySelector('#shop-directory')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleSearchInputChange = (value: string) => {
+    setSearchInput(value);
+    setQuery(value.trim());
+    setSelectedCategoryId('');
+  };
+
+  const clearFilters = () => {
+    setSearchInput('');
+    setQuery('');
+    setSelectedCategoryId('');
+  };
+
   return (
     <main className="bg-white pt-[68px] sm:pt-[76px]">
       <section className="relative overflow-hidden bg-white">
@@ -45,7 +57,7 @@ export default function ShopPage() {
             <label htmlFor="shop-search-input" className="sr-only">Search the marketplace</label>
             <div className="flex flex-1 items-center gap-2 px-3">
               <Search className="h-4 w-4 text-[#0B56D9]" />
-              <input id="shop-search-input" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="Search products, brands, or categories" className="h-10 min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-slate-400" />
+              <input id="shop-search-input" value={searchInput} onChange={(event) => handleSearchInputChange(event.target.value)} placeholder="Search products, brands, or categories" className="h-10 min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-slate-400" />
             </div>
             <button type="submit" className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0B56D9] px-6 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] sm:rounded-full">
               Search <ArrowRight className="h-4 w-4" />
@@ -59,7 +71,7 @@ export default function ShopPage() {
         </div>
       </section>
 
-      <ShoppingDirectory searchQuery={query} categoryFilter={selectedCategoryId} />
+      <ShoppingDirectory searchQuery={query} categoryFilter={selectedCategoryId} onClearFilters={clearFilters} />
     </main>
   );
 }

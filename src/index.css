@@ -194,6 +194,13 @@ html.lenis, html.lenis body {
   html {
     @apply font-sans;
   }
+  button:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 /* intl-tel-input fix */

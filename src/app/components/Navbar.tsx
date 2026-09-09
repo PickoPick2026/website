@@ -71,8 +71,8 @@ export function Navbar() {
         setCartCount(0);
         return;
       }
-      const { count } = await supabase.from('cart').select('*', { count: 'exact', head: true }).eq('customer_id', customerId);
-      setCartCount(count || 0);
+      const { data } = await supabase.from('cart').select('quantity').eq('customer_id', customerId);
+      setCartCount((data || []).reduce((total, item) => total + (Number(item.quantity) || 1), 0));
     };
     void refreshCartCount();
     window.addEventListener('cart-updated', refreshCartCount);
