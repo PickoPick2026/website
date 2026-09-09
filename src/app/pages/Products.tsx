@@ -86,7 +86,7 @@ if (imageUrl.startsWith("blob:")) {
     price: Number(item.price),
     image: imageUrl, 
     category: item.category?.categoryName || "Other",
-    inStock: Number(item.stock) > 0,
+    inStock: item.stock === null || item.stock === undefined || Number(item.stock) > 0,
     rating: 4.5,
     reviews: 100,
   };
@@ -115,7 +115,7 @@ if (imageUrl.startsWith("blob:")) {
 }, []);
   
 const handleAddToCart = async (product: any) => {
-  const price = Number(product.price ?? product.price_value ?? 0);
+  const price = Number(product.price ?? product.price_value ?? 0) || 0;
 
   // ❌ Never allow zero / invalid priced products into the cart
   if (!Number.isFinite(price) || price < 1) {
@@ -424,7 +424,7 @@ const handleAddToCart = async (product: any) => {
 
                     <div className="mb-4 flex items-baseline gap-2">
                       <span className="text-xl font-extrabold text-[#0B56D9]">
-                        Rs{product.price}
+                        Quote on request
                       </span>
                       {product.originalPrice && (
                         <span className="text-sm text-gray-500 line-through">
@@ -435,11 +435,11 @@ const handleAddToCart = async (product: any) => {
 
                     <button
                       onClick={() => handleAddToCart(product)}
-                      disabled={!product.inStock || Number(product.price) < 1}
+                      disabled={!product.inStock}
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B56D9] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0849B7] disabled:cursor-not-allowed disabled:bg-slate-300"
                     >
                       <ShoppingCart className="size-5" />
-                      {Number(product.price) < 1 ? "Unavailable" : "Add to Cart"}
+                      {product.inStock ? "Add to Cart" : "Unavailable"}
                     </button>
                     
                   </div>

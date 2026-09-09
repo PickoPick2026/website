@@ -1,9 +1,11 @@
 import { FormEvent, useRef, useState } from 'react';
 import { ArrowRight, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function Hero() {
   const [cargoId, setCargoId] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const handleTrack = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -13,8 +15,7 @@ export function Hero() {
       return;
     }
 
-    window.dispatchEvent(new CustomEvent('pickopick:prefill-tracking', { detail: trackingId }));
-    document.querySelector('#track-shipment')?.scrollIntoView({ behavior: 'smooth' });
+    navigate(`/track-shipment?cargoId=${encodeURIComponent(trackingId)}`);
   };
 
   return (

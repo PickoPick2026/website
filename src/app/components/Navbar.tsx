@@ -66,22 +66,15 @@ export function Navbar() {
           className="relative w-full border-b border-[#DE4D17] bg-[#FF6321]"
           onMouseLeave={() => setActiveMenu(null)}
         >
-          <div className="mx-auto flex h-[68px] max-w-[1600px] items-center justify-between gap-3 px-4 sm:h-[76px] sm:px-6">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-5 sm:h-[68px] sm:px-6 lg:px-8">
             <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="flex shrink-0 items-center rounded-xl bg-white px-2 py-1" aria-label="Pick O Pick home">
               <img src="/PICKLogo.png" alt="Pick O Pick" className="h-9 w-auto object-contain sm:h-10" />
             </a>
 
             <div className="hidden h-full items-center gap-1 lg:flex">
               <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="rounded-lg px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-white/15">Home</a>
-              <a href="#track-shipment" onClick={(event) => handleNavigation(event, '#track-shipment')} className="rounded-lg px-3 py-2 text-sm font-extrabold text-white transition-colors hover:bg-white/15">Tracking</a>
+              <a href="/track-shipment" onClick={(event) => handleNavigation(event, '/track-shipment')} className="rounded-lg px-3 py-2 text-sm font-extrabold text-white transition-colors hover:bg-white/15">Tracking</a>
               <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="rounded-full bg-[#0B56D9] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-transform hover:-translate-y-0.5 hover:bg-[#0B56D9]/90">NRI Services</a>
-              <button type="button" onClick={() => setIsRegisterOpen(true)} className="group relative isolate inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-[#FF9F1C] via-[#FFD15A] to-[#FF9F1C] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-[#083B91] shadow-[0_4px_16px_rgba(255,193,61,0.35)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_7px_20px_rgba(255,193,61,0.5)]">
-                <span className="buy-ship-shine pointer-events-none absolute inset-y-0 -left-12 w-8 -skew-x-12 bg-white/65 blur-sm group-hover:bg-white/85" />
-                <span className="relative">Buy &amp; Ship</span>
-              </button>
-              <button type="button" onClick={() => navigate('/nri#booking-portal')} className="inline-flex items-center justify-center rounded-full  border-white/65 bg-white/10 px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-[#0B56D9]">
-                Order &amp; Send
-              </button>
               {navGroups.map((group) => (
                 <button
                   key={group.name}
@@ -156,7 +149,7 @@ export function Navbar() {
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden border-t border-white/30 bg-[#FF6321] lg:hidden">
                 <div className="space-y-5 px-4 py-5 sm:px-6">
                   <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="block text-sm font-extrabold text-white">Home</a>
-                  <a href="#track-shipment" onClick={(event) => handleNavigation(event, '#track-shipment')} className="block text-sm font-extrabold text-white">Tracking</a>
+                  <a href="/track-shipment" onClick={(event) => handleNavigation(event, '/track-shipment')} className="block text-sm font-extrabold text-white">Tracking</a>
                   {navGroups.map((group) => <div key={group.name}>
                     <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">{group.name}</p>
                     <div className="grid grid-cols-2 gap-2">
@@ -164,10 +157,6 @@ export function Navbar() {
                     </div>
                   </div>)}
                   <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="block rounded-lg bg-white px-3 py-3 text-sm font-extrabold text-[#0B56D9]">NRI Services</a>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button type="button" onClick={() => { setIsMobileMenuOpen(false); setIsRegisterOpen(true); }} className="rounded-lg bg-white px-3 py-3 text-xs font-extrabold text-[#0B56D9]">Buy &amp; Ship</button>
-                    <button type="button" onClick={() => { setIsMobileMenuOpen(false); navigate('/nri#booking-portal'); }} className="rounded-lg border border-white/60 px-3 py-3 text-xs font-extrabold text-white">Order &amp; Send</button>
-                  </div>
                   <div>
                     <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">Global offices</p>
                     <div className="grid grid-cols-3 gap-2">

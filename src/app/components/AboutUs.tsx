@@ -269,10 +269,10 @@ export function AboutUs() {
             help you source, pack, and ship with confidence.
           </p>
 
-          <button className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-[#0849B7]">
+          <a href="/shop" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-[#0849B7]">
             Start Shopping Today
             <ArrowRight className="h-4 w-4" />
-          </button>
+          </a>
         </div>
 
       </div>

@@ -18,7 +18,6 @@ import Products from "./Products";
 import { HeroMobile } from "../components/HeroMobile";
 import { AboutUs } from "../components/AboutUs";
 import { ConsultationModal } from "../components/NRI/ConsultationModal";
-import { HomeConversionActions } from "../components/HomeConversionActions";
 import { WelcomePopup } from "../components/WelcomePopup";
 
 export default function Home() {
@@ -83,7 +82,6 @@ export default function Home() {
       <div className="hidden sm:block ">
         <Hero />
       </div>
-      <HomeConversionActions />
       <ImageSearch />
       <TrackingExperience />
       {/* <TrustMetrics /> */}

@@ -19,9 +19,9 @@ export function Footer() {
               Your premium global logistics partner. Buy from any Indian store and we'll ship it to your doorstep anywhere in the world.
             </p>
             <div className="flex gap-3">
-              <a href="#" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-gradient-to-br hover:from-blue-600 hover:to-indigo-800 hover:text-white transition-colors" aria-label="Twitter">X</a>
-              <a href="#" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-gradient-to-br hover:from-blue-600 hover:to-indigo-800 hover:text-white transition-colors" aria-label="LinkedIn">in</a>
-              <a href="#" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-gradient-to-br hover:from-blue-600 hover:to-indigo-800 hover:text-white transition-colors" aria-label="Instagram">ig</a>
+              <a href="https://x.com/Pickopicko61028" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors" aria-label="X">X</a>
+              <a href="https://www.facebook.com/profile.php?id=61578667226102" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors" aria-label="Facebook">f</a>
+              <a href="https://www.instagram.com/pickopickofficial/" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors" aria-label="Instagram">ig</a>
             </div>
           </div>
 

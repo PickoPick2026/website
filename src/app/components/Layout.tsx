@@ -166,7 +166,7 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
                   </button>
                   {servicesMenuOpen && (
                     <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2">
-                      <Link to="/#track-shipment" onClick={() => setServicesMenuOpen(false)} className="block rounded-xl px-3 py-3 transition-colors hover:bg-blue-50">
+                      <Link to="/track-shipment" onClick={() => setServicesMenuOpen(false)} className="block rounded-xl px-3 py-3 transition-colors hover:bg-blue-50">
                         <span className="block text-sm font-extrabold text-[#0A1931]">Track a shipment</span>
                         <span className="mt-0.5 block text-xs text-slate-500">Check your cargo status in real time.</span>
                       </Link>
@@ -272,7 +272,7 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
               <div className="mx-auto flex max-w-7xl flex-col gap-1">
                 <Link to="/" onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-2.5 text-sm font-bold ${location.pathname === "/" ? "bg-blue-50 text-[#0B56D9]" : "text-slate-700 hover:bg-slate-50"}`}>Shop</Link>
                 <p className="px-3 pt-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">Services</p>
-                <Link to="/#track-shipment" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Track a shipment</Link>
+                <Link to="/track-shipment" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Track a shipment</Link>
                 <Link to="/shipping-estimate" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Get shipping estimate</Link>
                 <Link to="/nri" onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-2.5 text-sm font-bold ${location.pathname === "/nri" ? "bg-blue-50 text-[#0B56D9]" : "text-slate-700 hover:bg-slate-50"}`}>NRI Services</Link>
                 <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className={`rounded-lg px-3 py-2.5 text-sm font-bold ${location.pathname === "/contact" ? "bg-blue-50 text-[#0B56D9]" : "text-slate-700 hover:bg-slate-50"}`}>Contact Us</Link>

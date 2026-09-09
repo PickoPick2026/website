@@ -20,6 +20,7 @@ const NriPage = lazy(() => import("./app/pages/Nri"));
 const ShippingEstimatePage = lazy(() => import("./app/pages/ShippingEstimate"));
 const ContactPage = lazy(() => import("./app/pages/Contact"));
 const ShopPage = lazy(() => import("./app/pages/Shop"));
+const TrackShipmentPage = lazy(() => import("./app/pages/TrackShipment"));
 
 
 export default function App() {
@@ -45,6 +46,7 @@ export default function App() {
            <Route path="shipping-estimate" element={<ShippingEstimatePage />} />
            <Route path="contact" element={<ContactPage />} />
            <Route path="shop" element={<ShopPage />} />
+           <Route path="track-shipment" element={<TrackShipmentPage />} />
 
           {/* After login pages */}
           <Route path="cart" element={<Cart />} />
