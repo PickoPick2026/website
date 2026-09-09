@@ -1,5 +1,6 @@
 {
   "routes": [
+    { "src": "/api/nri-requests", "dest": "/api/send-email" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
