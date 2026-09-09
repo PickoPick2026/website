@@ -63,7 +63,7 @@ export function Navbar() {
     <>
       <header className="fixed inset-x-0 top-0 z-50">
         <nav
-          className="relative w-full border-b border-[#E85717] bg-[#FF6321]"
+          className="relative w-full border-b border-[#DE4D17] bg-[#FF6321]"
           onMouseLeave={() => setActiveMenu(null)}
         >
           <div className="mx-auto flex h-[68px] max-w-[1600px] items-center justify-between gap-3 px-4 sm:h-[76px] sm:px-6">
@@ -74,6 +74,14 @@ export function Navbar() {
             <div className="hidden h-full items-center gap-1 lg:flex">
               <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="rounded-lg px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-white/15">Home</a>
               <a href="#track-shipment" onClick={(event) => handleNavigation(event, '#track-shipment')} className="rounded-lg px-3 py-2 text-sm font-extrabold text-white transition-colors hover:bg-white/15">Tracking</a>
+              <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="rounded-full bg-[#0B56D9] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-transform hover:-translate-y-0.5 hover:bg-[#0B56D9]/90">NRI Services</a>
+              <button type="button" onClick={() => setIsRegisterOpen(true)} className="group relative isolate inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-[#FF9F1C] via-[#FFD15A] to-[#FF9F1C] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-[#083B91] shadow-[0_4px_16px_rgba(255,193,61,0.35)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_7px_20px_rgba(255,193,61,0.5)]">
+                <span className="buy-ship-shine pointer-events-none absolute inset-y-0 -left-12 w-8 -skew-x-12 bg-white/65 blur-sm group-hover:bg-white/85" />
+                <span className="relative">Buy &amp; Ship</span>
+              </button>
+              <button type="button" onClick={() => navigate('/nri#booking-portal')} className="inline-flex items-center justify-center rounded-full  border-white/65 bg-white/10 px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-[#0B56D9]">
+                Order &amp; Send
+              </button>
               {navGroups.map((group) => (
                 <button
                   key={group.name}
@@ -87,14 +95,6 @@ export function Navbar() {
                   {group.name}<ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === group.name ? 'rotate-180' : ''}`} />
                 </button>
               ))}
-              <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className={`rounded-lg px-3 py-2 text-sm font-extrabold transition-colors ${location.pathname === '/nri' ? 'bg-white text-[#0B56D9]' : 'bg-[#0B56D9] text-white hover:bg-[#0849B7]'}`}>NRI Services</a>
-              <button type="button" onClick={() => setIsRegisterOpen(true)} className="relative inline-flex items-center justify-center rounded-full bg-white px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-[#0B56D9] shadow-[0_0_0_4px_rgba(255,255,255,0.16)] transition-transform hover:scale-[1.03]">
-                <span className="absolute inset-0 rounded-full border border-white/70 animate-ping" />
-                <span className="relative">Buy &amp; Ship</span>
-              </button>
-              <button type="button" onClick={() => navigate('/nri#booking-portal')} className="relative inline-flex items-center justify-center rounded-full border border-white/65 bg-white/10 px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white/20">
-                <span>Order &amp; Send</span>
-              </button>
               <button type="button" onMouseEnter={() => setActiveMenu('Global Offices')} onFocus={() => setActiveMenu('Global Offices')} onClick={() => setActiveMenu((current) => current === 'Global Offices' ? null : 'Global Offices')} className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${activeMenu === 'Global Offices' ? 'bg-white text-[#0B56D9]' : 'text-white hover:bg-white/15'}`} aria-expanded={activeMenu === 'Global Offices'}>
                 Global Offices <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === 'Global Offices' ? 'rotate-180' : ''}`} />
               </button>

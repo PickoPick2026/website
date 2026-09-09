@@ -52,6 +52,17 @@ html.lenis, html.lenis body {
 }
 
 @layer utilities {
+  @keyframes buy-ship-shine {
+    0%, 18% { transform: translateX(0) skewX(-12deg); opacity: 0; }
+    28% { opacity: 0.9; }
+    48% { transform: translateX(9rem) skewX(-12deg); opacity: 0; }
+    100% { transform: translateX(9rem) skewX(-12deg); opacity: 0; }
+  }
+
+  .buy-ship-shine {
+    animation: buy-ship-shine 2.8s ease-in-out infinite;
+  }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
