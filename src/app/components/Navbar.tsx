@@ -109,6 +109,14 @@ export function Navbar() {
     window.dispatchEvent(new Event('auth-change'));
     navigate('/');
   };
+  const openBuyAndShip = () => {
+    closeMenus();
+    setIsRegisterOpen(true);
+  };
+  const openOrderAndSend = () => {
+    closeMenus();
+    navigate('/nri#booking-portal');
+  };
 
   return (
     <>
@@ -126,6 +134,8 @@ export function Navbar() {
               <a href="#home" onClick={(event) => handleNavigation(event, '#home')} className="rounded-lg px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-white/15">Home</a>
               <a href="/track-shipment" onClick={(event) => handleNavigation(event, '/track-shipment')} className="rounded-lg px-3 py-2 text-sm font-extrabold text-white transition-colors hover:bg-white/15">Tracking</a>
               <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="rounded-full bg-[#0B56D9] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-transform hover:-translate-y-0.5 hover:bg-[#0B56D9]/90">NRI Services</a>
+              <button type="button" onClick={openBuyAndShip} className="relative isolate overflow-hidden rounded-full bg-white px-3.5 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-[#0B56D9] transition-transform hover:-translate-y-0.5" aria-label="Start Buy and Ship"><span aria-hidden="true" className="buy-ship-shine pointer-events-none absolute inset-y-0 -left-10 w-7 bg-gradient-to-r from-transparent via-white/90 to-transparent" /><span className="relative">Buy &amp; Ship</span></button>
+              <button type="button" onClick={openOrderAndSend} className="rounded-lg px-2.5 py-2 text-xs font-extrabold text-white transition-colors hover:bg-white/15">Order &amp; Send</button>
               {navGroups.map((group) => (
                 <button
                   key={group.name}
@@ -212,6 +222,10 @@ export function Navbar() {
                     </div>
                   </div>)}
                   <a href="/nri" onClick={(event) => handleNavigation(event, '/nri')} className="block rounded-lg bg-white px-3 py-3 text-sm font-extrabold text-[#0B56D9]">NRI Services</a>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button type="button" onClick={openBuyAndShip} className="relative isolate overflow-hidden rounded-lg bg-white px-3 py-3 text-xs font-extrabold text-[#0B56D9]"><span aria-hidden="true" className="buy-ship-shine pointer-events-none absolute inset-y-0 -left-10 w-7 bg-gradient-to-r from-transparent via-blue-100 to-transparent" /><span className="relative">Buy &amp; Ship</span></button>
+                    <button type="button" onClick={openOrderAndSend} className="rounded-lg border border-white/40 bg-white/10 px-3 py-3 text-xs font-extrabold text-white">Order &amp; Send</button>
+                  </div>
                   <div>
                     <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">Global offices</p>
                     <div className="grid grid-cols-3 gap-2">

@@ -1,27 +1,327 @@
-import { FormEvent, useState } from 'react';
-import { CheckCircle2, MessageCircle, PhoneCall, ShieldCheck } from 'lucide-react';
+import { FormEvent, useState } from "react";
+import {
+  CheckCircle2,
+  MessageCircle,
+  PhoneCall,
+  ShieldCheck,
+} from "lucide-react";
+
+type FormState = {
+  customerName: string;
+  whatsappNumber: string;
+  customerEmail: string;
+  destinationCountry: string;
+  packageType: string;
+  approxWeightKg: string;
+  dimensions: string;
+  requirementDescription: string;
+};
+type Dimensions = { length: string; width: string; height: string };
 
 export default function ShippingEstimatePage() {
-  const [form, setForm] = useState({ customerName: '', whatsappNumber: '', customerEmail: '', destinationCountry: '', packageType: 'Parcel', approxWeightKg: '', dimensions: '', requirementDescription: '' });
+  const [form, setForm] = useState<FormState>({
+    customerName: "",
+    whatsappNumber: "",
+    customerEmail: "",
+    destinationCountry: "",
+    packageType: "Parcel",
+    approxWeightKg: "",
+    dimensions: "",
+    requirementDescription: "",
+  });
+  const [dimensions, setDimensions] = useState<Dimensions>({
+    length: "",
+    width: "",
+    height: "",
+  });
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<{ requestId: string; whatsappUrl: string } | null>(null);
-  const [error, setError] = useState('');
-  const update = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const [result, setResult] = useState<{
+    requestId: string;
+    whatsappUrl: string;
+  } | null>(null);
+  const [error, setError] = useState("");
+  const update = (key: keyof FormState, value: string) =>
+    setForm((current) => ({ ...current, [key]: value }));
 
   const submit = async (event: FormEvent) => {
-    event.preventDefault(); setError(''); setSubmitting(true);
+    event.preventDefault();
+    setError("");
+    setSubmitting(true);
     try {
-      const response = await fetch('/api/nri-requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requestType: 'estimate_request', payload: form }) });
+      const dimensionText = [
+        dimensions.length,
+        dimensions.width,
+        dimensions.height,
+      ].some(Boolean)
+        ? `${dimensions.length || 0} × ${dimensions.width || 0} × ${dimensions.height || 0} cm`
+        : "";
+      const response = await fetch("/api/nri-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestType: "estimate_request",
+          payload: { ...form, dimensions: dimensionText },
+        }),
+      });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Unable to request an estimate.');
+      if (!response.ok)
+        throw new Error(data.error || "Unable to request an estimate.");
       setResult({ requestId: data.requestId, whatsappUrl: data.whatsappUrl });
-      window.open(data.whatsappUrl, '_blank', 'noopener,noreferrer');
-    } catch (requestError: any) { setError(requestError.message || 'Please try again shortly.'); } finally { setSubmitting(false); }
+      window.open(data.whatsappUrl, "_blank", "noopener,noreferrer");
+    } catch (requestError: any) {
+      setError(requestError.message || "Please try again shortly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  return <main className="min-h-screen bg-[#F7F9FF] px-4 pb-16 pt-28 sm:px-8"><div className="mx-auto max-w-5xl"><div className="mx-auto max-w-2xl text-center"><span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[#0B56D9]"><ShieldCheck className="h-4 w-4" /> Verified quote request</span><h1 className="mt-5 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-5xl">Get your shipping estimate</h1><p className="mt-4 text-sm leading-relaxed text-slate-600">Tell us about your shipment. Our contact centre verifies each request first, then shares the right quotation on WhatsApp or email—never public pricing.</p></div>
-    <div className="mt-10 grid overflow-hidden rounded-3xl border border-slate-200 bg-white lg:grid-cols-[0.8fr_1.2fr]"><aside className="bg-[#0B56D9] p-7 text-white sm:p-9"><h2 className="text-xl font-extrabold">A real quote, not a public calculator.</h2><ol className="mt-7 space-y-6 text-sm text-blue-50"><li><span className="mr-3 text-base font-extrabold text-white">01</span>Submit your package and destination details.</li><li><span className="mr-3 text-base font-extrabold text-white">02</span>Our team contacts you on WhatsApp to verify the request.</li><li><span className="mr-3 text-base font-extrabold text-white">03</span>Receive the best suitable quotation by WhatsApp or email.</li></ol><div className="mt-10 border-t border-white/25 pt-5 text-xs leading-relaxed text-blue-100">This protects genuine customers and lets our team account for the exact service, destination and handling needs.</div></aside>
-    <section className="p-6 sm:p-9">{result ? <div className="py-10 text-center"><div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"><CheckCircle2 className="h-7 w-7" /></div><h2 className="mt-4 text-xl font-extrabold text-[#0A1931]">Request received</h2><p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600">Your verification code is <span className="font-mono font-bold text-[#0B56D9]">{result.requestId}</span>. Keep it handy—our team will ask you to confirm this code on WhatsApp before sharing your quotation.</p><div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><a href={result.whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-3 text-xs font-bold text-white"><MessageCircle className="h-4 w-4" />Continue on WhatsApp</a><a href="tel:+919876543210" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 px-5 py-3 text-xs font-bold text-[#0A1931]"><PhoneCall className="h-4 w-4" />Call contact centre</a></div></div> : <form onSubmit={submit} className="space-y-4"><h2 className="text-lg font-extrabold text-[#0A1931]">Shipment details</h2>{error && <p className="rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-700">{error}</p>}<div className="grid gap-4 sm:grid-cols-2"><Input label="Your name *" value={form.customerName} onChange={(value) => update('customerName', value)} /><Input label="WhatsApp number *" type="tel" value={form.whatsappNumber} onChange={(value) => update('whatsappNumber', value)} /></div><div className="grid gap-4 sm:grid-cols-2"><Input label="Email ID *" type="email" value={form.customerEmail} onChange={(value) => update('customerEmail', value)} /><Input label="Destination country *" value={form.destinationCountry} onChange={(value) => update('destinationCountry', value)} /></div><div className="grid gap-4 sm:grid-cols-2"><label className="label">Package type *<select required value={form.packageType} onChange={(event) => update('packageType', event.target.value)} className="field"><option>Parcel</option><option>Documents</option><option>Multiple packages</option><option>Food & groceries</option></select></label><Input label="Approx. weight (kg) *" type="number" value={form.approxWeightKg} onChange={(value) => update('approxWeightKg', value)} /></div><Input label="Dimensions (optional)" value={form.dimensions} onChange={(value) => update('dimensions', value)} placeholder="L × W × H in cm" /><label className="label">What are you shipping or sourcing?<textarea rows={3} value={form.requirementDescription} onChange={(event) => update('requirementDescription', event.target.value)} placeholder="Items, quantities or special handling requirements" className="field resize-none" /></label><button disabled={submitting} className="w-full rounded-full bg-[#0B56D9] px-5 py-3.5 text-xs font-extrabold tracking-wide text-white hover:bg-[#0849B7] disabled:opacity-60">{submitting ? 'Sending request…' : 'REQUEST A VERIFIED QUOTE'}</button></form>}</section></div></div><style>{`.label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#334155}.field{display:block;width:100%;margin-top:6px;border:1px solid #cbd5e1;border-radius:12px;padding:12px;font-size:12px;color:#0A1931;outline:none}.field:focus{border-color:#0B56D9;box-shadow:0 0 0 3px rgb(11 86 217 / .12)}`}</style></main>;
+  return (
+    <main className="min-h-screen bg-[#F7F9FF] px-4 pb-16 pt-28 sm:px-8">
+      <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[#0B56D9]">
+            <ShieldCheck className="h-4 w-4" /> Verified quote request
+          </span>
+          <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-5xl">
+            Get your shipping estimate
+          </h1>
+          <p className="mt-4 text-sm leading-relaxed text-slate-600">
+            Tell us about your shipment. Our contact centre verifies each
+            request first, then shares the right quotation on WhatsApp or email
+            - never public pricing.
+          </p>
+        </div>
+        <div className="mt-10 grid overflow-hidden rounded-3xl border border-slate-200 bg-white lg:grid-cols-[0.8fr_1.2fr]">
+          <aside className="bg-[#0B56D9] p-7 text-white sm:p-9">
+            <h2 className="text-xl font-extrabold">
+              A real quote, not a public calculator.
+            </h2>
+            <ol className="mt-7 space-y-6 text-sm text-blue-50">
+              <li>
+                <span className="mr-3 text-base font-extrabold text-white">
+                  01
+                </span>
+                Submit your package and destination details.
+              </li>
+              <li>
+                <span className="mr-3 text-base font-extrabold text-white">
+                  02
+                </span>
+                Our team contacts you on WhatsApp to verify the request.
+              </li>
+              <li>
+                <span className="mr-3 text-base font-extrabold text-white">
+                  03
+                </span>
+                Receive the best suitable quotation by WhatsApp or email.
+              </li>
+            </ol>
+          </aside>
+          <section className="p-6 sm:p-9">
+            {result ? (
+              <div className="py-10 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                  <CheckCircle2 className="h-7 w-7" />
+                </div>
+                <h2 className="mt-4 text-xl font-extrabold text-[#0A1931]">
+                  Request received
+                </h2>
+                <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
+                  Your verification code is{" "}
+                  <span className="font-mono font-bold text-[#0B56D9]">
+                    {result.requestId}
+                  </span>
+                  . Keep it handy - our team will confirm your quotation on
+                  WhatsApp.
+                </p>
+                <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+                  <a
+                    href={result.whatsappUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-3 text-xs font-bold text-white"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Continue on WhatsApp
+                  </a>
+                  <a
+                    href="tel:+919876543210"
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 px-5 py-3 text-xs font-bold text-[#0A1931]"
+                  >
+                    <PhoneCall className="h-4 w-4" />
+                    Call contact centre
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={submit} className="space-y-4">
+                <h2 className="text-lg font-extrabold text-[#0A1931]">
+                  Shipment details
+                </h2>
+                {error && (
+                  <p className="rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-700">
+                    {error}
+                  </p>
+                )}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Input
+                    label="Your name *"
+                    value={form.customerName}
+                    onChange={(value) => update("customerName", value)}
+                  />
+                  <Input
+                    label="WhatsApp number *"
+                    type="tel"
+                    value={form.whatsappNumber}
+                    onChange={(value) => update("whatsappNumber", value)}
+                  />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Input
+                    label="Email ID *"
+                    type="email"
+                    value={form.customerEmail}
+                    onChange={(value) => update("customerEmail", value)}
+                  />
+                  <Input
+                    label="Destination country *"
+                    value={form.destinationCountry}
+                    onChange={(value) => update("destinationCountry", value)}
+                  />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="label">
+                    Package type *
+                    <select
+                      required
+                      value={form.packageType}
+                      onChange={(event) =>
+                        update("packageType", event.target.value)
+                      }
+                      className="field"
+                    >
+                      <option>Parcel</option>
+                      <option>Documents</option>
+                      <option>Multiple packages</option>
+                      <option>Food &amp; groceries</option>
+                    </select>
+                  </label>
+                  <Input
+                    label="Approx. weight (kg) *"
+                    type="number"
+                    value={form.approxWeightKg}
+                    onChange={(value) => update("approxWeightKg", value)}
+                  />
+                </div>
+                <fieldset>
+                  <legend className="label">
+                    Dimensions (optional, in cm)
+                  </legend>
+                  <div className="mt-1 grid grid-cols-[1fr_auto_1fr_auto_1fr] items-end gap-2">
+                    <Input
+                      label="Length"
+                      type="number"
+                      value={dimensions.length}
+                      onChange={(value) =>
+                        setDimensions((current) => ({
+                          ...current,
+                          length: value,
+                        }))
+                      }
+                      placeholder="L"
+                      optional
+                    />
+                    <span className="mb-3 text-sm font-bold text-slate-400">
+                      ×
+                    </span>
+                    <Input
+                      label="Width"
+                      type="number"
+                      value={dimensions.width}
+                      onChange={(value) =>
+                        setDimensions((current) => ({
+                          ...current,
+                          width: value,
+                        }))
+                      }
+                      placeholder="W"
+                      optional
+                    />
+                    <span className="mb-3 text-sm font-bold text-slate-400">
+                      ×
+                    </span>
+                    <Input
+                      label="Height"
+                      type="number"
+                      value={dimensions.height}
+                      onChange={(value) =>
+                        setDimensions((current) => ({
+                          ...current,
+                          height: value,
+                        }))
+                      }
+                      placeholder="H"
+                      optional
+                    />
+                  </div>
+                </fieldset>
+                <label className="label">
+                  What are you shipping or sourcing?
+                  <textarea
+                    rows={3}
+                    value={form.requirementDescription}
+                    onChange={(event) =>
+                      update("requirementDescription", event.target.value)
+                    }
+                    placeholder="Items, quantities or special handling requirements"
+                    className="field resize-none"
+                  />
+                </label>
+                <button
+                  disabled={submitting}
+                  className="w-full rounded-full bg-[#0B56D9] px-5 py-3.5 text-xs font-extrabold tracking-wide text-white hover:bg-[#0849B7] disabled:opacity-60"
+                >
+                  {submitting
+                    ? "Sending request..."
+                    : "REQUEST A VERIFIED QUOTE"}
+                </button>
+              </form>
+            )}
+          </section>
+        </div>
+      </div>
+      <style>{`.label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#334155}.field{display:block;width:100%;margin-top:6px;border:1px solid #cbd5e1;border-radius:12px;padding:12px;font-size:12px;color:#0A1931;outline:none}.field:focus{border-color:#0B56D9;box-shadow:0 0 0 3px rgb(11 86 217 / .12)}`}</style>
+    </main>
+  );
 }
 
-const Input = ({ label, value, onChange, type = 'text', placeholder = '' }: { label: string; value: string; onChange: (value: string) => void; type?: string; placeholder?: string }) => <label className="label">{label}<input required={!label.includes('optional')} type={type} min={type === 'number' ? '0.1' : undefined} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="field" /></label>;
+const Input = ({
+  label,
+  value,
+  onChange,
+  type = "text",
+  placeholder = "",
+  optional = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+  placeholder?: string;
+  optional?: boolean;
+}) => (
+  <label className="label">
+    {label}
+    {!optional && label && <span className="sr-only"> required</span>}
+    <input
+      required={!optional}
+      type={type}
+      min={type === "number" ? "0" : undefined}
+      step={type === "number" ? "any" : undefined}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      placeholder={placeholder}
+      className="field"
+    />
+  </label>
+);

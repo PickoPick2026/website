@@ -177,7 +177,7 @@ export function CalculateShippingModal({ isOpen, onClose }: CalculateShippingMod
                               type="number" 
                               required
                               min="0.1"
-                              step="0.1"
+                              step="any"
                               placeholder="e.g. 2.5"
                               value={formData.weight}
                               onChange={(e) => setFormData({...formData, weight: e.target.value})}
@@ -187,11 +187,11 @@ export function CalculateShippingModal({ isOpen, onClose }: CalculateShippingMod
                           <div className="col-span-2 sm:col-span-1">
                             <label className="block text-xs font-medium text-slate-700 mb-1">Dimensions (cm) <span className="text-slate-400 font-normal">Optional</span></label>
                             <div className="flex items-center gap-2">
-                              <input type="number" placeholder="L" value={formData.length} onChange={(e) => setFormData({...formData, length: e.target.value})} className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg px-2 py-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-center" />
+                              <input type="number" min="0" step="any" placeholder="L" value={formData.length} onChange={(e) => setFormData({...formData, length: e.target.value})} className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg px-2 py-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-center" />
                               <span className="text-slate-300 text-xs">x</span>
-                              <input type="number" placeholder="W" value={formData.width} onChange={(e) => setFormData({...formData, width: e.target.value})} className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg px-2 py-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-center" />
+                              <input type="number" min="0" step="any" placeholder="W" value={formData.width} onChange={(e) => setFormData({...formData, width: e.target.value})} className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg px-2 py-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-center" />
                               <span className="text-slate-300 text-xs">x</span>
-                              <input type="number" placeholder="H" value={formData.height} onChange={(e) => setFormData({...formData, height: e.target.value})} className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg px-2 py-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-center" />
+                              <input type="number" min="0" step="any" placeholder="H" value={formData.height} onChange={(e) => setFormData({...formData, height: e.target.value})} className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg px-2 py-2 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-center" />
                             </div>
                           </div>
                         </div>

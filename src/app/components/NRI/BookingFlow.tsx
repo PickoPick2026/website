@@ -205,6 +205,10 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
         setErrorMessage('Please choose a preferred pickup date.');
         return false;
       }
+      if (formData.preferredPickupDate < toDateValue(new Date())) {
+        setErrorMessage('Please choose today or a future pickup date.');
+        return false;
+      }
       if (!formData.preferredPickupSlotId && !formData.customTimeRequested) {
         setErrorMessage('Please select an available pickup time slot or request a custom time.');
         return false;
@@ -463,7 +467,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     <div className="relative">
                       <input
                         type="number"
-                        step="0.5"
+                        step="any"
                         min="0.5"
                         value={formData.approxWeightKg}
                         onChange={(e) => setFormData((prev) => ({ ...prev, approxWeightKg: e.target.value }))}
@@ -527,6 +531,8 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                   <div className="grid grid-cols-3 gap-3">
                     <input
                       type="number"
+                      min="0"
+                      step="any"
                       placeholder="Length (cm)"
                       value={formData.dimensions.lengthCm}
                       onChange={(e) => setFormData((prev) => ({ ...prev, dimensions: { ...prev.dimensions, lengthCm: e.target.value } }))}
@@ -534,6 +540,8 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     />
                     <input
                       type="number"
+                      min="0"
+                      step="any"
                       placeholder="Width (cm)"
                       value={formData.dimensions.widthCm}
                       onChange={(e) => setFormData((prev) => ({ ...prev, dimensions: { ...prev.dimensions, widthCm: e.target.value } }))}
@@ -541,6 +549,8 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     />
                     <input
                       type="number"
+                      min="0"
+                      step="any"
                       placeholder="Height (cm)"
                       value={formData.dimensions.heightCm}
                       onChange={(e) => setFormData((prev) => ({ ...prev, dimensions: { ...prev.dimensions, heightCm: e.target.value } }))}

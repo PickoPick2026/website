@@ -12,6 +12,11 @@ import { FinalCtaSection } from '../components/NRI/FinalCtaSection';
 import { ConsultationModal } from '../components/NRI/ConsultationModal';
 import { BookingFormData, ServiceTypeId } from '../components/NRI/types';
 
+const getTodayValue = () => {
+  const date = new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+
 export default function App() {
   // Master booking form state
   const [formData, setFormData] = useState<BookingFormData>({
@@ -32,7 +37,7 @@ export default function App() {
     recipientName: '',
     recipientPhone: '',
     isPermanentAddress: 'yes',
-    preferredPickupDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
+    preferredPickupDate: getTodayValue(),
     preferredPickupSlotId: 'slot-morning-1',
     preferredPickupSlotLabel: '09:00 AM – 11:00 AM (Morning Slot A)',
     customTimeRequested: false,
@@ -128,7 +133,7 @@ export default function App() {
       recipientName: '',
       recipientPhone: '',
       isPermanentAddress: 'yes',
-      preferredPickupDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      preferredPickupDate: getTodayValue(),
       preferredPickupSlotId: 'slot-morning-1',
       preferredPickupSlotLabel: '09:00 AM – 11:00 AM (Morning Slot A)',
       customTimeRequested: false,

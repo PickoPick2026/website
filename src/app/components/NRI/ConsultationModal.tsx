@@ -22,6 +22,9 @@ const TIME_SLOTS = [
 
 export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, onClose }) => {
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const minimumDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const [formData, setFormData] = useState({
     fullName: '', mobileCountryCode: '', mobileNumber: '', whatsappCountryCode: '', whatsappNumber: '',
     currentCountry: '', preferredDate: '', preferredTime: '', timezone: detectedTimezone,
@@ -41,6 +44,10 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
     event.preventDefault();
     if (!formData.mobileCountryCode || !formData.whatsappCountryCode) {
       setError('Please select a country code for both mobile and WhatsApp numbers.');
+      return;
+    }
+    if (!formData.preferredDate || formData.preferredDate < minimumDate) {
+      setError('Please choose today or a future date for your consultation.');
       return;
     }
     setError(null);
@@ -79,7 +86,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
               <Field label="Mobile number *"><PhoneInput code={formData.mobileCountryCode} number={formData.mobileNumber} onCode={(value) => update('mobileCountryCode', value)} onNumber={(value) => update('mobileNumber', value)} autoComplete="tel-national" /></Field>
               <Field label="WhatsApp number *"><PhoneInput code={formData.whatsappCountryCode} number={formData.whatsappNumber} onCode={(value) => update('whatsappCountryCode', value)} onNumber={(value) => update('whatsappNumber', value)} autoComplete="tel" /></Field>
               <Field label="Country of residence *"><input required value={formData.currentCountry} onChange={(e) => update('currentCountry', e.target.value)} className="input" autoComplete="country-name" /></Field>
-              <Field label="Preferred date *"><input required type="date" min={new Date().toISOString().split('T')[0]} value={formData.preferredDate} onChange={(e) => update('preferredDate', e.target.value)} className="input" /></Field>
+              <Field label="Preferred date *"><input required type="date" min={minimumDate} value={formData.preferredDate} onChange={(e) => update('preferredDate', e.target.value)} className="input" /></Field>
               <div className="grid gap-3 sm:grid-cols-2"><Field label="Your timezone *"><select required value={formData.timezone} onChange={(e) => update('timezone', e.target.value)} className="input">{timezones.map((timezone) => <option key={timezone} value={timezone}>{timezone.replace('_', ' ')}</option>)}</select></Field><Field label="Preferred time *"><select required value={formData.preferredTime} onChange={(e) => update('preferredTime', e.target.value)} className="input"><option value="">Select a time slot</option>{TIME_SLOTS.map((slot) => <option key={slot.value} value={slot.value}>{slot.label}</option>)}</select><p className="mt-1 text-[10px] text-slate-500">Times shown in {formData.timezone.replace('_', ' ')}.</p></Field></div>
               <Field label="Email ID *"><input required type="email" value={formData.email} onChange={(e) => update('email', e.target.value)} className="input" autoComplete="email" /></Field>
               <Field label="What would you like us to arrange from India?"><textarea rows={3} value={formData.requirementHelp} onChange={(e) => update('requirementHelp', e.target.value)} placeholder="For example: shopping links, homemade food, festive wear, documents or multiple packages." className="input resize-none" /></Field>

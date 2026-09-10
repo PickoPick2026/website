@@ -133,7 +133,7 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
               </label>
               <input
                 type="number"
-                step="0.5"
+                step="any"
                 min="0.5"
                 value={weightKg}
                 onChange={(e) => setWeightKg(e.target.value)}
@@ -148,6 +148,8 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
               <div className="grid grid-cols-3 gap-2">
                 <input
                   type="number"
+                  min="0"
+                  step="any"
                   placeholder="L (cm)"
                   value={lengthCm}
                   onChange={(e) => setLengthCm(e.target.value)}
@@ -155,6 +157,8 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
                 />
                 <input
                   type="number"
+                  min="0"
+                  step="any"
                   placeholder="W (cm)"
                   value={widthCm}
                   onChange={(e) => setWidthCm(e.target.value)}
@@ -162,6 +166,8 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
                 />
                 <input
                   type="number"
+                  min="0"
+                  step="any"
                   placeholder="H (cm)"
                   value={heightCm}
                   onChange={(e) => setHeightCm(e.target.value)}
