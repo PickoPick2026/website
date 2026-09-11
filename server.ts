@@ -94,6 +94,7 @@ async function sendNriConsultationConfirmation(email: string, name: string, requ
     await transactionalMailClient.sendMail({
       from: { address: "noreply@pickopick.com", name: "Pick O Pick" },
       to: [{ email_address: { address: email, name } }],
+      cc: [{ email_address: { address:  "info@pickopick.com", name: "Pick O Pick Team" } }],
       subject: "Your Pick O Pick NRI consultation is booked",
       htmlbody: `<p>Hi ${name},</p><p>Your free Pick O Pick NRI shipping consultation has been booked.</p><p>Your reference ID is <strong>${requestCode}</strong>.</p><p>Our concierge team will contact you at your selected time.</p><p>— Pick O Pick</p>`,
     });
@@ -677,12 +678,35 @@ app.post("/api/auth/login", async (req, res) => {
     res.json({ cost, days: rate.days });
   });
 
-  // A single persistence endpoint for consultations, pickup reservations and shipment requests.
-  // The complete form is retained in JSONB so every NRI form can be reviewed in one admin queue.
-  app.post("/api/nri-requests", async (req, res) => {
+  app.post("/api/estimate", (req, res) => {
+    const { destinationCountry, weightKg, lengthCm = 0, widthCm = 0, heightCm = 0 } = req.body || {};
+    const actualWeightKg = Number(weightKg);
+    const dimensions = [lengthCm, widthCm, heightCm].map(Number);
+    if (!destinationCountry || !Number.isFinite(actualWeightKg) || actualWeightKg <= 0 || dimensions.some((value) => !Number.isFinite(value) || value < 0)) {
+      return res.status(400).json({ error: "Provide a destination and valid package measurements." });
+    }
+    const zones: Record<string, { base: number; perKg: number; days: string }> = {
+      USA: { base: 1450, perKg: 560, days: "5–8 business days" }, Canada: { base: 1550, perKg: 590, days: "6–9 business days" },
+      "United Kingdom": { base: 1350, perKg: 510, days: "4–7 business days" }, UAE: { base: 950, perKg: 390, days: "3–5 business days" },
+      Australia: { base: 1650, perKg: 610, days: "6–10 business days" }, Singapore: { base: 1050, perKg: 430, days: "3–6 business days" },
+    };
+    const rate = zones[destinationCountry] || { base: 1750, perKg: 650, days: "6–12 business days" };
+    const volumetricWeightKg = (dimensions[0] * dimensions[1] * dimensions[2]) / 5000;
+    const billableWeightKg = Math.max(actualWeightKg, volumetricWeightKg);
+    const midpoint = rate.base + billableWeightKg * rate.perKg;
+    const estimatedInrMin = Math.round(midpoint * 0.9), estimatedInrMax = Math.round(midpoint * 1.12);
+    return res.json({ origin: "India", destinationCountry, actualWeightKg: Number(actualWeightKg.toFixed(2)), volumetricWeightKg: Number(volumetricWeightKg.toFixed(2)), billableWeightKg: Number(billableWeightKg.toFixed(2)), estimatedInrMin, estimatedInrMax, estimatedUsdMin: Number((estimatedInrMin / 84).toFixed(2)), estimatedUsdMax: Number((estimatedInrMax / 84).toFixed(2)), transitDays: rate.days, serviceLevel: "International express", notes: ["This is an indicative rate only; the final quotation follows shipment verification.", "Chargeable weight is the higher of actual and volumetric weight."] });
+  });
+
+  // Separate public endpoints, while retaining shared validation/persistence locally.
+  // The complete form is retained in JSONB so staff can review every submitted detail.
+  app.post(["/api/nri-requests", "/api/estimate-request"], async (req, res) => {
     try {
       const { requestType, payload } = req.body || {};
-      const allowedTypes = ["consultation", "slot_reservation", "pickup_request", "estimate_request"];
+      const estimateEndpoint = req.path === "/api/estimate-request";
+      const allowedTypes = estimateEndpoint
+        ? ["estimate_request"]
+        : ["consultation", "slot_reservation", "pickup_request"];
       if (!allowedTypes.includes(requestType) || !payload || typeof payload !== "object") {
         return res.status(400).json({ error: "A valid NRI request type and form data are required." });
       }

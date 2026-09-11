@@ -55,7 +55,7 @@ export default function ShippingEstimatePage() {
       ].some(Boolean)
         ? `${dimensions.length || 0} × ${dimensions.width || 0} × ${dimensions.height || 0} cm`
         : "";
-      const response = await fetch("/api/nri-requests", {
+      const response = await fetch("/api/estimate-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

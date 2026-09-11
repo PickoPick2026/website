@@ -11,7 +11,9 @@
     { "src": "/api/search", "dest": "/api/search.js" },
     { "src": "/api/send-otp", "dest": "/api/send-otp.js" },
     { "src": "/api/verify-otp", "dest": "/api/verify-otp.js" },
-    { "src": "/api/nri-requests", "dest": "/api/send-email.js" },
+    { "src": "/api/nri-requests", "dest": "/api/nri-requests.js" },
+    { "src": "/api/estimate-request", "dest": "/api/estimate-request.js" },
+    { "src": "/api/estimate", "dest": "/api/estimate.js" },
     { "src": "/api/send-email", "dest": "/api/send-email.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
