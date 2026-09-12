@@ -14,6 +14,7 @@
     { "src": "/api/nri-requests", "dest": "/api/nri-requests.js" },
     { "src": "/api/estimate-request", "dest": "/api/estimate-request.js" },
     { "src": "/api/estimate", "dest": "/api/estimate.js" },
+    { "src": "/api/slots/availability", "dest": "/api/slots-availability.js" },
     { "src": "/api/send-email", "dest": "/api/send-email.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }

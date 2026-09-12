@@ -699,6 +699,18 @@ app.post("/api/auth/login", async (req, res) => {
     return res.json({ origin: "India", destinationCountry, actualWeightKg: Number(actualWeightKg.toFixed(2)), volumetricWeightKg: Number(volumetricWeightKg.toFixed(2)), billableWeightKg: Number(billableWeightKg.toFixed(2)), estimatedInrMin, estimatedInrMax, estimatedUsdMin: Number((estimatedInrMin / 84).toFixed(2)), estimatedUsdMax: Number((estimatedInrMax / 84).toFixed(2)), transitDays: rate.days, serviceLevel: "International express", notes: ["This is an indicative rate only; the final quotation follows shipment verification.", "Chargeable weight is the higher of actual and volumetric weight."] });
   });
 
+  app.get("/api/slots/availability", (req, res) => {
+    const date = String(req.query.date || "");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: "A valid pickup date is required." });
+    return res.json({ date, slots: [
+      { id: "morning", timeRange: "09:00 AM – 11:00 AM", label: "Morning", status: "AVAILABLE", remainingQuota: 4 },
+      { id: "midday", timeRange: "11:00 AM – 01:00 PM", label: "Midday", status: "AVAILABLE", remainingQuota: 3 },
+      { id: "afternoon", timeRange: "01:00 PM – 03:00 PM", label: "Afternoon", status: "LIMITED", remainingQuota: 2, badge: "Limited" },
+      { id: "evening", timeRange: "03:00 PM – 05:00 PM", label: "Evening", status: "AVAILABLE", remainingQuota: 3 },
+      { id: "late-evening", timeRange: "05:00 PM – 07:00 PM", label: "Late evening", status: "AVAILABLE", remainingQuota: 2 },
+    ] });
+  });
+
   // Separate public endpoints, while retaining shared validation/persistence locally.
   // The complete form is retained in JSONB so staff can review every submitted detail.
   app.post(["/api/nri-requests", "/api/estimate-request"], async (req, res) => {
@@ -808,7 +820,7 @@ app.post("/api/auth/login", async (req, res) => {
         record.email || "",
         record.customer_name,
         data.request_code,
-        "Your Pick O Pick NRI request is received",
+        consultation ? "Your Pick O Pick Consultation Booking Request Has Been Received" : slotReservation ? "Your Pick O Pick Slot Reservation Request Has Been Received" : "Your Pick O Pick Shipment Booking Request Has Been Received",
         consultation ? "Your free shipping consultation has been booked. Our concierge team will contact you at your selected time." : "We received your NRI service request. Our team will contact you on WhatsApp.",
         [["Request type", requestType.replace(/_/g, " ")], ["Country", country], ["Preferred date", record.preferred_date], ["Preferred time", record.preferred_time], ["WhatsApp", phone]],
         requestWhatsAppUrl,

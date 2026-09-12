@@ -76,6 +76,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
     bookingId: string;
     whatsappUrl: string;
     createdAt: string;
+    emailSent: boolean;
   } | null>(null);
 
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
@@ -228,6 +229,10 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
         setErrorMessage('Please enter your WhatsApp contact number.');
         return false;
       }
+      if (!formData.customerEmail.trim() || !/^\S+@\S+\.\S+$/.test(formData.customerEmail)) {
+        setErrorMessage('Please provide a valid email address so we can send your booking confirmation.');
+        return false;
+      }
       if (!formData.pickupCity.trim() || !formData.pickupAddressLine1.trim()) {
         setErrorMessage('Please enter the complete pickup address in India.');
         return false;
@@ -276,6 +281,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
         bookingId: data.requestId,
         whatsappUrl: data.whatsappUrl,
         createdAt: new Date().toISOString(),
+        emailSent: Boolean(data.emailSent),
       });
 
       setCurrentStep(6);
@@ -992,10 +998,11 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                        Email Address (for docket receipt):
+                        Email Address (for booking confirmation): *
                       </label>
                       <input
                         type="email"
+                        required
                         value={formData.customerEmail}
                         onChange={(e) => setFormData((prev) => ({ ...prev, customerEmail: e.target.value }))}
                         className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-[#0A1931]"
@@ -1197,6 +1204,10 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
             {/* ----------------- STEP 06: FINAL CONFIRMATION ----------------- */}
             {currentStep === 6 && submissionResult && (
               <div className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-2xl font-extrabold tracking-tight text-[#0A1931]">Your shipment booking request has been received</h3>
+                  <p className="mt-2 text-sm text-slate-600">Our India dispatch team will review the request and confirm your pickup on WhatsApp.</p>
+                </div>
                 {/* Booking Receipt Summary Card */}
                 <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
                   <div className="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -1212,6 +1223,12 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       RECEIVED & QUEUED
                     </span>
                   </div>
+
+                  <p className="rounded-xl bg-blue-50 px-4 py-3 text-xs leading-relaxed text-slate-600">
+                    {submissionResult.emailSent
+                      ? 'Your branded booking confirmation email has been sent, with info@pickopick.com copied.'
+                      : 'Your booking request is saved. We could not send the confirmation email, so our team will contact you on WhatsApp.'}
+                  </p>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
                     <div>
