@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import { GoogleGenAI } from "@google/genai";
 import { SendMailClient } from "zeptomail";
 import { supabase } from './supabase.js';
+import { brandedEmailHtml } from './api/_request-utils.js';
 
 
 const otpStore: Record<string, { otp: string; expiry: number }> = {};
@@ -88,7 +89,7 @@ const transactionalMailClient = new SendMailClient({
   token: mailToken
 });
 
-async function sendNriConsultationConfirmation(email: string, name: string, requestCode: string, subject = "Your Pick O Pick NRI consultation is booked", message = "Your free Pick O Pick NRI shipping consultation has been booked. Our concierge team will contact you at your selected time.") {
+async function sendNriConsultationConfirmation(email: string, name: string, requestCode: string, subject = "Your Pick O Pick NRI consultation is booked", message = "Your free Pick O Pick NRI shipping consultation has been booked. Our concierge team will contact you at your selected time.", details: Array<[string, unknown]> = [], whatsappUrlValue = "") {
   if (!email || mailToken === "YOUR_TOKEN") return false;
   try {
     await transactionalMailClient.sendMail({
@@ -96,7 +97,7 @@ async function sendNriConsultationConfirmation(email: string, name: string, requ
       to: [{ email_address: { address: email, name } }],
       cc: [{ email_address: { address:  "info@pickopick.com", name: "Pick O Pick Team" } }],
       subject,
-      htmlbody: `<p>Hi ${name},</p><p>Your free Pick O Pick NRI shipping consultation has been booked.</p><p>Your reference ID is <strong>${requestCode}</strong>.</p><p>Our concierge team will contact you at your selected time.</p><p>— Pick O Pick</p>`,
+      htmlbody: brandedEmailHtml({ name, code: requestCode, message, details, whatsappUrlValue }),
     });
     return true;
   } catch (error) {
@@ -759,19 +760,23 @@ app.post("/api/auth/login", async (req, res) => {
           return res.status(500).json({ error: "We could not save your request. Please try again shortly.", details: process.env.NODE_ENV === "production" ? undefined : estimateError.message });
         }
 
+        const estimateMessage = encodeURIComponent(`Hello Pick O Pick! I requested a shipping estimate.\nVerification code: ${estimateData.request_code}\nDestination: ${country}`);
+        const estimateWhatsAppUrl = `https://wa.me/919876543210?text=${estimateMessage}`;
         const emailSent = await sendNriConsultationConfirmation(
           estimateRecord.email || "",
           estimateRecord.customer_name,
           estimateData.request_code,
           "Your Pick O Pick shipping estimate request",
+          "We received your shipping estimate request and will contact you with a verified quotation.",
+          [["Destination", country], ["Package", estimateRecord.package_type], ["Approx. weight", approxWeightKg ? `${approxWeightKg} kg` : ""], ["Dimensions", estimateRecord.dimensions], ["Requirement", estimateRecord.requirement_description]],
+          estimateWhatsAppUrl,
         );
-        const estimateMessage = encodeURIComponent(`Hello Pick O Pick! I requested a shipping estimate.\nVerification code: ${estimateData.request_code}\nDestination: ${country}`);
         return res.status(201).json({
           success: true,
           requestId: estimateData.request_code,
           createdAt: estimateData.created_at,
           emailSent,
-          whatsappUrl: `https://wa.me/919876543210?text=${estimateMessage}`,
+          whatsappUrl: estimateWhatsAppUrl,
           noticeText: "Your estimate request has been received. Our team will verify your code and share your quotation.",
         });
       }
@@ -797,14 +802,23 @@ app.post("/api/auth/login", async (req, res) => {
         return res.status(500).json({ error: "We could not save your request. Please try again shortly.", details: process.env.NODE_ENV === "production" ? undefined : error.message });
       }
 
-      const emailSent = consultation ? await sendNriConsultationConfirmation(record.email || "", record.customer_name, data.request_code) : false;
       const message = encodeURIComponent(`Hello Pick O Pick! I submitted an NRI ${requestType.replace(/_/g, " ")} request.\nReference: ${data.request_code}`);
+      const requestWhatsAppUrl = `https://wa.me/919876543210?text=${message}`;
+      const emailSent = await sendNriConsultationConfirmation(
+        record.email || "",
+        record.customer_name,
+        data.request_code,
+        "Your Pick O Pick NRI request is received",
+        consultation ? "Your free shipping consultation has been booked. Our concierge team will contact you at your selected time." : "We received your NRI service request. Our team will contact you on WhatsApp.",
+        [["Request type", requestType.replace(/_/g, " ")], ["Country", country], ["Preferred date", record.preferred_date], ["Preferred time", record.preferred_time], ["WhatsApp", phone]],
+        requestWhatsAppUrl,
+      );
       return res.status(201).json({
         success: true,
         requestId: data.request_code,
         createdAt: data.created_at,
         emailSent,
-        whatsappUrl: `https://wa.me/919876543210?text=${message}`,
+        whatsappUrl: requestWhatsAppUrl,
         noticeText: slotReservation ? "Slot request received — our team will confirm availability shortly." : "Your request has been received. Our NRI team will contact you on WhatsApp.",
       });
     } catch (error) {

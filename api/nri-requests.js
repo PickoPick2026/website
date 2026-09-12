@@ -36,14 +36,23 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "We could not save your request. Please try again shortly." });
     }
 
+    const customerWhatsappUrl = whatsappUrl(`Hello Pick O Pick, my NRI ${requestType.replace(/_/g, " ")} reference is ${data.request_code}.`);
     const emailSent = await sendConfirmationEmail({
       email, name: customerName, code: data.request_code,
       subject: "Your Pick O Pick NRI request is received",
       message: consultation ? "Your free shipping consultation has been booked. Our concierge team will contact you at your selected time." : "We received your NRI service request. Our team will contact you on WhatsApp.",
+      whatsappUrlValue: customerWhatsappUrl,
+      details: [
+        ["Request type", requestType.replace(/_/g, " ")],
+        ["Country", country],
+        ["Preferred date", preferredDate],
+        ["Preferred time", preferredTime],
+        ["WhatsApp", whatsappNumber],
+      ],
     });
     return res.status(201).json({
       success: true, requestId: data.request_code, createdAt: data.created_at, emailSent,
-      whatsappUrl: whatsappUrl(`Hello Pick O Pick, my NRI ${requestType.replace(/_/g, " ")} reference is ${data.request_code}.`),
+      whatsappUrl: customerWhatsappUrl,
       noticeText: slot ? "Slot request received — our team will confirm availability shortly." : "Your request has been received. Our NRI team will contact you on WhatsApp.",
     });
   } catch (error) {

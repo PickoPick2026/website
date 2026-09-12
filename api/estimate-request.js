@@ -35,19 +35,28 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "We could not save your estimate request. Please try again shortly." });
     }
 
+    const customerWhatsappUrl = whatsappUrl(`Hello Pick O Pick, my shipping estimate reference is ${data.request_code}.`);
     const emailSent = await sendConfirmationEmail({
       email,
       name: customerName,
       code: data.request_code,
       subject: "Your Pick O Pick shipping estimate request",
       message: "We received your shipping estimate request and will contact you with a verified quotation.",
+      whatsappUrlValue: customerWhatsappUrl,
+      details: [
+        ["Destination", destinationCountry],
+        ["Package", cleanText(payload.packageType)],
+        ["Approx. weight", `${weight} kg`],
+        ["Dimensions", cleanText(payload.dimensions)],
+        ["Requirement", cleanText(payload.requirementDescription)],
+      ],
     });
     return res.status(201).json({
       success: true,
       requestId: data.request_code,
       createdAt: data.created_at,
       emailSent,
-      whatsappUrl: whatsappUrl(`Hello Pick O Pick, my shipping estimate reference is ${data.request_code}.`),
+      whatsappUrl: customerWhatsappUrl,
     });
   } catch (error) {
     console.error("Estimate request API error:", error);
