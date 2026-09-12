@@ -38,6 +38,7 @@ export default function ShippingEstimatePage() {
   const [result, setResult] = useState<{
     requestId: string;
     whatsappUrl: string;
+    emailSent: boolean;
   } | null>(null);
   const [error, setError] = useState("");
   const update = (key: keyof FormState, value: string) =>
@@ -66,7 +67,7 @@ export default function ShippingEstimatePage() {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.error || "Unable to request an estimate.");
-      setResult({ requestId: data.requestId, whatsappUrl: data.whatsappUrl });
+      setResult({ requestId: data.requestId, whatsappUrl: data.whatsappUrl, emailSent: Boolean(data.emailSent) });
       window.open(data.whatsappUrl, "_blank", "noopener,noreferrer");
     } catch (requestError: any) {
       setError(requestError.message || "Please try again shortly.");
@@ -126,13 +127,18 @@ export default function ShippingEstimatePage() {
                 <h2 className="mt-4 text-xl font-extrabold text-[#0A1931]">
                   Request received
                 </h2>
-                <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
+                  <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
                   Your verification code is{" "}
                   <span className="font-mono font-bold text-[#0B56D9]">
                     {result.requestId}
                   </span>
                   . Keep it handy - our team will confirm your quotation on
                   WhatsApp.
+                </p>
+                <p className="mx-auto mt-2 max-w-sm text-xs text-slate-500">
+                  {result.emailSent
+                    ? "A confirmation email was sent to you, with info@pickopick.com copied."
+                    : "Your request was saved. The confirmation email could not be sent, so our team will contact you on WhatsApp."}
                 </p>
                 <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
                   <a

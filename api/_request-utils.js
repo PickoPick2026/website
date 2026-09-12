@@ -1,7 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { SendMailClient } from "zeptomail";
 
-export const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+// Vite uses the VITE_ names locally; Vercel deployments commonly use the
+// server-only names. Accept both so the API and browser use the same project.
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+export const supabase = createClient(supabaseUrl, supabaseKey);
+const mailToken = process.env.ZEPTO_TOKEN || process.env.ZEPTOMAIL_TOKEN || process.env.VITE_ZEPTO_TOKEN;
 
 export const cleanText = (value) => typeof value === "string" ? value.trim() : "";
 
@@ -13,12 +18,12 @@ const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (char) => 
 }[char]));
 
 export async function sendConfirmationEmail({ email, name, code, subject, message }) {
-  if (!email || !process.env.ZEPTO_TOKEN) return false;
+  if (!email || !mailToken) return false;
 
   try {
     const client = new SendMailClient({
       url: "https://api.zeptomail.in/v1.1/email",
-      token: process.env.ZEPTO_TOKEN,
+      token: mailToken,
     });
     await client.sendMail({
       from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "Pick O Pick" },

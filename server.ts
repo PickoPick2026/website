@@ -76,7 +76,7 @@ try {
 }
 
 const mailUrl = "https://api.zeptomail.in/v1.1/email/template";
-const mailToken = process.env.ZEPTO_TOKEN || "YOUR_TOKEN";
+const mailToken = process.env.ZEPTO_TOKEN || process.env.ZEPTOMAIL_TOKEN || process.env.VITE_ZEPTO_TOKEN || "YOUR_TOKEN";
 
 const mailClient = new SendMailClient({
   url: mailUrl,
@@ -88,14 +88,14 @@ const transactionalMailClient = new SendMailClient({
   token: mailToken
 });
 
-async function sendNriConsultationConfirmation(email: string, name: string, requestCode: string) {
-  if (!email || !process.env.ZEPTO_TOKEN) return false;
+async function sendNriConsultationConfirmation(email: string, name: string, requestCode: string, subject = "Your Pick O Pick NRI consultation is booked", message = "Your free Pick O Pick NRI shipping consultation has been booked. Our concierge team will contact you at your selected time.") {
+  if (!email || mailToken === "YOUR_TOKEN") return false;
   try {
     await transactionalMailClient.sendMail({
       from: { address: "noreply@pickopick.com", name: "Pick O Pick" },
       to: [{ email_address: { address: email, name } }],
       cc: [{ email_address: { address:  "info@pickopick.com", name: "Pick O Pick Team" } }],
-      subject: "Your Pick O Pick NRI consultation is booked",
+      subject,
       htmlbody: `<p>Hi ${name},</p><p>Your free Pick O Pick NRI shipping consultation has been booked.</p><p>Your reference ID is <strong>${requestCode}</strong>.</p><p>Our concierge team will contact you at your selected time.</p><p>— Pick O Pick</p>`,
     });
     return true;
@@ -759,11 +759,18 @@ app.post("/api/auth/login", async (req, res) => {
           return res.status(500).json({ error: "We could not save your request. Please try again shortly.", details: process.env.NODE_ENV === "production" ? undefined : estimateError.message });
         }
 
+        const emailSent = await sendNriConsultationConfirmation(
+          estimateRecord.email || "",
+          estimateRecord.customer_name,
+          estimateData.request_code,
+          "Your Pick O Pick shipping estimate request",
+        );
         const estimateMessage = encodeURIComponent(`Hello Pick O Pick! I requested a shipping estimate.\nVerification code: ${estimateData.request_code}\nDestination: ${country}`);
         return res.status(201).json({
           success: true,
           requestId: estimateData.request_code,
           createdAt: estimateData.created_at,
+          emailSent,
           whatsappUrl: `https://wa.me/919876543210?text=${estimateMessage}`,
           noticeText: "Your estimate request has been received. Our team will verify your code and share your quotation.",
         });
