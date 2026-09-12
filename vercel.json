@@ -1,22 +1,75 @@
 {
   "routes": [
-    { "src": "/api/shipments/(?<id>[^/]+)", "dest": "/api/shipments/[id].js?id=$id" },
-    { "src": "/api/shipments", "dest": "/api/shipments/index.js" },
-    { "src": "/api/auth/register", "dest": "/api/auth/register.js" },
-    { "src": "/api/analyze-image", "dest": "/api/analyze-image.js" },
-    { "src": "/api/analyze-link", "dest": "/api/analyze-link.js" },
-    { "src": "/api/check-user-email", "dest": "/api/check-user-email.js" },
-    { "src": "/api/forgot-password", "dest": "/api/forgot-password.js" },
-    { "src": "/api/reset-password", "dest": "/api/reset-password.js" },
-    { "src": "/api/search", "dest": "/api/search.js" },
-    { "src": "/api/send-otp", "dest": "/api/send-otp.js" },
-    { "src": "/api/verify-otp", "dest": "/api/verify-otp.js" },
-    { "src": "/api/nri-requests", "dest": "/api/nri-requests.js" },
-    { "src": "/api/estimate-request", "dest": "/api/estimate-request.js" },
-    { "src": "/api/estimate", "dest": "/api/estimate.js" },
-    { "src": "/api/slots/availability", "dest": "/api/slots-availability.js" },
-    { "src": "/api/send-email", "dest": "/api/send-email.js" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    {
+      "src": "/api/shipments/(?<id>[^/]+)",
+      "dest": "/api/shipments.js?id=$id"
+    },
+    {
+      "src": "/api/shipments",
+      "dest": "/api/shipments.js"
+    },
+    {
+      "src": "/api/auth/register",
+      "dest": "/api/auth.js?action=register"
+    },
+    {
+      "src": "/api/check-user-email",
+      "dest": "/api/auth.js?action=check-user-email"
+    },
+    {
+      "src": "/api/send-otp",
+      "dest": "/api/auth.js?action=send-otp"
+    },
+    {
+      "src": "/api/verify-otp",
+      "dest": "/api/auth.js?action=verify-otp"
+    },
+    {
+      "src": "/api/forgot-password",
+      "dest": "/api/auth.js?action=forgot-password"
+    },
+    {
+      "src": "/api/reset-password",
+      "dest": "/api/auth.js?action=reset-password"
+    },
+    {
+      "src": "/api/analyze-image",
+      "dest": "/api/analyze.js?type=image"
+    },
+    {
+      "src": "/api/analyze-link",
+      "dest": "/api/analyze.js?type=link"
+    },
+    {
+      "src": "/api/search",
+      "dest": "/api/search.js"
+    },
+    {
+      "src": "/api/nri-requests",
+      "dest": "/api/nri-requests.js"
+    },
+    {
+      "src": "/api/estimate-request",
+      "dest": "/api/estimate-request.js"
+    },
+    {
+      "src": "/api/estimate",
+      "dest": "/api/estimate.js"
+    },
+    {
+      "src": "/api/slots/availability",
+      "dest": "/api/slots-availability.js"
+    },
+    {
+      "src": "/api/send-email",
+      "dest": "/api/send-email.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }

@@ -3,10 +3,9 @@ import { SendMailClient } from "zeptomail";
 
 // Vite uses the VITE_ names locally; Vercel deployments commonly use the
 // server-only names. Accept both so the API and browser use the same project.
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || "placeholder";
 export const supabase = createClient(supabaseUrl, supabaseKey);
-const mailToken = process.env.ZEPTO_TOKEN || process.env.ZEPTOMAIL_TOKEN || process.env.VITE_ZEPTO_TOKEN;
 
 export const cleanText = (value) => typeof value === "string" ? value.trim() : "";
 
@@ -27,7 +26,16 @@ export function brandedEmailHtml({ name, code, message, details = [], whatsappUr
 }
 
 export async function sendConfirmationEmail({ email, name, code, subject, message, details, whatsappUrlValue }) {
-  if (!email || !mailToken) return false;
+  const mailToken = process.env.ZEPTO_TOKEN || process.env.ZEPTOMAIL_TOKEN || process.env.VITE_ZEPTO_TOKEN;
+
+  if (!email) {
+    console.warn("sendConfirmationEmail skipped: no recipient email provided");
+    return false;
+  }
+  if (!mailToken) {
+    console.warn("sendConfirmationEmail skipped: missing ZEPTO_TOKEN / ZEPTOMAIL_TOKEN env variable");
+    return false;
+  }
 
   try {
     const client = new SendMailClient({
@@ -46,10 +54,11 @@ export async function sendConfirmationEmail({ email, name, code, subject, messag
       subject,
       htmlbody: brandedEmailHtml({ name, code, message, details, whatsappUrlValue }),
     });
+    console.log(`Confirmation email sent successfully to ${email} for reference ${code}`);
     return true;
   } catch (error) {
     // The request is already saved. A mail-provider outage must not lose a lead.
-    console.error("Customer confirmation email failed:", error);
+    console.error("Customer confirmation email failed:", error?.message || error);
     return false;
   }
 }
