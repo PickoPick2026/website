@@ -12,6 +12,7 @@ import { ShopBanner } from "../components/ShopBanner";
 import { LiveActivity } from "../components/LiveActivity";
 import { HeroMobile } from "../components/HeroMobile";
 import { AboutUs } from "../components/AboutUs";
+import { CompanyVision } from "../components/CompanyVision";
 import { ConsultationModal } from "../components/NRI/ConsultationModal";
 import { WelcomePopup } from "../components/WelcomePopup";
 
@@ -87,7 +88,11 @@ export default function Home() {
       <Testimonials />
       <ShopBanner />
 
-      <LiveActivity />
+      {/*<LiveActivity />*/}
+
+      {/* Extracted Bottom Section: Vision, Mission, Commitment & Company Info */}
+      <CompanyVision />
+
       <ConsultationModal
         isOpen={isConsultationOpen}
         onClose={() => setIsConsultationOpen(false)}
