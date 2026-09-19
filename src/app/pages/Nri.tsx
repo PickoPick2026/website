@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { HeroSection } from '../components/NRI/HeroSection';
-import { QuickActions } from '../components/NRI/QuickActions';
 import { BookingFlow } from '../components/NRI/BookingFlow';
 import { FreeConsultationModule } from '../components/NRI/FreeConsultationModule';
 import { ProcessSection } from '../components/NRI/ProcessSection';
@@ -180,12 +179,6 @@ export default function App() {
           onStartBooking={() => scrollToSection('booking-portal')}
           onOpenBlockSlot={handleOpenBlockSlot}
         />
-
-        {/* 4 Quick Action Cards */}
-        <QuickActions
-          onOpenConsultation={() => setIsConsultationModalOpen(true)}
-        />
-
 
         {/* Core Multi-Step Booking Engine & Sticky Live Summary */}
         <BookingFlow

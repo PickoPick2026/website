@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import Lenis from "lenis";
 
-
-
 import { StoryFlow } from "../components/StoryFlow";
 import { Hero } from "../components/Hero";
 import { ImageSearch } from "../components/ImageSearch";
 import { TrustMetrics } from "../components/TrustMetrics";
 import { Services } from "../components/Services";
 import { ShoppingDirectoryMarquee } from "../components/ShoppingDirectoryMarquee";
-import { TrackingExperience } from "../components/TrackingExperience";
 import { Testimonials } from "../components/Testimonials";
 import { ShopBanner } from "../components/ShopBanner";
-import { CTA } from "../components/CTA";
 import { LiveActivity } from "../components/LiveActivity";
 import { HeroMobile } from "../components/HeroMobile";
 import { AboutUs } from "../components/AboutUs";
@@ -23,7 +19,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
 
-  // 🔐 CHECK LOGIN STATE
+  // 🔑 CHECK LOGIN STATE
   useEffect(() => {
     const checkAuth = () => {
       const user = localStorage.getItem("user");
@@ -60,8 +56,12 @@ export default function Home() {
 
   useEffect(() => {
     const openConsultation = () => setIsConsultationOpen(true);
-    window.addEventListener('pickopick:open-consultation', openConsultation);
-    return () => window.removeEventListener('pickopick:open-consultation', openConsultation);
+    window.addEventListener("pickopick:open-consultation", openConsultation);
+    return () =>
+      window.removeEventListener(
+        "pickopick:open-consultation",
+        openConsultation,
+      );
   }, []);
 
   // 🎯 CONDITIONAL RENDER
@@ -78,18 +78,20 @@ export default function Home() {
         <Hero />
       </div>
       <ImageSearch />
-      <TrackingExperience />
       {/* <TrustMetrics /> */}
       <AboutUs />
       <StoryFlow />
       <Services />
       <ShoppingDirectoryMarquee />
-      
+
       <Testimonials />
       <ShopBanner />
-      <CTA />
+
       <LiveActivity />
-      <ConsultationModal isOpen={isConsultationOpen} onClose={() => setIsConsultationOpen(false)} />
+      <ConsultationModal
+        isOpen={isConsultationOpen}
+        onClose={() => setIsConsultationOpen(false)}
+      />
     </main>
   );
 }
