@@ -30,6 +30,36 @@ async function handleAnalyzeLink(req, res) {
     if (!link) return res.status(400).json({ error: "No link provided" });
 
     const productName = extractProductFromUrl(link);
+
+    // Extract real product image from page
+    let productImage = "";
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3500);
+      const pageRes = await fetch(link, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        },
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      if (pageRes.ok) {
+        const html = await pageRes.text();
+        const match = html.match(/<meta[^>]+property=["'](?:og:image|og:image:secure_url)["'](?:[^>]+content=["']([^"']+)["'])?/i)
+          || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["'](?:og:image|og:image:secure_url)["']/i)
+          || html.match(/<meta[^>]+name=["'](?:twitter:image|twitter:image:src)["'][^>]+content=["']([^"']+)["']/i)
+          || html.match(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["']/i)
+          || html.match(/id=["']landingImage["'][^>]*src=["']([^"']+)["']/i)
+          || html.match(/data-old-hires=["']([^"']+)["']/i);
+        if (match && match[1]) {
+          productImage = match[1].replace(/&amp;/g, "&");
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch page og:image:", e);
+    }
+
     const localProducts = await searchSupabaseProducts(productName);
     const stores = ["Amazon India", "Flipkart", "Google Shopping"];
     const universalResults = stores.map((store, i) => ({
@@ -38,7 +68,7 @@ async function handleAnalyzeLink(req, res) {
       price: "Check Store",
       store: store,
       source: store.toLowerCase().split(" ")[0],
-      image: "",
+      image: productImage || (localProducts[0]?.image || ""),
       category: "E-commerce",
       inStock: true,
       url: buildStoreUrl(store, productName),
@@ -48,6 +78,7 @@ async function handleAnalyzeLink(req, res) {
     return res.json({
       source: localProducts.length > 0 ? "mixed" : "universal",
       identified: productName,
+      image: productImage || (localProducts[0]?.image || ""),
       results: [...localProducts, ...universalResults],
     });
   } catch (error) {

@@ -1,20 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Upload,
   Search,
-  Image as ImageIcon,
   ShoppingCart,
   ExternalLink,
   RefreshCw,
   Package,
-  Store,
   AlertCircle,
-  Link2,
   Clipboard,
   Sparkles,
   CheckCircle2,
   ArrowRight,
+  X,
+  Image as ImageIcon,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { toast } from "sonner";
@@ -87,30 +85,6 @@ const BrandLogos = {
       />
     </svg>
   ),
-  google: (className: string) => (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-        fill="#34A853"
-      />
-      <path
-        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53v-5.6z"
-        fill="#EA4335"
-      />
-    </svg>
-  ),
 };
 
 interface ProductResult {
@@ -119,7 +93,10 @@ interface ProductResult {
   price: string;
   store: string;
   source: "pickopick" | "amazon" | "flipkart" | string;
-  image: string;
+  image?: string;
+  imageURL?: string;
+  imageUrl?: string;
+  thumbnail?: string;
   url: string;
   description?: string;
   category?: string;
@@ -151,7 +128,7 @@ const SOURCE_CONFIG: Record<
     label: "PickoPick Catalog",
   },
   amazon: {
-    color: "text-amber-700",
+    color: "text-amber-800",
     bg: "bg-amber-50",
     border: "border-amber-200",
     logo: (c) => BrandLogos.amazon(c),
@@ -164,50 +141,107 @@ const SOURCE_CONFIG: Record<
     logo: (c) => BrandLogos.flipkart(c),
     label: "Flipkart",
   },
-  google: {
-    color: "text-rose-700",
-    bg: "bg-rose-50",
-    border: "border-rose-200",
-    logo: (c) => BrandLogos.google(c),
-    label: "Google Shopping",
-  },
 };
 
 const supportedStores = [
-  { name: "Amazon.in", color: "hover:border-amber-400 hover:text-amber-600" },
-  { name: "Flipkart", color: "hover:border-blue-400 hover:text-blue-600" },
-  { name: "Myntra", color: "hover:border-pink-400 hover:text-pink-600" },
-  { name: "Ajio", color: "hover:border-slate-800 hover:text-slate-900" },
-  { name: "Nykaa", color: "hover:border-rose-400 hover:text-rose-600" },
-  { name: "Meesho", color: "hover:border-fuchsia-400 hover:text-fuchsia-600" },
-  { name: "Tata CLiQ", color: "hover:border-red-500 hover:text-red-600" },
+  "Amazon.in",
+  "Flipkart",
+  "Myntra",
+  "Ajio",
+  "Nykaa",
+  "Meesho",
+  "Tata CLiQ",
 ];
 
+// Product Image Renderer: shows response image if available, otherwise shows clean "No image" placeholder
+function ProductImage({ src, alt }: { src?: string; alt: string }) {
+  const [hasError, setHasError] = useState(false);
+
+  const cleanSrc = (src || "").trim();
+  const isValidSrc =
+    cleanSrc.length > 5 && !cleanSrc.startsWith("blob:") && !hasError;
+
+  if (!isValidSrc) {
+    return (
+      <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl shrink-0 border border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-2 select-none">
+        <ImageIcon size={22} className="text-slate-300" />
+        <span className="text-[10px] font-semibold text-slate-400 mt-1 text-center">
+          No image
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden shrink-0 border border-slate-200 bg-white p-1 flex items-center justify-center">
+      <img
+        src={cleanSrc}
+        alt={alt}
+        className="w-full h-full object-contain rounded-lg"
+        loading="lazy"
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+}
+
+// Minute Blue & White Zigzag Border
+function ZigzagBorder({ position = "top" }: { position?: "top" | "bottom" }) {
+  const isTop = position === "top";
+  return (
+    <div className="w-full overflow-hidden leading-none select-none bg-white">
+      <svg
+        className="w-full h-1.5 sm:h-2 block"
+        aria-hidden="true"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <pattern
+            id={`zigzag-pattern-${position}`}
+            width="8"
+            height="5"
+            patternUnits="userSpaceOnUse"
+          >
+            {isTop ? (
+              <>
+                <polygon points="0,0 4,5 8,0" fill="#0B56D9" />
+                <polygon points="4,5 8,0 8,5 0,5" fill="#FFFFFF" />
+              </>
+            ) : (
+              <>
+                <polygon points="0,5 4,0 8,5" fill="#0B56D9" />
+                <polygon points="4,0 8,5 8,0 0,0" fill="#FFFFFF" />
+              </>
+            )}
+          </pattern>
+        </defs>
+        <rect
+          width="100%"
+          height="100%"
+          fill={`url(#zigzag-pattern-${position})`}
+        />
+      </svg>
+    </div>
+  );
+}
+
 export function ImageSearch() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchPhase, setSearchPhase] = useState<
     "idle" | "identifying" | "searching-local" | "searching-external"
   >("idle");
   const [results, setResults] = useState<ProductResult[]>([]);
-  const [resultSource, setResultSource] = useState<
-    "pickopick" | "external" | null
-  >(null);
   const [identifiedProduct, setIdentifiedProduct] = useState<string>("");
-  const [searchType, setSearchType] = useState<"link" | "image">("link");
   const [productLink, setProductLink] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isDragging, setIsDragging] = useState(false);
-  const [isQuotaExceeded, setIsQuotaExceeded] = useState(false);
-  const [manualProductName, setManualProductName] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const productLinkInputRef = useRef<HTMLInputElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
-  // Switch to link and auto-scroll/focus
-  const switchToLinkSearch = () => {
-    setSearchType("link");
+  // Focus into input
+  const focusInput = () => {
     window.setTimeout(() => {
       productLinkInputRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -217,13 +251,9 @@ export function ImageSearch() {
     }, 60);
   };
 
-  const switchToImageSearch = () => {
-    setSearchType("image");
-  };
-
   useEffect(() => {
     const handleSwitchToLink = () => {
-      switchToLinkSearch();
+      focusInput();
     };
     window.addEventListener("pickopick:switch-to-link", handleSwitchToLink);
     return () =>
@@ -242,7 +272,7 @@ export function ImageSearch() {
         productLinkInputRef.current?.focus();
       }
     } catch {
-      toast.error("Clipboard access blocked. Please paste manually.");
+      toast.error("Please paste manually using Ctrl+V or right click.");
     }
   };
 
@@ -256,10 +286,12 @@ export function ImageSearch() {
     const user = JSON.parse(userStr);
     const price = parseFloat(String(product.price).replace(/[₹,]/g, "")) || 0;
 
-    if (!Number.isFinite(price) || price < 1) {
-      toast.error("This product isn't available for purchase yet ❌");
-      return;
-    }
+    const rawImage =
+      product.image ||
+      product.imageURL ||
+      product.imageUrl ||
+      product.thumbnail ||
+      "";
 
     try {
       const customerId = user?.customerID ?? user?.customerId ?? user?.id;
@@ -267,127 +299,19 @@ export function ImageSearch() {
         {
           customer_id: customerId,
           product_name: product.name,
-          product_price: price,
-          product_image: product.image || "",
-          product_url: product.url || "",
+          product_price: price > 0 ? price : 0,
+          product_image: rawImage,
+          product_url: product.url || productLink || "",
           store: product.store || "PickoPick",
           quantity: 1,
         },
       ]);
 
       if (error) throw error;
-      toast.success("Added to cart successfully! 🎉");
+      toast.success("Added to cart successfully!");
       window.dispatchEvent(new Event("cart-updated"));
     } catch (err: any) {
       toast.error(err.message || "Failed to add to cart");
-    }
-  };
-
-  // Process image file
-  const processImageFile = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target?.result as string;
-      setSelectedImage(base64);
-      setErrorMessage("");
-      setIsQuotaExceeded(false);
-      setResults([]);
-      setResultSource(null);
-      setIdentifiedProduct("");
-
-      await performImageSearch(base64);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      processImageFile(file);
-    }
-  };
-
-  const performImageSearch = async (base64Image: string) => {
-    setIsSearching(true);
-    setSearchPhase("identifying");
-
-    try {
-      const response = await fetch("/api/search-by-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image }),
-      });
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || `Server error (${response.status})`);
-      }
-
-      const data: SearchResponse = await response.json();
-      setIdentifiedProduct(data.identified || "");
-      setResultSource(data.source);
-
-      if (data.source === "pickopick") {
-        setSearchPhase("searching-local");
-      } else {
-        setSearchPhase("searching-external");
-      }
-
-      await new Promise((r) => setTimeout(r, 400));
-      setResults(data.results || []);
-    } catch (error: any) {
-      console.error("Search error:", error);
-      if (
-        error.message?.includes("Quota Exceeded") ||
-        error.message?.includes("429")
-      ) {
-        setIsQuotaExceeded(true);
-      } else {
-        setErrorMessage(error.message || "Search failed. Please try again.");
-      }
-      setResults([]);
-    } finally {
-      setIsSearching(false);
-      setSearchPhase("idle");
-    }
-  };
-
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      processImageFile(files[0]);
     }
   };
 
@@ -396,11 +320,10 @@ export function ImageSearch() {
     if (!productLink.trim()) return;
 
     setIsSearching(true);
+    setHasSearched(true);
     setResults([]);
-    setResultSource(null);
     setIdentifiedProduct("");
     setErrorMessage("");
-    setIsQuotaExceeded(false);
 
     try {
       setSearchPhase("identifying");
@@ -418,26 +341,19 @@ export function ImageSearch() {
 
       const data: SearchResponse = await response.json();
       setIdentifiedProduct(data.identified || "");
-      setResultSource(data.source);
-
-      if (data.source === "pickopick" || data.source === "mixed") {
-        setSearchPhase("searching-local");
-      } else {
-        setSearchPhase("searching-external");
-      }
-
-      await new Promise((r) => setTimeout(r, 400));
       setResults(data.results || []);
+
+      window.setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
     } catch (error: any) {
-      console.error("Link Search error:", error);
-      if (
-        error.message?.includes("Quota Exceeded") ||
-        error.message?.includes("429")
-      ) {
-        setIsQuotaExceeded(true);
-      } else {
-        setErrorMessage(error.message || "Search failed. Please try again.");
-      }
+      setErrorMessage(
+        error.message ||
+          "Could not fetch details for this link. Please check the URL or try searching again.",
+      );
       setResults([]);
     } finally {
       setIsSearching(false);
@@ -445,48 +361,13 @@ export function ImageSearch() {
     }
   };
 
-  const handleManualSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!manualProductName.trim()) return;
-
-    setIsSearching(true);
-    setResults([]);
-    setErrorMessage("");
-    setIsQuotaExceeded(false);
-
-    try {
-      setSearchPhase("searching-local");
-      const response = await fetch("/api/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: manualProductName.trim() }),
-      });
-
-      if (!response.ok) throw new Error("Search failed");
-      const data: SearchResponse = await response.json();
-      setIdentifiedProduct(data.identified || manualProductName);
-      setResultSource(data.source);
-      setResults(data.results || []);
-    } catch {
-      setErrorMessage("Search failed. Please try again.");
-    } finally {
-      setIsSearching(false);
-      setSearchPhase("idle");
-    }
-  };
-
   const handleReset = () => {
-    setSelectedImage(null);
     setProductLink("");
     setResults([]);
-    setResultSource(null);
     setIdentifiedProduct("");
     setSearchPhase("idle");
     setErrorMessage("");
-    setIsDragging(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setHasSearched(false);
   };
 
   const getSourceConfig = (source: string) => {
@@ -497,484 +378,289 @@ export function ImageSearch() {
     <section
       id="search-by-image"
       ref={sectionRef}
-      className="pt-14 pb-28 bg-[#F7F9FF] scroll-mt-24"
+      className="relative bg-[#F9FBFE] scroll-mt-24"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-8">
-        {/* Header - Redesigned 'Find it . Buy it . Ship it .' */}
-        <div className="text-center mb-10 sm:mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-xs font-bold uppercase tracking-widest text-[#0B56D9]"
-          >
-            <Sparkles size={14} className="text-[#FF6321]" />
-            Universal Assisted Shopping
-          </motion.div>
+      {/* Top Minute Zigzag Border (Blue & White) */}
+      <ZigzagBorder position="top" />
 
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.08 }}
-            className="mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight text-[#0A1931]"
-          >
-            Find it . Buy it . Ship it .
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.16 }}
-            className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-slate-600 leading-relaxed"
-          >
-            Found something you want from India? Paste the product URL or upload
-            a picture. We source it directly, consolidate your packages, and
-            deliver globally.
-          </motion.p>
-        </div>
-
-        {/* Dual Tab Switcher: Search by Link vs Search by Image */}
-        <div className="flex justify-center mb-10">
-          <div className="inline-flex p-1.5 rounded-2xl bg-white border border-slate-200/90 shadow-sm gap-1">
-            <button
-              type="button"
-              onClick={switchToLinkSearch}
-              className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
-                searchType === "link"
-                  ? "bg-[#0B56D9] text-white shadow-md shadow-[#0B56D9]/20"
-                  : "text-slate-600 hover:text-[#0A1931] hover:bg-slate-50"
-              }`}
-            >
-              <Link2 size={16} />
-              <span>Search by Product Link</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={switchToImageSearch}
-              className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
-                searchType === "image"
-                  ? "bg-[#0B56D9] text-white shadow-md shadow-[#0B56D9]/20"
-                  : "text-slate-600 hover:text-[#0A1931] hover:bg-slate-50"
-              }`}
-            >
-              <ImageIcon size={16} />
-              <span>Search by Image</span>
-            </button>
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-14 sm:py-18">
+        {/* Section Header */}
+        <div className="text-center mb-7">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-100 bg-blue-50/70 text-[11px] font-extrabold uppercase tracking-widest text-[#0B56D9]">
+            <Sparkles size={13} className="text-[#FF6321]" />
+            Universal Buy &amp; Ship Service
           </div>
+
+          <h2 className="mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight text-[#0A1931]">
+            Find it . Buy it . Ship it .
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-xl text-sm sm:text-base text-slate-600 leading-relaxed">
+            Paste any Indian product link. PickoPick will buy it for you and ship it worldwide.
+
+          </p>
         </div>
 
-        {/* Main 2-Column Search Container */}
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          {/* Left Column: Search Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm"
-          >
-            {searchType === "link" ? (
-              <div
-                id="product-link-input-card"
-                className="flex flex-col justify-center"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 bg-[#0B56D9]/10 text-[#0B56D9] rounded-2xl flex items-center justify-center">
-                      <Link2 size={22} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-extrabold text-[#0A1931]">
-                        Paste Product URL
-                      </h3>
-                      <p className="text-xs text-slate-500">
-                        From any Indian store or marketplace
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handlePasteClipboard}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:border-[#0B56D9] hover:text-[#0B56D9] hover:bg-blue-50/50 transition-colors"
-                    title="Paste from clipboard"
-                  >
-                    <Clipboard size={14} />
-                    <span>Paste</span>
-                  </button>
-                </div>
+        {/* Single Direct Search Input Card - Minimal 1px Border, Zero Shadows, No Tabs */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-7">
+          <form onSubmit={handleLinkSearch} className="space-y-4">
+            <label
+              htmlFor="product-url-input"
+              className="block text-xs font-bold uppercase tracking-wider text-slate-700"
+            >
+              Paste Indian Product URL:
+            </label>
 
-                <form onSubmit={handleLinkSearch} className="space-y-4">
-                  <div className="relative">
-                    <input
-                      ref={productLinkInputRef}
-                      type="url"
-                      placeholder="https://www.amazon.in/dp/... or Myntra, Flipkart, etc."
-                      required
-                      value={productLink}
-                      onChange={(e) => setProductLink(e.target.value)}
-                      className="w-full px-4 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl focus:bg-white focus:border-[#0B56D9] focus:ring-4 focus:ring-blue-100 outline-none transition-all pr-12 text-sm text-[#0A1931] placeholder:text-slate-400 font-medium"
-                    />
-                    <Search
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-                      size={18}
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isSearching || !productLink.trim()}
-                    className="w-full py-3.5 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-md shadow-blue-600/20 flex items-center justify-center gap-2"
-                  >
-                    {isSearching ? (
-                      <>
-                        <RefreshCw size={16} className="animate-spin" />
-                        <span>Analyzing Link...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Search Product</span>
-                        <ArrowRight size={16} />
-                      </>
-                    )}
-                  </button>
-                </form>
-
-                {/* Supported Stores Badges */}
-                <div className="mt-6 pt-5 border-t border-slate-100">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 block mb-2.5">
-                    Works seamlessly with:
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {supportedStores.map((store) => (
-                      <span
-                        key={store.name}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-600"
-                      >
-                        <CheckCircle2 size={12} className="text-emerald-500" />
-                        {store.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* Image Search UI */
-              <div>
+            <div className="flex flex-col sm:flex-row items-stretch gap-2">
+              <div className="relative flex-1">
                 <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="hidden"
-                  id="image-upload-input"
+                  ref={productLinkInputRef}
+                  id="product-url-input"
+                  type="url"
+                  placeholder="https://www.amazon.in/... or Flipkart, Myntra, Ajio, Nykaa"
+                  required
+                  value={productLink}
+                  onChange={(e) => setProductLink(e.target.value)}
+                  className="w-full h-12 px-4 bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-[#0B56D9] outline-none transition-colors pr-24 text-sm text-[#0A1931] placeholder:text-slate-400 font-medium"
                 />
 
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragEnter={handleDragEnter}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  className={`border-2 border-dashed rounded-3xl p-8 sm:p-10 flex flex-col items-center justify-center text-center min-h-[360px] transition-all cursor-pointer group relative overflow-hidden ${
-                    isDragging
-                      ? "border-[#0B56D9] bg-blue-50/80 scale-[1.01]"
-                      : selectedImage
-                        ? "border-blue-300 bg-blue-50/20"
-                        : "border-slate-200 hover:border-[#0B56D9] hover:bg-blue-50/40"
-                  }`}
+                {/* Paste button inside the field */}
+                <button
+                  type="button"
+                  onClick={handlePasteClipboard}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:border-[#0B56D9] hover:text-[#0B56D9] transition-colors"
+                  title="Paste link from clipboard"
                 >
-                  {isDragging && (
-                    <div className="absolute inset-0 bg-blue-50/95 flex items-center justify-center z-10 rounded-3xl">
-                      <div className="text-center">
-                        <Upload
-                          size={44}
-                          className="text-[#0B56D9] mx-auto mb-3 animate-bounce"
-                        />
-                        <p className="text-[#0B56D9] font-extrabold text-base">
-                          Drop your product photo here
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedImage ? (
-                    <div className="relative w-full flex flex-col items-center">
-                      <div className="relative w-full aspect-video rounded-2xl overflow-hidden mb-6 bg-slate-100 border border-slate-200 shadow-lg">
-                        <img
-                          src={selectedImage}
-                          alt="Selected product"
-                          className="w-full h-full object-contain"
-                        />
-                        {isSearching && (
-                          <motion.div
-                            initial={{ top: "-10%" }}
-                            animate={{ top: "110%" }}
-                            transition={{
-                              duration: 1.8,
-                              repeat: Infinity,
-                              ease: "linear",
-                            }}
-                            className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#0B56D9] to-transparent shadow-[0_0_15px_rgba(11,86,217,0.8)] z-20"
-                          />
-                        )}
-                      </div>
-
-                      {!isSearching && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleReset();
-                          }}
-                          className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-bold transition-all inline-flex items-center gap-1.5"
-                        >
-                          <RefreshCw size={14} />
-                          <span>Change Photo</span>
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <>
-                      <div className="w-16 h-16 rounded-2xl bg-blue-50 text-[#0B56D9] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Upload size={28} />
-                      </div>
-                      <h3 className="text-base font-extrabold text-[#0A1931] mb-1">
-                        Upload Product Photo
-                      </h3>
-                      <p className="text-xs text-slate-500 mb-6 max-w-xs">
-                        Drag &amp; drop an image, screenshot, or click to browse
-                        files
-                      </p>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          fileInputRef.current?.click();
-                        }}
-                        className="px-6 py-2.5 rounded-full bg-[#0B56D9] text-white text-xs font-extrabold uppercase tracking-wide hover:bg-[#0849B7] transition-all shadow-md shadow-blue-600/20"
-                      >
-                        Select Image
-                      </button>
-                    </>
-                  )}
-                </div>
+                  <Clipboard size={13} />
+                  <span>Paste</span>
+                </button>
               </div>
-            )}
-          </motion.div>
 
-          {/* Right Column: Search Results Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 flex flex-col min-h-[420px] shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0B56D9]/10 text-[#0B56D9]">
-                  <Package size={20} />
-                </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-[#0A1931]">
-                    Matching Products
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Live Indian catalog verification
-                  </p>
-                </div>
-              </div>
-              {results.length > 0 && (
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    resultSource === "pickopick"
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-amber-100 text-amber-700"
-                  }`}
-                >
-                  {results.length} Found
-                </span>
-              )}
+              <button
+                type="submit"
+                disabled={isSearching || !productLink.trim()}
+                className="h-12 px-7 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2 shrink-0"
+              >
+                {isSearching ? (
+                  <>
+                    <RefreshCw size={14} className="animate-spin" />
+                    <span>Analyzing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Find Product</span>
+                    <ArrowRight size={14} />
+                  </>
+                )}
+              </button>
             </div>
 
-            {/* Identified product banner */}
-            {identifiedProduct && !isSearching && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4 px-4 py-2.5 rounded-2xl bg-blue-50 border border-blue-100 flex items-center gap-2 text-xs font-semibold text-[#0B56D9]"
-              >
-                <Sparkles size={16} />
-                <span>
-                  Identified: <strong>{identifiedProduct}</strong>
+            {/* Supported Stores Row */}
+            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-slate-500 font-bold mr-1">
+                Supported stores:
+              </span>
+              {supportedStores.map((store) => (
+                <span
+                  key={store}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-slate-200/80 bg-slate-50/70 text-[11px] font-semibold text-slate-700"
+                >
+                  <CheckCircle2 size={11} className="text-emerald-600" />
+                  {store}
                 </span>
+              ))}
+            </div>
+          </form>
+        </div>
+
+        {/* Results Area: ONLY Shown After User Searches */}
+        <div ref={resultsRef}>
+          <AnimatePresence>
+            {isSearching && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="mt-6 p-6 rounded-2xl border border-blue-100 bg-white text-center"
+              >
+                <div className="w-9 h-9 border-3 border-blue-100 border-t-[#0B56D9] rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-sm font-bold text-[#0A1931]">
+                  {searchPhase === "identifying" &&
+                    "Analyzing link and fetching product details..."}
+                  {searchPhase === "searching-local" &&
+                    "Checking warehouse availability..."}
+                  {searchPhase === "searching-external" &&
+                    "Fetching live prices from Indian stores..."}
+                  {searchPhase === "idle" && "Finding product..."}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Connecting to Indian e-commerce verification servers
+                </p>
               </motion.div>
             )}
 
-            <div className="flex-1 overflow-y-auto pr-1">
-              <AnimatePresence mode="wait">
-                {isSearching ? (
-                  <motion.div
-                    key="searching"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex flex-col items-center justify-center h-full py-16"
-                  >
-                    <div className="w-12 h-12 border-4 border-blue-100 border-t-[#0B56D9] rounded-full animate-spin mb-4" />
-                    <p className="text-xs font-bold text-slate-600 animate-pulse text-center">
-                      {searchPhase === "identifying" &&
-                        "🤖 AI is analyzing the product..."}
-                      {searchPhase === "searching-local" &&
-                        "🛒 Searching PickoPick warehouse catalog..."}
-                      {searchPhase === "searching-external" &&
-                        "🌐 Sourcing live across Indian stores..."}
-                      {searchPhase === "idle" && "Searching..."}
-                    </p>
-                  </motion.div>
-                ) : errorMessage ? (
-                  <motion.div
-                    key="error"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex flex-col items-center justify-center text-center py-12"
-                  >
-                    <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-3 text-red-500">
-                      <AlertCircle size={24} />
+            {errorMessage && !isSearching && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="mt-6 p-6 rounded-2xl border border-red-100 bg-red-50/40 text-center"
+              >
+                <div className="w-9 h-9 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-2">
+                  <AlertCircle size={20} />
+                </div>
+                <h4 className="text-sm font-bold text-red-900">
+                  Could Not Load Product
+                </h4>
+                <p className="text-xs text-red-700 mt-1 max-w-md mx-auto">
+                  {errorMessage}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="mt-3 px-4 py-1.5 rounded-xl bg-white border border-red-200 text-xs font-bold text-red-700 hover:bg-red-50"
+                >
+                  Clear &amp; Try Another Link
+                </button>
+              </motion.div>
+            )}
+
+            {results.length > 0 && !isSearching && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="mt-7 space-y-3.5"
+              >
+                {/* Result Summary Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl border border-slate-200/80 bg-white">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-100">
+                      <Package size={15} />
+                    </span>
+                    <div>
+                      <p className="text-xs font-bold text-[#0A1931]">
+                        {identifiedProduct
+                          ? `Identified: ${identifiedProduct}`
+                          : "Product Match Found"}
+                      </p>
+                      <p className="text-[11px] text-slate-500">
+                        Choose your preferred source below to proceed with
+                        PickoPick shipping
+                      </p>
                     </div>
-                    <p className="text-sm font-extrabold text-red-700 mb-1">
-                      Search Interrupted
-                    </p>
-                    <p className="text-xs text-slate-500 mb-5 max-w-xs">
-                      {errorMessage}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="px-5 py-2 bg-slate-100 text-slate-700 rounded-full text-xs font-bold hover:bg-slate-200 transition-colors"
-                    >
-                      Reset &amp; Try Again
-                    </button>
-                  </motion.div>
-                ) : isQuotaExceeded ? (
-                  <motion.div
-                    key="quota"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex flex-col items-center justify-center text-center py-6"
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-red-600"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center mb-3 text-amber-600">
-                      <ImageIcon size={24} />
-                    </div>
-                    <p className="text-sm font-extrabold text-[#0A1931] mb-1">
-                      Help us locate this item
-                    </p>
-                    <p className="text-xs text-slate-500 max-w-xs mb-4">
-                      Enter the item name below and we'll check our warehouse
-                      catalog immediately.
-                    </p>
-                    <form
-                      onSubmit={handleManualSearch}
-                      className="w-full space-y-3"
-                    >
-                      <input
-                        type="text"
-                        placeholder="e.g. Silk Kurta, Kitchenware, Snacks..."
-                        required
-                        value={manualProductName}
-                        onChange={(e) => setManualProductName(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0B56D9]"
-                      />
-                      <button
-                        type="submit"
-                        className="w-full py-3 bg-[#0B56D9] text-white rounded-xl text-xs font-bold uppercase tracking-wider"
+                    <X size={13} />
+                    <span>New Search</span>
+                  </button>
+                </div>
+
+                {/* Product List */}
+                <div className="grid sm:grid-cols-2 gap-3.5">
+                  {results.map((product) => {
+                    const config = getSourceConfig(product.source);
+                    const rawImage =
+                      product.image ||
+                      product.imageURL ||
+                      product.imageUrl ||
+                      product.thumbnail ||
+                      "";
+                    return (
+                      <div
+                        key={product.id}
+                        className={`flex flex-col justify-between rounded-2xl border bg-white p-4 transition-colors ${config.border}`}
                       >
-                        Search Catalog
-                      </button>
-                    </form>
-                  </motion.div>
-                ) : results.length > 0 ? (
-                  <motion.div
-                    key="results"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="grid gap-3"
-                  >
-                    {results.map((product) => {
-                      const config = getSourceConfig(product.source);
-                      return (
-                        <div
-                          key={product.id}
-                          className={`flex gap-3 p-3.5 rounded-2xl border bg-white hover:border-[#0B56D9]/40 hover:shadow-sm transition-all ${config.border}`}
-                        >
-                          <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-slate-50 flex items-center justify-center border border-slate-100">
-                            {product.image ? (
-                              <img
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="opacity-30">
-                                {config.logo("w-8 h-8")}
-                              </div>
-                            )}
-                          </div>
+                        <div className="flex gap-3.5">
+                          {/* Real Product Image from response or clean 'No image' state */}
+                          <ProductImage src={rawImage} alt={product.name} />
 
-                          <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                              <h4 className="font-bold text-xs text-[#0A1931] line-clamp-2">
-                                {product.name}
-                              </h4>
-                              <div className="mt-1 flex items-center gap-2">
-                                <span
-                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${config.bg} ${config.color}`}
-                                >
-                                  {config.label}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100">
-                              <span className="text-sm font-extrabold text-[#0B56D9]">
-                                {product.price}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => handleAddToCart(product)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-lg text-xs font-bold shadow-sm transition-all"
-                              >
-                                <ShoppingCart size={13} />
-                                <span>Add to Cart</span>
-                              </button>
-                            </div>
+                          <div className="flex-1 min-w-0">
+                            <span
+                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${config.bg} ${config.color} mb-1`}
+                            >
+                              {config.label}
+                            </span>
+                            <h4 className="text-xs font-bold text-[#0A1931] line-clamp-2 leading-snug">
+                              {product.name}
+                            </h4>
+                            <p className="text-base font-extrabold text-[#0B56D9] mt-1.5">
+                              {product.price}
+                            </p>
+                            <p className="text-[11px] text-slate-500 mt-0.5">
+                              Store: {product.store}
+                            </p>
                           </div>
                         </div>
-                      );
-                    })}
-                  </motion.div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-center py-14">
-                    <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-3 text-[#0B56D9]">
-                      <Search size={26} />
-                    </div>
-                    <p className="text-xs font-extrabold text-[#0A1931]">
-                      Ready for your product query
-                    </p>
-                    <p className="text-[11px] text-slate-500 max-w-xs mt-1">
-                      Paste a URL from any Indian e-commerce store or upload a
-                      picture on the left to begin.
-                    </p>
-                  </div>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
+
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                          {product.url ? (
+                            <a
+                              href={product.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-semibold text-slate-600 hover:text-[#0B56D9] inline-flex items-center gap-1"
+                            >
+                              <span>View Product</span>
+                              <ExternalLink size={12} />
+                            </a>
+                          ) : (
+                            <div />
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => handleAddToCart(product)}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-bold transition-colors"
+                          >
+                            <ShoppingCart size={13} />
+                            <span>Choose Product</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {hasSearched &&
+              results.length === 0 &&
+              !isSearching &&
+              !errorMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mt-6 p-6 rounded-2xl border border-slate-200 bg-white text-center"
+                >
+                  <p className="text-sm font-bold text-[#0A1931]">
+                    No exact match found
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Try checking the link or pasting another product link from
+                    Amazon India, Flipkart, or Myntra.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="mt-3 px-4 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                  >
+                    Try Again
+                  </button>
+                </motion.div>
+              )}
+          </AnimatePresence>
         </div>
       </div>
+
+      {/* Bottom Minute Zigzag Border (Blue & White) */}
+      <ZigzagBorder position="bottom" />
     </section>
   );
 }
