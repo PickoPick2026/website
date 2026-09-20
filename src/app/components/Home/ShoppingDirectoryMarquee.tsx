@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ShoppingBag, Sparkles } from "lucide-react"
-import { LoginModal } from "./LoginModal"
+import { LoginModal } from "../LoginModal"
 import { supabase } from "@/src/lib/supabase"
 
 interface MarqueeProduct {

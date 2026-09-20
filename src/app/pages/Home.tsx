@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import Lenis from "lenis";
 
-import { StoryFlow } from "../components/StoryFlow";
-import { Hero } from "../components/Hero";
-import { ImageSearch } from "../components/ImageSearch";
-import { TrustMetrics } from "../components/TrustMetrics";
-import { Services } from "../components/Services";
-import { ShoppingDirectoryMarquee } from "../components/ShoppingDirectoryMarquee";
-import { Testimonials } from "../components/Testimonials";
-import { ShopBanner } from "../components/ShopBanner";
-import { LiveActivity } from "../components/LiveActivity";
-import { HeroMobile } from "../components/HeroMobile";
-import { AboutUs } from "../components/AboutUs";
+import {
+  Hero,
+  HeroMobile,
+  ImageSearch,
+  PlanShipmentSection,
+  AboutUs,
+  WhyChooseUs,
+  StoryFlow,
+  Services,
+  ShoppingDirectoryMarquee,
+  Testimonials,
+  ShopBanner,
+} from "../components/Home";
 import { CompanyVision } from "../components/CompanyVision";
 import { ConsultationModal } from "../components/NRI/ConsultationModal";
 import { WelcomePopup } from "../components/WelcomePopup";
@@ -69,6 +71,7 @@ export default function Home() {
   return (
     <main className="bg-white text-slate-900">
       <WelcomePopup />
+
       {/* MOBILE HERO */}
       <div className="block sm:hidden">
         <HeroMobile />
@@ -78,19 +81,35 @@ export default function Home() {
       <div className="hidden sm:block ">
         <Hero />
       </div>
+
+      {/* UNIVERSAL BUY & SHIP SEARCH */}
       <ImageSearch />
-      {/* <TrustMetrics /> */}
+
+      {/* PLAN YOUR SHIPMENT & DIRECT WHATSAPP QUOTE */}
+      <PlanShipmentSection />
+
+      {/* ABOUT US: OUR STORY & CAPABILITIES */}
       <AboutUs />
+
+      {/* WHY CHOOSE PICK O PICK (EXTRACTED COMPONENT) */}
+      <WhyChooseUs />
+
+      {/* 7-STEP JOURNEY */}
       <StoryFlow />
+
+      {/* SERVICES WITH 3D VISUALS */}
       <Services />
+
+      {/* SHOPPING DIRECTORY MARQUEE */}
       <ShoppingDirectoryMarquee />
 
+      {/* CUSTOMER TESTIMONIALS */}
       <Testimonials />
+
+      {/* SHOP BANNER & BRAND PARTNERS */}
       <ShopBanner />
 
-      {/*<LiveActivity />*/}
-
-      {/* Extracted Bottom Section: Vision, Mission, Commitment & Company Info */}
+      {/* Bottom Section: Vision, Mission, Commitment & Company Info */}
       <CompanyVision />
 
       <ConsultationModal

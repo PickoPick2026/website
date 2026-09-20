@@ -1,16 +1,5 @@
 import { Link } from "react-router-dom";
-import {
-  Globe,
-  Package,
-  ShieldCheck,
-  Users,
-  Truck,
-  HeartHandshake,
-  CheckCircle2,
-  Sparkles,
-  MapPin,
-  ArrowRight,
-} from "lucide-react";
+import { Sparkles, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export function AboutUs() {
   const services = [
@@ -21,45 +10,6 @@ export function AboutUs() {
     "Worldwide delivery support",
     "Export assistance for businesses",
     "Shipment tracking & customer support",
-  ];
-
-  const features = [
-    {
-      num: "01",
-      icon: Users,
-      title: "Reliable Support",
-      desc: "Our team assists customers throughout the shopping and shipping process with clear communication and responsive support.",
-    },
-    {
-      num: "02",
-      icon: Package,
-      title: "Flexible Shopping",
-      desc: "Purchase products from local stores, online marketplaces, regional sellers, and specialty shops across India.",
-    },
-    {
-      num: "03",
-      icon: ShieldCheck,
-      title: "Secure Packaging",
-      desc: "Every parcel is carefully packed to reduce transit damage and ensure safe international delivery.",
-    },
-    {
-      num: "04",
-      icon: Globe,
-      title: "Global Reach",
-      desc: "International shipping solutions for customers across multiple countries worldwide.",
-    },
-    {
-      num: "05",
-      icon: HeartHandshake,
-      title: "Easy Communication",
-      desc: "Connect with us via WhatsApp, email, and direct support channels for faster assistance.",
-    },
-    {
-      num: "06",
-      icon: Truck,
-      title: "Reliable Delivery",
-      desc: "Trusted logistics partners help us deliver parcels safely and efficiently worldwide.",
-    },
   ];
 
   return (
@@ -86,7 +36,7 @@ export function AboutUs() {
         </div>
 
         {/* Story & What We Do Grid */}
-        <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 items-stretch mb-16 sm:mb-20">
+        <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
           {/* Left: Our Story (7 cols) */}
           <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-7 sm:p-9 flex flex-col justify-between hover:border-[#0B56D9]/40 transition-colors duration-200">
             <div>
@@ -143,7 +93,7 @@ export function AboutUs() {
               backgroundPosition: "center",
             }}
           >
-            {/* Global blue overlay matching Contact & Tracking sections */}
+            {/* Global blue overlay */}
             <div className="absolute inset-0 bg-[#0B56D9]/85 backdrop-blur-[0.5px] z-0" />
 
             {/* Content */}
@@ -174,7 +124,7 @@ export function AboutUs() {
               </div>
             </div>
 
-            {/* Action button to NRI Services matching global brand button styling */}
+            {/* Action button to NRI Services */}
             <div className="relative z-10 mt-6 pt-4 border-t border-white/20">
               <Link
                 to="/nri"
@@ -184,56 +134,6 @@ export function AboutUs() {
                 <ArrowRight size={14} />
               </Link>
             </div>
-          </div>
-        </div>
-
-        {/* Why Customers Choose Pick O Pick */}
-        <div>
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
-            <span className="inline-block px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              Why Pick O Pick
-            </span>
-
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0A1931] mt-3">
-              Why Customers Choose{" "}
-              <span className="text-[#0B56D9]">Pick O Pick</span>
-            </h3>
-
-            <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-              We focus on making international shopping simple, secure,
-              transparent, and reliable.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {features.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.title}
-                  className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 flex flex-col justify-between hover:border-[#0B56D9]/50 transition-colors duration-200 group"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 text-[#0B56D9] flex items-center justify-center group-hover:bg-[#0B56D9] group-hover:text-white transition-colors duration-200">
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-black text-slate-300 group-hover:text-[#0B56D9] transition-colors tracking-widest">
-                        {item.num}
-                      </span>
-                    </div>
-
-                    <h4 className="text-base font-extrabold text-[#0A1931] tracking-tight group-hover:text-[#0B56D9] transition-colors">
-                      {item.title}
-                    </h4>
-
-                    <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>

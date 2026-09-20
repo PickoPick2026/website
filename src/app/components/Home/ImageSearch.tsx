@@ -18,7 +18,7 @@ import {
   Plane,
   RotateCcw,
 } from "lucide-react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/src/lib/supabase";
 import { toast } from "sonner";
 
 // Inline Brand Logotypes
