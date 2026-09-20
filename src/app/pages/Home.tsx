@@ -11,6 +11,7 @@ import {
   StoryFlow,
   Services,
   ShoppingDirectoryMarquee,
+  PromoBannerDuo,
   Testimonials,
   ShopBanner,
 } from "../components/Home";
@@ -88,11 +89,11 @@ export default function Home() {
       {/* PLAN YOUR SHIPMENT & DIRECT WHATSAPP QUOTE */}
       <PlanShipmentSection />
 
+      <PromoBannerDuo />
       {/* ABOUT US: OUR STORY & CAPABILITIES */}
       <AboutUs />
 
-      {/* WHY CHOOSE PICK O PICK (EXTRACTED COMPONENT) */}
-      <WhyChooseUs />
+      
 
       {/* 7-STEP JOURNEY */}
       <StoryFlow />
@@ -102,6 +103,8 @@ export default function Home() {
 
       {/* SHOPPING DIRECTORY MARQUEE */}
       <ShoppingDirectoryMarquee />
+
+      {/* SIDE-BY-SIDE PROMO BANNERS: TASTE OF INDIA & BEAUTIFUL INDIAN WEAR */}
 
       {/* CUSTOMER TESTIMONIALS */}
       <Testimonials />

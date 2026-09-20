@@ -7,6 +7,7 @@ export { WhyChooseUs } from "./WhyChooseUs";
 export { StoryFlow } from "./StoryFlow";
 export { Services } from "./Services";
 export { ShoppingDirectoryMarquee } from "./ShoppingDirectoryMarquee";
+export { PromoBannerDuo } from "./PromoBannerDuo";
 export { Testimonials } from "./Testimonials";
 export { ShopBanner } from "./ShopBanner";
 export { TrustMetrics } from "./TrustMetrics";
