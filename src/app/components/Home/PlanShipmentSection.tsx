@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   CheckCircle2,
   MapPin,
@@ -9,6 +9,7 @@ import {
   Sparkles,
   ArrowRight,
   ChevronDown,
+  Check,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { CountrySelect, COUNTRIES, CountryOption } from "../ui/CountrySelect";
@@ -41,12 +42,20 @@ const POPULAR_INDIAN_CITIES = [
   "Kochi",
   "Pune",
   "Ahmedabad",
+  "Kolkata",
+  "Jaipur",
+  "Tiruchirappalli",
+  "Salem",
+  "Trivandrum",
 ];
 
 export function PlanShipmentSection() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [pickupCity, setPickupCity] = useState("");
+  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
+  const cityDropdownRef = useRef<HTMLDivElement>(null);
+
   const [destinationCountry, setDestinationCountry] = useState("United States");
   const [dialCode, setDialCode] = useState("+1");
   const [whatsappNumber, setWhatsappNumber] = useState("");
@@ -55,6 +64,7 @@ export function PlanShipmentSection() {
   const [customWeight, setCustomWeight] = useState("");
   const [packageType, setPackageType] = useState("Apparel & Sarees");
   const [showDialDropdown, setShowDialDropdown] = useState(false);
+  const dialDropdownRef = useRef<HTMLDivElement>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<{
@@ -62,6 +72,27 @@ export function PlanShipmentSection() {
     whatsappUrl: string;
   } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        cityDropdownRef.current &&
+        !cityDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsCityDropdownOpen(false);
+      }
+      if (
+        dialDropdownRef.current &&
+        !dialDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDialDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleCountryChange = (countryName: string, country: CountryOption) => {
     setDestinationCountry(countryName);
@@ -77,6 +108,10 @@ export function PlanShipmentSection() {
     return selectedWeightPreset;
   };
 
+  const filteredCities = POPULAR_INDIAN_CITIES.filter((city) =>
+    city.toLowerCase().includes(pickupCity.toLowerCase().trim()),
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
@@ -87,7 +122,7 @@ export function PlanShipmentSection() {
     }
 
     if (!pickupCity.trim()) {
-      setErrorMsg("Please specify the pickup city in India.");
+      setErrorMsg("Please specify the pickup location in India.");
       return;
     }
 
@@ -136,7 +171,7 @@ export function PlanShipmentSection() {
       }
 
       if (!waUrl) {
-        const message = `Hello PickoPick team! 👋\n\nI would like to request an international shipping quote:\n\n📋 *Request ID:* ${generatedRequestId}\n👤 *Customer Name:* ${customerName.trim()}\n📱 *WhatsApp:* ${fullPhone}\n📧 *Email:* ${customerEmail.trim() || "Not provided"}\n📍 *Pickup City:* ${pickupCity.trim()}, India\n🌍 *Destination Country:* ${destinationCountry.trim()}\n⚖️ *Approx. Weight:* ${effectiveWeight} kg\n📦 *Package Type:* ${packageType}\n\nPlease share the best available shipping rate and pickup schedule. Thank you!`;
+        const message = `Hello PickoPick team! 👋\n\nI would like to request an international shipping quote:\n\n📋 *Request ID:* ${generatedRequestId}\n👤 *Customer Name:* ${customerName.trim()}\n📱 *WhatsApp:* ${fullPhone}\n📧 *Email:* ${customerEmail.trim() || "Not provided"}\n📍 *Pickup Location:* ${pickupCity.trim()}, India\n🌍 *Destination Country:* ${destinationCountry.trim()}\n⚖️ *Approx. Weight:* ${effectiveWeight} kg\n📦 *Package Type:* ${packageType}\n\nPlease share the best available shipping rate and pickup schedule. Thank you!`;
 
         waUrl = `https://wa.me/919790361222?text=${encodeURIComponent(message)}`;
       }
@@ -259,7 +294,7 @@ export function PlanShipmentSection() {
                         required
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
-                        placeholder="e.g. Priya Sharma"
+                        placeholder="Enter your name"
                         className="w-full h-12 pl-10 pr-3.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-[#0A1931] placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9] transition-all"
                       />
                     </div>
@@ -281,39 +316,108 @@ export function PlanShipmentSection() {
                         type="email"
                         value={customerEmail}
                         onChange={(e) => setCustomerEmail(e.target.value)}
-                        placeholder="name@example.com"
+                        placeholder="Enter your email"
                         className="w-full h-12 pl-10 pr-3.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-[#0A1931] placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9] transition-all"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* 2. Pickup City in India */}
-                <div>
+                {/* 2. Pickup Location in India (Interactive Searchable Dropdown) */}
+                <div ref={cityDropdownRef} className="relative">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Pickup City in India{" "}
+                    Pickup Location in India{" "}
                     <span className="text-[#FF6321]">*</span>
                   </label>
                   <div className="relative">
                     <MapPin
                       size={16}
-                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10"
                     />
                     <input
                       type="text"
-                      list="plan-pickup-cities"
                       required
                       value={pickupCity}
-                      onChange={(e) => setPickupCity(e.target.value)}
-                      placeholder="e.g. Chennai, Bangalore, Mumbai, Delhi, Hyderabad"
-                      className="w-full h-12 pl-10 pr-3.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-[#0A1931] placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9] transition-all"
+                      onFocus={() => setIsCityDropdownOpen(true)}
+                      onChange={(e) => {
+                        setPickupCity(e.target.value);
+                        setIsCityDropdownOpen(true);
+                      }}
+                      placeholder="Enter your location"
+                      className="w-full h-12 pl-10 pr-10 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-[#0A1931] placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9] transition-all"
                     />
-                    <datalist id="plan-pickup-cities">
-                      {POPULAR_INDIAN_CITIES.map((city) => (
-                        <option key={city} value={city} />
-                      ))}
-                    </datalist>
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setIsCityDropdownOpen((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                    >
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform duration-200 ${
+                          isCityDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
                   </div>
+
+                  {/* Dropdown Menu for Popular Cities */}
+                  {isCityDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                      <div className="p-2 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                          Popular Hubs & Cities
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          Or type any Indian city
+                        </span>
+                      </div>
+
+                      <div className="max-h-48 overflow-y-auto p-1.5">
+                        {filteredCities.length > 0 ? (
+                          filteredCities.map((city) => {
+                            const isSelected =
+                              pickupCity.toLowerCase().trim() ===
+                              city.toLowerCase();
+                            return (
+                              <button
+                                key={city}
+                                type="button"
+                                onClick={() => {
+                                  setPickupCity(city);
+                                  setIsCityDropdownOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 rounded-lg flex items-center justify-between text-xs text-left transition-colors cursor-pointer ${
+                                  isSelected
+                                    ? "bg-blue-50 text-[#0B56D9] font-bold"
+                                    : "hover:bg-slate-50 text-slate-700 font-medium"
+                                }`}
+                              >
+                                <span className="flex items-center gap-2">
+                                  <MapPin
+                                    size={13}
+                                    className={
+                                      isSelected
+                                        ? "text-[#0B56D9]"
+                                        : "text-slate-400"
+                                    }
+                                  />
+                                  <span>{city}</span>
+                                </span>
+                                {isSelected && (
+                                  <Check size={14} className="text-[#0B56D9]" />
+                                )}
+                              </button>
+                            );
+                          })
+                        ) : (
+                          <div className="px-3 py-2 text-xs text-slate-500">
+                            Use "{pickupCity.trim()}" as pickup location
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* 3. Destination Country (Custom Flag Dropdown) */}
@@ -332,7 +436,7 @@ export function PlanShipmentSection() {
                   </label>
                   <div className="flex gap-2">
                     {/* Dial Code Selector */}
-                    <div className="relative shrink-0">
+                    <div ref={dialDropdownRef} className="relative shrink-0">
                       <button
                         type="button"
                         onClick={() => setShowDialDropdown(!showDialDropdown)}
@@ -378,7 +482,7 @@ export function PlanShipmentSection() {
                         required
                         value={whatsappNumber}
                         onChange={(e) => setWhatsappNumber(e.target.value)}
-                        placeholder="Enter phone or WhatsApp number"
+                        placeholder="Enter your phone or WhatsApp number"
                         className="w-full h-12 pl-10 pr-3.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-[#0A1931] placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-[#0B56D9] focus:ring-1 focus:ring-[#0B56D9] transition-all"
                       />
                     </div>
