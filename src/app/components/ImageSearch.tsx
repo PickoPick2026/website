@@ -13,6 +13,9 @@ import {
   ArrowRight,
   X,
   Image as ImageIcon,
+  Copy,
+  Calculator,
+  Plane,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { toast } from "sonner";
@@ -286,6 +289,13 @@ export function ImageSearch() {
     const user = JSON.parse(userStr);
     const price = parseFloat(String(product.price).replace(/[₹,]/g, "")) || 0;
 
+    const customerId = user?.customerID ?? user?.customerId ?? user?.id;
+    if (!customerId) {
+      toast.error("Please login to add items to cart");
+      window.dispatchEvent(new Event("pickopick:open-login"));
+      return;
+    }
+
     const rawImage =
       product.image ||
       product.imageURL ||
@@ -294,21 +304,39 @@ export function ImageSearch() {
       "";
 
     try {
-      const customerId = user?.customerID ?? user?.customerId ?? user?.id;
-      const { error } = await supabase.from("cart").insert([
-        {
+      // 1. Prepare valid payload matching the cart table schema (customer_id, name, price, quantity)
+      const primaryPayload: Record<string, any> = {
+        customer_id: customerId,
+        name: product.name,
+        price: price > 0 ? price : 0,
+        quantity: 1,
+      };
+
+      // Standard 'image' column in cart table (if provided)
+      if (rawImage) {
+        primaryPayload.image = rawImage;
+      }
+
+      let { error } = await supabase.from("cart").insert([primaryPayload]);
+
+      // 2. Fallback: if 'image' is rejected by schema cache, retry with minimal fields
+      if (
+        error &&
+        error.message &&
+        error.message.toLowerCase().includes("schema cache")
+      ) {
+        const minimalPayload = {
           customer_id: customerId,
-          product_name: product.name,
-          product_price: price > 0 ? price : 0,
-          product_image: rawImage,
-          product_url: product.url || productLink || "",
-          store: product.store || "PickoPick",
+          name: product.name,
+          price: price > 0 ? price : 0,
           quantity: 1,
-        },
-      ]);
+        };
+        const retry = await supabase.from("cart").insert([minimalPayload]);
+        error = retry.error;
+      }
 
       if (error) throw error;
-      toast.success("Added to cart successfully!");
+      toast.success(`${product.name.slice(0, 35)}... added to cart! 🛒`);
       window.dispatchEvent(new Event("cart-updated"));
     } catch (err: any) {
       toast.error(err.message || "Failed to add to cart");
@@ -383,98 +411,163 @@ export function ImageSearch() {
       {/* Top Minute Zigzag Border (Blue & White) */}
       <ZigzagBorder position="top" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-14 sm:py-18">
-        {/* Section Header */}
-        <div className="text-center mb-7">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-100 bg-blue-50/70 text-[11px] font-extrabold uppercase tracking-widest text-[#0B56D9]">
-            <Sparkles size={13} className="text-[#FF6321]" />
-            Universal Buy &amp; Ship Service
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-18">
+        {/* Main 2-Column Efficient Layout: Search Concierge + Visual Guide */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-10">
+          {/* Left Column: Headline, Input Bar, 3-Step Guide (7 cols) */}
+          <div className="lg:col-span-7">
+            {/* Tag */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-100 bg-blue-50 text-[11px] font-extrabold uppercase tracking-widest text-[#0B56D9]">
+              <Sparkles size={13} className="text-[#FF6321]" />
+              Universal Buy &amp; Ship Service
+            </div>
+
+            {/* Headline */}
+            <h2 className="mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight text-[#0A1931]">
+              Find it . Buy it . Ship it .
+            </h2>
+
+            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl">
+              Paste any Indian product link. PickoPick will buy it for you and
+              ship it worldwide.
+            </p>
+
+            {/* Direct Search Input Card - Minimal 1px Border, Zero Shadows */}
+            <div className="mt-6 bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6">
+              <form onSubmit={handleLinkSearch} className="space-y-4">
+                <label
+                  htmlFor="product-url-input"
+                  className="block text-xs font-bold uppercase tracking-wider text-slate-700"
+                >
+                  Paste Indian Product URL:
+                </label>
+
+                <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
+                  <div className="relative flex-1">
+                    <input
+                      ref={productLinkInputRef}
+                      id="product-url-input"
+                      type="url"
+                      placeholder="https://www.amazon.in/... or Flipkart, Myntra, Ajio"
+                      required
+                      value={productLink}
+                      onChange={(e) => setProductLink(e.target.value)}
+                      className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:border-[#0B56D9] outline-none transition-colors pr-24 text-sm text-[#0A1931] placeholder:text-slate-400 font-medium"
+                    />
+
+                    {/* Paste button inside the field */}
+                    <button
+                      type="button"
+                      onClick={handlePasteClipboard}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:border-[#0B56D9] hover:text-[#0B56D9] transition-colors cursor-pointer"
+                      title="Paste link from clipboard"
+                    >
+                      <Clipboard size={13} />
+                      <span>Paste</span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSearching || !productLink.trim()}
+                    className="h-12 px-7 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+                  >
+                    {isSearching ? (
+                      <>
+                        <RefreshCw size={14} className="animate-spin" />
+                        <span>Analyzing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Find Product</span>
+                        <ArrowRight size={14} />
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Supported Stores Row */}
+                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-xs">
+                  <span className="text-slate-500 font-bold mr-1">
+                    Supported stores:
+                  </span>
+                  {supportedStores.map((store) => (
+                    <span
+                      key={store}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-slate-200/80 bg-slate-50/70 text-[11px] font-semibold text-slate-700"
+                    >
+                      <CheckCircle2 size={11} className="text-emerald-600" />
+                      {store}
+                    </span>
+                  ))}
+                </div>
+              </form>
+            </div>
+
+            {/* 3 Efficient Quick Steps */}
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              <div className="p-3 rounded-xl bg-white border border-slate-200/80 text-center">
+                <div className="text-[10px] font-black uppercase text-[#0B56D9] tracking-wider">
+                  Step 1
+                </div>
+                <p className="text-xs font-bold text-[#0A1931] mt-0.5">
+                  Copy Store URL
+                </p>
+                <p className="text-[10px] text-slate-500 hidden sm:block mt-0.5">
+                  From any Indian website
+                </p>
+              </div>
+              <div className="p-3 rounded-xl bg-white border border-slate-200/80 text-center">
+                <div className="text-[10px] font-black uppercase text-[#0B56D9] tracking-wider">
+                  Step 2
+                </div>
+                <p className="text-xs font-bold text-[#0A1931] mt-0.5">
+                  Instant Details
+                </p>
+                <p className="text-[10px] text-slate-500 hidden sm:block mt-0.5">
+                  Live price &amp; product match
+                </p>
+              </div>
+              <div className="p-3 rounded-xl bg-white border border-slate-200/80 text-center">
+                <div className="text-[10px] font-black uppercase text-[#0B56D9] tracking-wider">
+                  Step 3
+                </div>
+                <p className="text-xs font-bold text-[#0A1931] mt-0.5">
+                  Global Shipping
+                </p>
+                <p className="text-[10px] text-slate-500 hidden sm:block mt-0.5">
+                  To your doorstep overseas
+                </p>
+              </div>
+            </div>
           </div>
 
-          <h2 className="mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight text-[#0A1931]">
-            Find it . Buy it . Ship it .
-          </h2>
-
-          <p className="mx-auto mt-2 max-w-xl text-sm sm:text-base text-slate-600 leading-relaxed">
-            Paste any Indian product link. PickoPick will buy it for you and ship it worldwide.
-
-          </p>
-        </div>
-
-        {/* Single Direct Search Input Card - Minimal 1px Border, Zero Shadows, No Tabs */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-7">
-          <form onSubmit={handleLinkSearch} className="space-y-4">
-            <label
-              htmlFor="product-url-input"
-              className="block text-xs font-bold uppercase tracking-wider text-slate-700"
-            >
-              Paste Indian Product URL:
-            </label>
-
-            <div className="flex flex-col sm:flex-row items-stretch gap-2">
-              <div className="relative flex-1">
-                <input
-                  ref={productLinkInputRef}
-                  id="product-url-input"
-                  type="url"
-                  placeholder="https://www.amazon.in/... or Flipkart, Myntra, Ajio, Nykaa"
-                  required
-                  value={productLink}
-                  onChange={(e) => setProductLink(e.target.value)}
-                  className="w-full h-12 px-4 bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-[#0B56D9] outline-none transition-colors pr-24 text-sm text-[#0A1931] placeholder:text-slate-400 font-medium"
+          {/* Right Column: 3D Visual Illustration matching PickoPick 3D style (5 cols) */}
+          <div className="lg:col-span-5 flex items-center justify-center">
+            <div className="relative w-full max-w-sm rounded-2xl bg-white border border-slate-200/80 p-4 sm:p-5 flex flex-col items-center">
+              <div className="w-full aspect-square overflow-hidden rounded-xl bg-slate-50/50 flex items-center justify-center">
+                <img
+                  src="/images/link-search-concierge.jpg"
+                  alt="Paste Indian product URL to shop and ship worldwide"
+                  className="w-full h-full object-contain"
+                  loading="lazy"
                 />
-
-                {/* Paste button inside the field */}
-                <button
-                  type="button"
-                  onClick={handlePasteClipboard}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:border-[#0B56D9] hover:text-[#0B56D9] transition-colors"
-                  title="Paste link from clipboard"
-                >
-                  <Clipboard size={13} />
-                  <span>Paste</span>
-                </button>
               </div>
-
-              <button
-                type="submit"
-                disabled={isSearching || !productLink.trim()}
-                className="h-12 px-7 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2 shrink-0"
-              >
-                {isSearching ? (
-                  <>
-                    <RefreshCw size={14} className="animate-spin" />
-                    <span>Analyzing...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Find Product</span>
-                    <ArrowRight size={14} />
-                  </>
-                )}
-              </button>
+              <div className="mt-3 w-full text-center">
+                <p className="text-xs font-extrabold text-[#0A1931]">
+                  Paste URL ➔ We Buy ➔ We Deliver Worldwide
+                </p>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Consolidated &amp; shipped across 220+ countries with DHL
+                  &amp; FedEx
+                </p>
+              </div>
             </div>
-
-            {/* Supported Stores Row */}
-            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-xs">
-              <span className="text-slate-500 font-bold mr-1">
-                Supported stores:
-              </span>
-              {supportedStores.map((store) => (
-                <span
-                  key={store}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-slate-200/80 bg-slate-50/70 text-[11px] font-semibold text-slate-700"
-                >
-                  <CheckCircle2 size={11} className="text-emerald-600" />
-                  {store}
-                </span>
-              ))}
-            </div>
-          </form>
+          </div>
         </div>
 
         {/* Results Area: ONLY Shown After User Searches */}
-        <div ref={resultsRef}>
+        <div ref={resultsRef} className="max-w-4xl mx-auto">
           <AnimatePresence>
             {isSearching && (
               <motion.div
@@ -518,7 +611,7 @@ export function ImageSearch() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="mt-3 px-4 py-1.5 rounded-xl bg-white border border-red-200 text-xs font-bold text-red-700 hover:bg-red-50"
+                  className="mt-3 px-4 py-1.5 rounded-xl bg-white border border-red-200 text-xs font-bold text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   Clear &amp; Try Another Link
                 </button>
@@ -554,7 +647,7 @@ export function ImageSearch() {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-red-600"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-red-600 cursor-pointer"
                   >
                     <X size={13} />
                     <span>New Search</span>
@@ -616,7 +709,7 @@ export function ImageSearch() {
                           <button
                             type="button"
                             onClick={() => handleAddToCart(product)}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-bold transition-colors"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-bold transition-colors cursor-pointer"
                           >
                             <ShoppingCart size={13} />
                             <span>Choose Product</span>
@@ -649,7 +742,7 @@ export function ImageSearch() {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="mt-3 px-4 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                    className="mt-3 px-4 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
                   >
                     Try Again
                   </button>

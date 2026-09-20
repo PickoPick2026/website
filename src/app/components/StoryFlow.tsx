@@ -1,65 +1,144 @@
-import { Globe2, Link as LinkIcon, PackageCheck, PlaneTakeoff, Search, ShoppingBag, Warehouse } from "lucide-react";
+import {
+  Search,
+  Link as LinkIcon,
+  ShoppingBag,
+  Warehouse,
+  PlaneTakeoff,
+  Globe2,
+  PackageCheck,
+  ArrowRight,
+} from "lucide-react";
 
 const steps = [
-  { step: "01", icon: Search, title: "Discover Product", desc: "Find what you love on any Indian store." },
-  { step: "02", icon: LinkIcon, title: "Submit Link", desc: "Share the product URL with Pick O Pick." },
-  { step: "03", icon: ShoppingBag, title: "We Purchase", desc: "Our team buys it locally for you." },
-  { step: "04", icon: Warehouse, title: "Warehouse Check", desc: "Received, inspected, and securely consolidated." },
-  { step: "05", icon: PlaneTakeoff, title: "Global Dispatch", desc: "Packed to international standards for transit." },
-  { step: "06", icon: Globe2, title: "Live Tracking", desc: "Follow updates across international borders." },
-  { step: "07", icon: PackageCheck, title: "Doorstep Arrival", desc: "Safely delivered to your home worldwide." },
+  {
+    num: "1",
+    icon: Search,
+    title: "Discover Product",
+    desc: "Find what you love on any Indian store.",
+  },
+  {
+    num: "2",
+    icon: LinkIcon,
+    title: "Submit Link",
+    desc: "Share the product URL with Pick O Pick.",
+  },
+  {
+    num: "3",
+    icon: ShoppingBag,
+    title: "We Purchase",
+    desc: "Our team buys it locally for you.",
+  },
+  {
+    num: "4",
+    icon: Warehouse,
+    title: "Warehouse Hub",
+    desc: "Received, inspected & consolidated.",
+  },
+  {
+    num: "5",
+    icon: PlaneTakeoff,
+    title: "Global Dispatch",
+    desc: "Packed for international air transit.",
+  },
+  {
+    num: "6",
+    icon: Globe2,
+    title: "Live Tracking",
+    desc: "Follow updates across borders.",
+  },
+  {
+    num: "7",
+    numDone: true,
+    icon: PackageCheck,
+    title: "Doorstep Arrival",
+    desc: "Safely delivered to your home.",
+  },
 ];
 
-function FlowNode({ item, className }: { item: (typeof steps)[number]; className: string }) {
-  const Icon = item.icon;
-  return (
-    <div className={`absolute z-10 w-44 -translate-x-1/2 text-center ${className}`}>
-      <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#0B56D9] bg-white text-[#0B56D9] shadow-[0_4px_14px_rgba(11,86,217,.16)]"><Icon className="h-5 w-5" /></span>
-      <p className="mt-3 text-[10px] font-black uppercase tracking-[.16em] text-[#0B56D9]">Step {item.step}</p>
-      <h3 className="mt-1 text-sm font-extrabold text-[#0A1931]">{item.title}</h3>
-      <p className="mt-1 text-xs leading-relaxed text-slate-600">{item.desc}</p>
-    </div>
-  );
-}
-
 export function StoryFlow() {
-  const [one, two, three, four, five, six, seven] = steps;
   return (
-    <section id="how-it-works" className="overflow-hidden border-y border-slate-100 bg-white py-16 sm:py-24 scroll-mt-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#0B56D9]">How it works</span>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-4xl">Your package journey</h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600">One continuous route from India to your doorstep.</p>
+    <section
+      id="how-it-works"
+      className="py-14 sm:py-18 bg-white border-y border-slate-100 relative overflow-hidden scroll-mt-24"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-14">
+          <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#0B56D9]">
+            How it works
+          </span>
+          <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
+            Your Package Journey
+          </h2>
+          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-600">
+            From the streets of India to your doorstep, follow the seamless path
+            of your order.
+          </p>
         </div>
 
-        <div className="relative mx-auto mt-14 hidden h-[430px] max-w-6xl lg:block">
-          {/* The route: 01 → 02 → 03, straight down through 04 and 05, then 06 → 07 from right to left. */}
-          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
-            <defs><linearGradient id="journey-line" x1="0" x2="1"><stop stopColor="#0B56D9" /><stop offset="1" stopColor="#0B56D9" stopOpacity=".55" /></linearGradient></defs>
-            <path d="M140 58 H500 H860 V178 V300 H500 H140" fill="none" stroke="url(#journey-line)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M140 58 H500 H860 V178 V300 H500 H140" fill="none" stroke="#ffffff" strokeOpacity=".9" strokeWidth="3" strokeLinecap="round" strokeDasharray="18 120">
-              <animate attributeName="stroke-dashoffset" from="138" to="0" dur="3.2s" repeatCount="indefinite" />
-            </path>
-            <path d="M850 58 l10 0 l-5 8 z M852 300 l8 -7 v14 z M150 300 l-10 0 l5 -8 z" fill="#0B56D9" />
-          </svg>
+        {/* Single-Line Flow (Desktop & Tablet) */}
+        <div className="relative">
+          {/* Continuous Connecting Line behind the icons on desktop */}
+          <div className="hidden lg:block absolute top-6 left-[6%] right-[6%] h-0.5 bg-slate-200 -z-0" />
+          <div className="hidden lg:block absolute top-6 left-[6%] right-[6%] h-0.5 bg-gradient-to-r from-[#0B56D9] via-[#0B56D9] to-emerald-500 -z-0 opacity-40" />
 
-          <FlowNode item={one} className="left-[14%] top-[34px]" />
-          <FlowNode item={two} className="left-1/2 top-[34px]" />
-          <FlowNode item={three} className="left-[86%] top-[34px]" />
-          <FlowNode item={four} className="left-[86%] top-[154px]" />
-          <FlowNode item={five} className="left-[86%] top-[276px]" />
-          <FlowNode item={six} className="left-1/2 top-[276px]" />
-          <FlowNode item={seven} className="left-[14%] top-[276px]" />
-        </div>
-
-        <div className="relative mx-auto mt-10 max-w-md lg:hidden">
-          <div className="absolute bottom-5 left-6 top-5 w-px bg-[#0B56D9]/30" />
-          <div className="space-y-7">
-            {steps.map((item) => {
+          {/* 7-Step Grid on desktop, horizontal scroll rail on mobile */}
+          <div className="flex lg:grid lg:grid-cols-7 gap-3 lg:gap-3 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 scrollbar-none snap-x snap-mandatory">
+            {steps.map((item, index) => {
               const Icon = item.icon;
-              return <div key={item.step} className="relative z-10 flex items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-[#0B56D9] bg-white text-[#0B56D9]"><Icon className="h-5 w-5" /></span><div className="pt-0.5"><p className="text-[10px] font-black uppercase tracking-[.16em] text-[#0B56D9]">Step {item.step}</p><h3 className="mt-1 text-sm font-extrabold text-[#0A1931]">{item.title}</h3><p className="mt-1 text-xs leading-relaxed text-slate-600">{item.desc}</p></div></div>;
+              const isLast = index === steps.length - 1;
+              return (
+                <div
+                  key={item.num}
+                  className="min-w-[170px] sm:min-w-[190px] lg:min-w-0 shrink-0 snap-start flex flex-col items-center text-center relative group"
+                >
+                  {/* Icon Node with Number Badge */}
+                  <div className="relative z-10 mb-3.5">
+                    <div
+                      className={`w-12 h-12 rounded-full border-2 bg-white flex items-center justify-center transition-all duration-200 ${
+                        item.numDone
+                          ? "border-emerald-500 text-emerald-600 group-hover:bg-emerald-50"
+                          : "border-[#0B56D9] text-[#0B56D9] group-hover:bg-[#0B56D9] group-hover:text-white"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
+
+                    {/* Clean Number Badge - '1', '2', etc. (NO 'Step' word) */}
+                    <span
+                      className={`absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-[11px] font-black flex items-center justify-center text-white ${
+                        item.numDone ? "bg-emerald-600" : "bg-[#0B56D9]"
+                      }`}
+                    >
+                      {item.num}
+                    </span>
+                  </div>
+
+                  {/* Connecting Arrow between steps on desktop */}
+                  {!isLast && (
+                    <div className="hidden lg:flex absolute top-4 -right-2.5 z-10 w-5 h-5 items-center justify-center text-[#0B56D9]/70">
+                      <ArrowRight size={13} strokeWidth={2.5} />
+                    </div>
+                  )}
+
+                  {/* Content Container (Cleanly below the line, zero overlap) */}
+                  <div className="w-full px-1">
+                    <h4 className="text-xs sm:text-sm font-extrabold text-[#0A1931] group-hover:text-[#0B56D9] transition-colors leading-tight">
+                      {item.title}
+                    </h4>
+                    <p className="mt-1.5 text-[11px] text-slate-500 leading-snug">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              );
             })}
+          </div>
+
+          {/* Mobile Swipe Indicator */}
+          <div className="lg:hidden flex items-center justify-center gap-1.5 mt-2 text-[11px] text-slate-400 font-semibold">
+            <span>Swipe to follow journey</span>
+            <ArrowRight size={12} className="text-[#0B56D9]" />
           </div>
         </div>
       </div>

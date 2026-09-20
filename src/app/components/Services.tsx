@@ -1,73 +1,98 @@
-import { motion } from 'motion/react';
-import { ShoppingCart, Box, Truck, ShieldCheck, Clock, CreditCard } from 'lucide-react';
-
 const services = [
   {
-    icon: ShoppingCart,
+    num: "01",
+    image: "/images/nri-trust/shop-from-india.webp",
     title: "Personal Shopper",
-    desc: "We buy on your behalf from any Indian store, handling local payments and communications."
+    desc: "We buy on your behalf from any Indian store, handling local payments and communications.",
   },
   {
-    icon: Box,
+    num: "02",
+    image: "/images/nri-trust/consolidate-purchases.webp",
     title: "Package Consolidation",
-    desc: "Combine multiple orders into one shipment to save up to 80% on international shipping costs."
+    desc: "Combine multiple orders into one shipment to save up to 80% on international shipping costs.",
   },
   {
-    icon: Truck,
+    num: "03",
+    image: "/images/nri-trust/international-shipping.webp",
     title: "Global Forwarding",
-    desc: "Partnered with DHL, FedEx, and Aramex for reliable, fast delivery to over 200 countries."
+    desc: "Partnered with DHL, FedEx, and Aramex for reliable, fast delivery to over 200 countries.",
   },
   {
-    icon: ShieldCheck,
+    num: "04",
+    image: "/images/nri-trust/source-with-confidence.webp",
     title: "Quality Inspection",
-    desc: "We verify your items upon arrival at our warehouse, providing photos before shipping."
+    desc: "We verify your items upon arrival at our warehouse, providing photos before shipping.",
   },
   {
-    icon: Clock,
+    num: "05",
+    image: "/images/services/free-storage.jpg",
     title: "Free Storage",
-    desc: "Store your items securely in our warehouse for up to 30 days at no additional cost."
+    desc: "Store your items securely in our warehouse for up to 30 days at no additional cost.",
   },
   {
-    icon: CreditCard,
+    num: "06",
+    image: "/images/services/secure-payments.jpg",
     title: "Secure Payments",
-    desc: "Pay easily in your local currency using international credit cards or PayPal."
-  }
+    desc: "Pay easily in your local currency using international credit cards or PayPal.",
+  },
 ];
 
 export function Services() {
   return (
-    <section id="services" className="py-20 sm:py-24 bg-[#F1F5F9] scroll-mt-24 border-b border-slate-200">
+    <section
+      id="services"
+      className="py-16 sm:py-20 bg-[#F8FAFC] scroll-mt-24 border-b border-slate-200/80"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="inline-block px-3.5 py-1.5 rounded-full bg-slate-200 border border-slate-300 text-xs font-bold uppercase tracking-widest text-[#0A1931]">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
+          <span className="inline-block px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
             Premium Services
           </span>
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
-            Everything you need to shop <span className="text-[#0B56D9]">from India</span> seamlessly.
+            Everything you need to shop{" "}
+            <span className="text-[#0B56D9]">from India</span> seamlessly.
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-600">
-            Shop, consolidate, inspect, store, and ship — all under one trusted roof.
+          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            Shop, consolidate, inspect, store, and ship — all under one trusted
+            roof.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 hover:border-[#0B56D9]/40 transition-colors duration-200"
+        {/* 6 Illustrated Service Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          {services.map((service) => (
+            <div
+              key={service.num}
+              className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 flex flex-col justify-between hover:border-[#0B56D9]/50 transition-colors duration-200 group"
             >
-              <div className="w-14 h-14 mb-5 flex items-center justify-center rounded-xl bg-[#0B56D9]/10 text-[#0B56D9]">
-                <service.icon className="w-7 h-7" />
+              <div>
+                {/* Top: 3D Illustration & Service Index */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center p-1 rounded-xl bg-slate-50/70 border border-slate-100 group-hover:border-blue-100 group-hover:bg-blue-50/40 transition-colors">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="text-xs font-black text-slate-300 group-hover:text-[#0B56D9] transition-colors tracking-widest">
+                    {service.num}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <h3 className="text-base font-extrabold tracking-tight text-[#0A1931] group-hover:text-[#0B56D9] transition-colors">
+                  {service.title}
+                </h3>
+
+                {/* Description */}
+                <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {service.desc}
+                </p>
               </div>
-              <h3 className="text-base font-extrabold tracking-tight text-[#0A1931]">{service.title}</h3>
-              <p className="mt-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {service.desc}
-              </p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
