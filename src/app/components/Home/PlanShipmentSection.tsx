@@ -8,7 +8,6 @@ import {
   Search,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { supabase } from "@/src/lib/supabase";
 import { submitServiceRequest } from "../../../lib/serviceRequests";
 
 // Comprehensive Dial Codes with Flags
@@ -147,6 +146,10 @@ export function PlanShipmentSection() {
       setErrorMsg("Please enter your full name.");
       return;
     }
+    if (!formData.email.trim()) {
+      setErrorMsg("Please enter your email address.");
+      return;
+    }
     if (!formData.mobileNumber.trim()) {
       setErrorMsg("Please enter your contact mobile number.");
       return;
@@ -172,51 +175,17 @@ export function PlanShipmentSection() {
         dropLocation: finalDrop,
         itemsToShip: formData.itemsToShip,
       });
-      setSubmissionSuccess({ requestId: result.requestId, whatsappUrl: result.whatsappUrl });
-      window.open(result.whatsappUrl, "_blank", "noopener,noreferrer");
-      return;
-    } catch (error) {
-      setErrorMsg(error instanceof Error ? error.message : "Something went wrong. Please try again.");
-      return;
-    } finally {
-      setIsSubmitting(false);
-    }
-
-    try {
-      const generatedRequestId = `POP-${Math.floor(100000 + Math.random() * 900000)}`;
-
-      const messageText = `Hello PickoPick Logistics Team! 📦\n\nI want to get an instant shipment quote:\n\n*Reference ID:* ${generatedRequestId}\n*Name:* ${formData.fullName}\n*Phone:* ${formData.dialCode} ${formData.mobileNumber}\n*Email:* ${formData.email || "Not provided"}\n*Pickup (India):* ${finalPickup}\n*Destination (Global):* ${finalDrop}\n*Items to Ship:* ${formData.itemsToShip || "Standard package / Gifts"}\n\nPlease share the lowest express rate & pickup availability!`;
-
-      const waUrl = `https://wa.me/919790361222?text=${encodeURIComponent(messageText)}`;
-
-      // Save inquiry in Supabase for tracking
-      try {
-        await supabase.from("inquiries").insert([
-          {
-            name: formData.fullName,
-            email: formData.email,
-            phone: `${formData.dialCode} ${formData.mobileNumber}`,
-            country: finalDrop,
-            notes: `[QUOTE REQUEST ${generatedRequestId}]\nPickup: ${finalPickup}\nDrop: ${finalDrop}\nItems: ${formData.itemsToShip || "Standard"}`,
-            status: "pending",
-            created_at: new Date().toISOString(),
-          },
-        ]);
-      } catch (insertErr) {
-        console.warn(
-          "Supabase record failed, proceeding with WhatsApp:",
-          insertErr,
-        );
-      }
-
       setSubmissionSuccess({
-        requestId: generatedRequestId,
-        whatsappUrl: waUrl,
+        requestId: result.requestId,
+        whatsappUrl: result.whatsappUrl,
       });
-
-      window.open(waUrl, "_blank", "noopener,noreferrer");
-    } catch (err: any) {
-      setErrorMsg(err.message || "Something went wrong. Please try again.");
+      window.open(result.whatsappUrl, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      setErrorMsg(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -248,7 +217,7 @@ export function PlanShipmentSection() {
           <p className="mt-3 text-base sm:text-lg text-slate-600 font-normal leading-relaxed">
             Doorstep pickup from any Indian city, free repackaging to eliminate
             dead weight, and express worldwide air delivery. Instant quotes
-            shared directly on WhatsApp.
+            shared directly on WhatsApp and email.
           </p>
 
           <div className="mt-4 flex items-center gap-3">
@@ -287,12 +256,11 @@ export function PlanShipmentSection() {
                   Quote Request Initiated!
                 </h3>
                 <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                  Your verification code is{" "}
+                  Your reference code is{" "}
                   <span className="font-mono font-bold text-[#0B56D9] bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
                     {submissionSuccess.requestId}
                   </span>
-                  . WhatsApp has been opened with your pre-filled shipment quote
-                  details.
+                  . WhatsApp has been opened and a confirmation email has been dispatched.
                 </p>
 
                 <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
@@ -318,7 +286,7 @@ export function PlanShipmentSection() {
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-[#0A1931] tracking-tight">
-                    Get Instant WhatsApp Shipping Quote
+                    Get Instant Shipping Quote
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-500 mt-1">
                     Provide your shipment details. We prepare the lowest
@@ -611,7 +579,7 @@ export function PlanShipmentSection() {
                   <span>
                     {isSubmitting
                       ? "Generating Rate Quote..."
-                      : "Send Request & Get Quote via WhatsApp"}
+                      : "Send Request to WhatsApp & Email"}
                   </span>
                   <ArrowRight size={16} />
                 </button>

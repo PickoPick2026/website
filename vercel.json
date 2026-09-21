@@ -1,6 +1,11 @@
 {
   "routes": [
     {
+      "src": "/admin(.*)",
+      "status": 307,
+      "headers": { "Location": "https://pickadmin.vercel.app/" }
+    },
+    {
       "src": "/api/shipments/(?<id>[^/]+)",
       "dest": "/api/shipments.js?id=$id"
     },

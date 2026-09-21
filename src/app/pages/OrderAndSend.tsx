@@ -148,9 +148,9 @@ export default function OrderAndSendPage() {
   const [productLinks, setProductLinks] = useState("");
   const [pickupCity, setPickupCity] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("United States");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [approxWeight, setApproxWeight] = useState("3–5 kg");
   const [parcelType, setParcelType] = useState("Homemade Food & Sweets");
-  const [mobileNumber, setMobileNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -159,7 +159,7 @@ export default function OrderAndSendPage() {
         () =>
           document
             .getElementById("order-and-send-form")
-            ?.scrollIntoView({ behavior: "smooth" }),
+            ?.scrollIntoView(),
         80,
       );
     }
@@ -167,6 +167,7 @@ export default function OrderAndSendPage() {
 
   const handleSubmitQuote = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!pickupCity.trim()) {
       toast.error("Please enter your Indian pickup city or town.");
       return;
@@ -180,7 +181,7 @@ export default function OrderAndSendPage() {
       !productLinks.trim()
     ) {
       toast.error(
-        "Please complete your name, phone, email, item details, and delivery location.",
+        "Please complete your name, phone, email, item details / product links, and delivery location.",
       );
       return;
     }
@@ -248,46 +249,44 @@ export default function OrderAndSendPage() {
               href="#order-and-send-form"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-xs font-extrabold tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50 cursor-pointer"
             >
-              <span>GET INSTANT QUOTE</span>
+              <span>SCHEDULE DOORSTEP PICKUP</span>
               <ArrowRight className="h-4 w-4" />
             </a>
 
             <a
-              href="https://wa.me/919790361222?text=Hello%20PickoPick%20Logistics%2C%20I%20want%20to%20send%20a%20parcel%20from%20India."
+              href="https://wa.me/919790361222?text=Hello%20PickoPick%20Courier%2C%20I%20want%20to%20schedule%20a%20doorstep%20pickup%20in%20India."
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3.5 text-xs font-extrabold tracking-wider text-white transition-colors hover:bg-white/20 cursor-pointer"
             >
               <FaWhatsapp className="h-4 w-4" />
-              <span>BOOK ON WHATSAPP</span>
+              <span>CHAT ON WHATSAPP</span>
             </a>
           </div>
 
-          {/* Trust strip matching NRI HeroSection */}
-          <div className="mx-auto mt-9 flex max-w-3xl flex-wrap justify-center gap-x-6 gap-y-3 border-t border-white/25 pt-5 text-xs text-white/80">
+          {/* Trust points */}
+          <div className="mx-auto mt-9 flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-3 border-t border-white/35 pt-5 text-xs text-white/80">
             <span className="inline-flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-white" /> 25,000+ Indian
-              Pincodes
+              <ShieldCheck className="h-4 w-4 text-[#FF6321]" />
+              Free Doorstep Collection
             </span>
             <span className="inline-flex items-center gap-2">
-              <Scale className="h-4 w-4 text-white" /> Free Box Trimming
+              <Scale className="h-4 w-4 text-[#FF6321]" />
+              Volumetric Box Trimming
             </span>
             <span className="inline-flex items-center gap-2">
-              <Plane className="h-4 w-4 text-white" /> 200+ Global Destinations
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-white" /> 3–5 Days Worldwide
-              Delivery
+              <Plane className="h-4 w-4 text-[#FF6321]" />
+              3–5 Days Express Delivery
             </span>
           </div>
         </div>
       </section>
 
-      {/* Popular Pickup Hubs Ribbon */}
-      <section className="py-4 bg-[#F8FAFC] border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-600">
-          <span className="text-[11px] font-black uppercase tracking-widest text-[#0B56D9] mr-1">
-            Top Pickup Hubs:
+      {/* Pickup Hub Quick Links Bar */}
+      <section className="bg-[#F8FAFC] border-b border-slate-200/80 py-4 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs">
+          <span className="font-extrabold text-[#0A1931] uppercase tracking-wider text-[11px] mr-1">
+            Major Pickup Hubs:
           </span>
           {POPULAR_PICKUP_CITIES.map((city) => (
             <button
@@ -297,7 +296,7 @@ export default function OrderAndSendPage() {
                 setPickupCity(city);
                 document
                   .getElementById("order-and-send-form")
-                  ?.scrollIntoView({ behavior: "smooth" });
+                  ?.scrollIntoView();
               }}
               className="px-3 py-1 rounded-full bg-white border border-slate-200/80 text-slate-700 hover:border-[#0B56D9]/40 hover:text-[#0B56D9] transition-colors cursor-pointer text-xs font-medium"
             >
@@ -403,7 +402,7 @@ export default function OrderAndSendPage() {
                     type="email"
                   />
                   <FormInput
-                    label="Destination City / Zip Code"
+                    label="Where to Send (Destination City / Zip Code)"
                     value={destinationLocation}
                     onChange={setDestinationLocation}
                     placeholder="e.g. London, UK EC1A 1BB"
@@ -449,13 +448,13 @@ export default function OrderAndSendPage() {
                   <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">
                     Approximate Weight Tier
                   </label>
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {WEIGHT_TIERS.map((tier) => (
                       <button
                         key={tier}
                         type="button"
                         onClick={() => setApproxWeight(tier)}
-                        className={`py-2 px-1 text-center rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                           approxWeight === tier
                             ? "bg-[#0B56D9] text-white border border-[#0B56D9]"
                             : "bg-[#F8FAFC] border border-slate-200 text-slate-700 hover:border-[#0B56D9]/40"
@@ -490,10 +489,10 @@ export default function OrderAndSendPage() {
                   </div>
                 </div>
 
-                {/* Items Description */}
+                {/* Product Links / Item Details */}
                 <div>
                   <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Items Inside the Package{" "}
+                    Share Product Links or List Items to Send{" "}
                     <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -501,9 +500,12 @@ export default function OrderAndSendPage() {
                     rows={3}
                     value={productLinks}
                     onChange={(e) => setProductLinks(e.target.value)}
-                    placeholder="e.g. 3 boxes of homemade sweets, 2 cotton kurtas, family photos, certificates..."
+                    placeholder="Share product links from Myntra, Meesho, Instagram, Flipkart, Amazon etc., or list personal items (e.g. homemade sweets, clothes, documents)..."
                     className="w-full p-3 bg-[#F8FAFC] border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-[#0A1931] outline-none transition-colors focus:border-[#0B56D9] focus:bg-white"
                   />
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Paste links from Myntra, Meesho, Instagram, Flipkart, Amazon, or describe packages for doorstep pickup.
+                  </p>
                 </div>
 
                 <div className="pt-2">

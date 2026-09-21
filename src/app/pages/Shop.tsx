@@ -96,7 +96,7 @@ export default function ShopPage() {
     setSearchParams(newParams);
     document
       .querySelector("#shop-directory")
-      ?.scrollIntoView({ behavior: "smooth" });
+      ?.scrollIntoView();
   };
 
   const handleQuickCategory = (category: any) => {
@@ -112,7 +112,7 @@ export default function ShopPage() {
     setSearchParams(newParams);
     document
       .querySelector("#shop-directory")
-      ?.scrollIntoView({ behavior: "smooth" });
+      ?.scrollIntoView();
   };
 
   const clearCategoryFilter = () => {

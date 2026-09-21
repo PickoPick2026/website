@@ -259,7 +259,7 @@ export default function BuyAndShipPage() {
         () =>
           document
             .getElementById("assisted-buy-form")
-            ?.scrollIntoView({ behavior: "smooth" }),
+            ?.scrollIntoView(),
         80,
       );
     }
@@ -405,7 +405,7 @@ export default function BuyAndShipPage() {
                 setSourceStore(st);
                 document
                   .getElementById("assisted-buy-form")
-                  ?.scrollIntoView({ behavior: "smooth" });
+                  ?.scrollIntoView();
               }}
               className="px-3 py-1 rounded-full bg-white border border-slate-200/80 text-slate-700 hover:border-[#0B56D9]/40 hover:text-[#0B56D9] transition-colors cursor-pointer text-xs font-medium"
             >

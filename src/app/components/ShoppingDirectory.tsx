@@ -11,6 +11,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { LoginModal } from "./LoginModal";
 import { supabase } from "@/src/lib/supabase";
 import { toast } from "sonner";
@@ -212,8 +213,15 @@ export function ShoppingDirectory({
       setExclusiveError("Please share the items you would like us to source.");
       return;
     }
-    if (!exclusiveName.trim() || !exclusivePhone.trim() || !exclusiveEmail.trim() || !exclusiveLocation.trim()) {
-      setExclusiveError("Please complete your name, phone, email, and delivery location.");
+    if (
+      !exclusiveName.trim() ||
+      !exclusivePhone.trim() ||
+      !exclusiveEmail.trim() ||
+      !exclusiveLocation.trim()
+    ) {
+      setExclusiveError(
+        "Please complete your name, phone, email, and delivery location.",
+      );
       return;
     }
     setExclusiveError("");
@@ -231,9 +239,17 @@ export function ShoppingDirectory({
       setExclusiveList("");
       setExclusiveQuantity("1");
       setIsThankYouOpen(true);
-      toast.success(result.emailSent ? "Sourcing request sent to WhatsApp and email." : "Sourcing request sent to WhatsApp.");
+      toast.success(
+        result.emailSent
+          ? "Sourcing request sent to WhatsApp and email."
+          : "Sourcing request sent to WhatsApp.",
+      );
     } catch (error) {
-      setExclusiveError(error instanceof Error ? error.message : "Unable to submit your sourcing request.");
+      setExclusiveError(
+        error instanceof Error
+          ? error.message
+          : "Unable to submit your sourcing request.",
+      );
     } finally {
       setIsSubmittingExclusive(false);
     }
@@ -273,7 +289,7 @@ export function ShoppingDirectory({
                   : "text-slate-500 hover:text-[#0A1931]"
               }`}
             >
-              <Sparkles size={14} /> Custom Sourcing
+              <Sparkles size={14} /> Exclusive Sourcing
             </button>
           </div>
 
@@ -440,7 +456,7 @@ export function ShoppingDirectory({
                       type="button"
                       disabled={isAdding === String(product.productID)}
                       onClick={() => void addToCart(product)}
-                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#0B56D9] to-[#2877ED] px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-colors hover:from-[#0849B7] hover:to-[#0B56D9] disabled:opacity-60 cursor-pointer"
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#0B56D9] px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] disabled:opacity-60 cursor-pointer"
                     >
                       <PackagePlus className="h-3.5 w-3.5" />{" "}
                       {isAdding === String(product.productID)
@@ -474,54 +490,130 @@ export function ShoppingDirectory({
                     onClick={() => setActiveTab("exclusive")}
                     className="cursor-pointer rounded-full bg-[#0B56D9] px-5 py-2 text-xs font-extrabold text-white transition-colors hover:bg-[#0849B7]"
                   >
-                    Request Custom Sourcing
+                    Request Exclusive Sourcing
                   </button>
                 </div>
               </div>
             )}
           </>
         ) : (
-          <div className="mx-auto max-w-3xl rounded-3xl border border-blue-100 bg-white p-6 sm:p-9 shadow-xs">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0B56D9]">
-              <Sparkles className="h-5 w-5" />
+          <div className="mx-auto max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-xs">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#0B56D9]">
+              <Sparkles className="h-3.5 w-3.5 text-[#0B56D9]" />
+              Exclusive Sourcing Desk
             </div>
-            <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-[#0A1931]">
-              Custom Indian Sourcing
+            <h2 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0A1931]">
+              We Exclusively Source These Famous Items
             </h2>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">
-              Can’t find what you need? Tell us what you are looking for from
-              any Indian shop, artisan, or boutique and our personal shoppers
-              will source it for you.
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 max-w-xl">
+              Can’t find what you need? We source authentic regional specialties
+              directly from India and air-ship them fresh to your destination.
             </p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
               {[
-                ["Tirupati Laddu", "Temple prasadam sourced to order"],
-                ["Tirunelveli Halwa", "Famous South Indian wheat halwa"],
-                ["Thoothukudi Macaroon", "Signature coastal Tamil treat"],
-              ].map(([title, detail]) => (
-                <div key={title} className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
-                  <p className="text-sm font-extrabold text-[#0A1931]">{title}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-600">{detail}</p>
-                </div>
-              ))}
+                {
+                  title: "Thirupathi Laddu",
+                  desc: "Authentic temple prasadam, air-shipped fresh.",
+                },
+                {
+                  title: "Thirunelveli Halwa",
+                  desc: "World-famous pure ghee wheat halwa.",
+                },
+                {
+                  title: "Thoothukudi Macrooni",
+                  desc: "Traditional coastal cashew macaroon.",
+                },
+              ].map((item) => {
+                const isSelected = exclusiveList.includes(item.title);
+                return (
+                  <button
+                    key={item.title}
+                    type="button"
+                    onClick={() => {
+                      setExclusiveList((prev) =>
+                        prev.includes(item.title)
+                          ? prev
+                          : prev
+                            ? `${prev}, ${item.title}`
+                            : item.title,
+                      );
+                    }}
+                    className={`group rounded-2xl border p-5 text-left transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-[#0B56D9] bg-blue-50/80 shadow-xs ring-1 ring-[#0B56D9]"
+                        : "border-slate-200 bg-[#F7F9FF] hover:border-[#0B56D9] hover:bg-blue-50/40"
+                    }`}
+                  >
+                    <p className="text-sm sm:text-base font-extrabold text-[#0A1931] group-hover:text-[#0B56D9] transition-colors">
+                      {item.title}
+                    </p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
+                      {item.desc}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
-            <form onSubmit={submitExclusiveRequest} className="mt-7 space-y-5">
+
+            <form onSubmit={submitExclusiveRequest} className="mt-8 space-y-5">
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block text-xs font-extrabold text-[#0A1931]">Your Name *<input required value={exclusiveName} onChange={(event) => setExclusiveName(event.target.value)} placeholder="Full name" className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]" /></label>
-                <label className="block text-xs font-extrabold text-[#0A1931]">Phone / WhatsApp *<input required type="tel" value={exclusivePhone} onChange={(event) => setExclusivePhone(event.target.value)} placeholder="+1 555 000 0000" className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]" /></label>
+                <label className="block text-xs font-extrabold text-[#0A1931]">
+                  Your Name <span className="text-red-500">*</span>
+                  <input
+                    required
+                    value={exclusiveName}
+                    onChange={(event) => setExclusiveName(event.target.value)}
+                    placeholder="Enter your name"
+                    className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]"
+                  />
+                </label>
+                <label className="block text-xs font-extrabold text-[#0A1931]">
+                  Phone / WhatsApp <span className="text-red-500">*</span>
+                  <input
+                    required
+                    type="tel"
+                    value={exclusivePhone}
+                    onChange={(event) => setExclusivePhone(event.target.value)}
+                    placeholder="Enter your phone number"
+                    className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]"
+                  />
+                </label>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block text-xs font-extrabold text-[#0A1931]">Email Address *<input required type="email" value={exclusiveEmail} onChange={(event) => setExclusiveEmail(event.target.value)} placeholder="you@example.com" className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]" /></label>
-                <label className="block text-xs font-extrabold text-[#0A1931]">Where to Send *<input required value={exclusiveLocation} onChange={(event) => setExclusiveLocation(event.target.value)} placeholder="City, country / postal code" className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]" /></label>
+                <label className="block text-xs font-extrabold text-[#0A1931]">
+                  Email Address <span className="text-red-500">*</span>
+                  <input
+                    required
+                    type="email"
+                    value={exclusiveEmail}
+                    onChange={(event) => setExclusiveEmail(event.target.value)}
+                    placeholder="Enter your email address"
+                    className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]"
+                  />
+                </label>
+                <label className="block text-xs font-extrabold text-[#0A1931]">
+                  Where to Send <span className="text-red-500">*</span>
+                  <input
+                    required
+                    value={exclusiveLocation}
+                    onChange={(event) =>
+                      setExclusiveLocation(event.target.value)
+                    }
+                    placeholder="Enter your address"
+                    className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9]"
+                  />
+                </label>
               </div>
               <label className="block text-sm font-extrabold text-[#0A1931]">
-                Share your item list or requirements below:
+                Share your item list or requirements below:{" "}
+                <span className="text-red-500">*</span>
                 <textarea
                   required
                   value={exclusiveList}
                   onChange={(event) => setExclusiveList(event.target.value)}
-                  rows={5}
-                  placeholder="Example: 2 Kanchipuram silk sarees from Nalli, traditional brass lamps from Mylapore, 1kg Tirunelveli halwa..."
+                  rows={4}
+                  placeholder="Enter the items you want to source..."
                   className="mt-2 block w-full resize-none rounded-2xl border border-slate-300 p-4 text-sm font-medium outline-none transition-colors placeholder:text-slate-400 focus:border-[#0B56D9] focus:ring-4 focus:ring-blue-50"
                 />
               </label>
@@ -533,6 +625,7 @@ export function ShoppingDirectory({
                   type="number"
                   value={exclusiveQuantity}
                   onChange={(event) => setExclusiveQuantity(event.target.value)}
+                  placeholder="Enter quantity or estimate"
                   className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium outline-none focus:border-[#0B56D9] focus:ring-4 focus:ring-blue-50"
                 />
               </label>
@@ -544,9 +637,14 @@ export function ShoppingDirectory({
               <button
                 type="submit"
                 disabled={isSubmittingExclusive}
-                className="rounded-full bg-[#0B56D9] px-6 py-3 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] cursor-pointer disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-7 py-3.5 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] cursor-pointer disabled:opacity-60"
               >
-                {isSubmittingExclusive ? "Sending..." : "Submit to WhatsApp + Email"}
+                <FaWhatsapp size={16} className="text-[#25D366]" />
+                <span>
+                  {isSubmittingExclusive
+                    ? "Submitting..."
+                    : "Submit to WhatsApp & Email"}
+                </span>
               </button>
             </form>
           </div>

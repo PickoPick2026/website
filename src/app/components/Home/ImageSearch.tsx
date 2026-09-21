@@ -149,10 +149,7 @@ export function ImageSearch() {
       if (nextUrl) {
         setProductLink(nextUrl);
       }
-      sectionRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      sectionRef.current?.scrollIntoView({ block: "start" });
       if (customEvent.detail?.focus) {
         window.setTimeout(() => {
           productLinkInputRef.current?.focus();
@@ -345,10 +342,7 @@ export function ImageSearch() {
     }
 
     setTimeout(() => {
-      resultsRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+      resultsRef.current?.scrollIntoView({ block: "nearest" });
     }, 100);
   };
 

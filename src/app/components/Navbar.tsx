@@ -23,8 +23,8 @@ import { supabase } from "@/src/lib/supabase";
 
 const companyLinks = [
   {
-    name: "About Us",
-    href: "#about",
+    name: "About Pick O Pick",
+    href: "/#about",
     description: "Learn about our India-to-world service",
     icon: Info,
   },
@@ -78,7 +78,7 @@ export function Navbar() {
         () =>
           document
             .querySelector(location.hash)
-            ?.scrollIntoView({ behavior: "smooth" }),
+            ?.scrollIntoView(),
         80,
       );
     }
@@ -139,7 +139,7 @@ export function Navbar() {
     if (location.pathname !== "/") {
       navigate("/");
     } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo(0, 0);
     }
   };
 
@@ -153,7 +153,7 @@ export function Navbar() {
     setIsProfileOpen(false);
     if (href.startsWith("/")) return navigate(href);
     if (location.pathname !== "/") return navigate(`/${href}`);
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    document.querySelector(href)?.scrollIntoView();
     window.history.pushState(null, "", href);
   };
 
@@ -172,21 +172,26 @@ export function Navbar() {
   const isLoggedIn = Boolean(user);
   const customerName =
     user?.firstName || user?.name || user?.fullName || "My account";
+
   const closeMenus = () => {
     setIsProfileOpen(false);
     setIsMobileMenuOpen(false);
     setActiveMenu(null);
   };
-  const isActive = (path: string) =>
-    location.pathname === path ||
-    (path === "/" && location.pathname === "/") ||
-    (path === "/shop" && location.pathname === "/shop");
+
+  const isRouteActive = (path: string) => location.pathname === path;
   const isHashActive = (hash: string) =>
     location.pathname === "/" && location.hash === hash;
+  const isAboutActive =
+    location.pathname === "/contact" ||
+    location.pathname === "/shipping-estimate" ||
+    (location.pathname === "/" && location.hash === "#about");
+
   const openAccountPage = (path: string) => {
     closeMenus();
     navigate(path);
   };
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
@@ -195,10 +200,12 @@ export function Navbar() {
     window.dispatchEvent(new Event("auth-change"));
     navigate("/");
   };
+
   const openBuyAndShip = () => {
     closeMenus();
     navigate("/buy-and-ship#assisted-buy-form");
   };
+
   const openOrderAndSend = () => {
     closeMenus();
     navigate("/order-and-send#order-and-send-form");
@@ -209,16 +216,22 @@ export function Navbar() {
       <header className="fixed inset-x-0 top-0 z-50">
         <nav className="relative w-full border-b border-[#D94F18] bg-[#FF6321] shadow-[0_2px_14px_rgba(10,25,49,0.12)]">
           <div className="mx-auto flex h-[68px] max-w-[1440px] items-center gap-2 px-4 sm:h-[74px] sm:gap-3 sm:px-6 lg:px-8">
+            {/* Header Back Button */}
             {location.pathname !== "/" && (
               <button
                 type="button"
-                onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/70 text-white transition-colors hover:bg-white/15"
+                onClick={() =>
+                  window.history.length > 1 ? navigate(-1) : navigate("/")
+                }
+                className="flex h-9 items-center gap-1.5 shrink-0 rounded-full border border-white/70 px-2.5 text-white transition-colors hover:bg-white/15 cursor-pointer shadow-xs"
                 aria-label="Go back"
+                title="Go back"
               >
                 <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline text-xs font-bold">Back</span>
               </button>
             )}
+
             {/* Logo navigates to Home / scrolls to top */}
             <a
               href="/"
@@ -234,19 +247,16 @@ export function Navbar() {
             </a>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 xl:flex">
-              <a
-                href="/shop#shop-directory"
-                onClick={(event) => handleNavigation(event, "/shop#shop-directory")}
-                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors ${isActive("/shop") ? "bg-white text-[#0B56D9]" : "text-white hover:bg-white/15"}`}
-              >
-                Shop Directory
-              </a>
-
+            <div className="hidden min-w-0 flex-1 items-center justify-center gap-1 xl:flex">
+              {/* 1. Buy & Ship */}
               <button
                 type="button"
                 onClick={openBuyAndShip}
-                className={`relative isolate overflow-hidden whitespace-nowrap rounded-full px-3.5 py-2.5 text-[11px] font-extrabold uppercase tracking-wide transition-transform hover:-translate-y-0.5 cursor-pointer shadow-sm ${isActive("/buy-and-ship") ? "bg-[#0849B7] text-white ring-2 ring-white/70" : "bg-white text-[#0B56D9] hover:bg-blue-50"}`}
+                className={`relative isolate overflow-hidden whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-extrabold uppercase tracking-wide transition-transform hover:-translate-y-0.5 cursor-pointer shadow-xs ${
+                  isRouteActive("/buy-and-ship")
+                    ? "bg-[#0849B7] text-white ring-2 ring-white/90"
+                    : "bg-white text-[#0B56D9] hover:bg-blue-50"
+                }`}
                 aria-label="Start Buy and Ship"
               >
                 <span
@@ -256,61 +266,105 @@ export function Navbar() {
                 <span className="relative">Buy &amp; Ship</span>
               </button>
 
+              {/* 2. Order & Send (Placed right next to Buy & Ship) */}
               <button
                 type="button"
                 onClick={openOrderAndSend}
-                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors hover:bg-white/15 cursor-pointer ${isActive("/order-and-send") ? "bg-white text-[#0B56D9]" : "text-white"}`}
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-extrabold transition-colors cursor-pointer ${
+                  isRouteActive("/order-and-send")
+                    ? "bg-white text-[#0B56D9] shadow-xs"
+                    : "text-white hover:bg-white/15"
+                }`}
                 aria-label="Order and Send"
               >
                 Order &amp; Send
               </button>
 
+              {/* 3. Shop Directory */}
               <a
-                href="/nri"
-                onClick={(event) => handleNavigation(event, "/nri")}
-                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors hover:bg-white/15 ${isActive("/nri") ? "bg-[#0B56D9] text-white ring-2 ring-white/60" : "text-white"}`}
+                href="/shop#shop-directory"
+                onClick={(event) =>
+                  handleNavigation(event, "/shop#shop-directory")
+                }
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-extrabold transition-colors ${
+                  isRouteActive("/shop")
+                    ? "bg-white text-[#0B56D9] shadow-xs"
+                    : "text-white hover:bg-white/15"
+                }`}
               >
-                NRI Services
+                Shop Directory
               </a>
 
+              {/* 4. Tracking */}
               <a
                 href="/track-shipment"
                 onClick={(event) => handleNavigation(event, "/track-shipment")}
-                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors hover:bg-white/15 ${isActive("/track-shipment") ? "bg-white text-[#0B56D9]" : "text-white"}`}
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-extrabold transition-colors ${
+                  isRouteActive("/track-shipment")
+                    ? "bg-white text-[#0B56D9] shadow-xs"
+                    : "text-white hover:bg-white/15"
+                }`}
               >
                 Tracking
               </a>
 
-              {/* Company Compact Dropdown Menu */}
+              {/* 5. NRI Services */}
+              <a
+                href="/nri"
+                onClick={(event) => handleNavigation(event, "/nri")}
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-extrabold transition-colors ${
+                  isRouteActive("/nri")
+                    ? "bg-[#0B56D9] text-white ring-2 ring-white/70 shadow-xs"
+                    : "text-white hover:bg-white/15"
+                }`}
+              >
+                NRI Services
+              </a>
+
+              {/* 6. How It Works (Separate top-level link) */}
+              <a
+                href="/#how-it-works"
+                onClick={(event) => handleNavigation(event, "/#how-it-works")}
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-extrabold transition-colors ${
+                  isHashActive("#how-it-works")
+                    ? "bg-white text-[#0B56D9] shadow-xs"
+                    : "text-white hover:bg-white/15"
+                }`}
+              >
+                <HelpCircle className="h-4 w-4" />
+                How It Works
+              </a>
+
+              {/* 7. About Us Dropdown */}
               <div
                 className="relative"
-                onMouseEnter={() => handleMouseEnter("Company")}
+                onMouseEnter={() => handleMouseEnter("AboutUs")}
                 onMouseLeave={handleMouseLeave}
               >
                 <button
                   type="button"
                   onClick={() =>
                     setActiveMenu((cur) =>
-                      cur === "Company" ? null : "Company",
+                      cur === "AboutUs" ? null : "AboutUs",
                     )
                   }
-                  className={`inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg px-2.5 py-2.5 text-[13px] font-bold transition-colors ${
-                    activeMenu === "Company"
-                      ? "bg-white text-[#0B56D9]"
+                  className={`inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-extrabold transition-colors ${
+                    activeMenu === "AboutUs" || isAboutActive
+                      ? "bg-white text-[#0B56D9] shadow-xs"
                       : "text-white hover:bg-white/15"
                   }`}
-                  aria-expanded={activeMenu === "Company"}
+                  aria-expanded={activeMenu === "AboutUs"}
                 >
                   About Us
                   <ChevronDown
                     className={`h-4 w-4 transition-transform duration-200 ${
-                      activeMenu === "Company" ? "rotate-180" : ""
+                      activeMenu === "AboutUs" ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 <AnimatePresence>
-                  {activeMenu === "Company" && (
+                  {activeMenu === "AboutUs" && (
                     <motion.div
                       initial={{ opacity: 0, y: 8, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -373,19 +427,9 @@ export function Navbar() {
                   )}
                 </AnimatePresence>
               </div>
-
-              <a
-                href="/#how-it-works"
-                onClick={(event) => handleNavigation(event, "/#how-it-works")}
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-bold transition-colors ${isHashActive("#how-it-works") ? "bg-white text-[#0B56D9]" : "text-white hover:bg-white/15"}`}
-              >
-                <HelpCircle className="h-4 w-4" />
-                How It Works
-              </a>
-
             </div>
 
-            {/* Desktop Auth Area: Clearly Visible in the Top Navbar */}
+            {/* Desktop Auth Area */}
             <div className="hidden items-center gap-2 xl:flex">
               {isLoggedIn ? (
                 <>
@@ -414,7 +458,9 @@ export function Navbar() {
                       </span>
                       <span className="max-w-28 truncate">{customerName}</span>
                       <ChevronDown
-                        className={`h-3.5 w-3.5 transition-transform ${isProfileOpen ? "rotate-180" : ""}`}
+                        className={`h-3.5 w-3.5 transition-transform ${
+                          isProfileOpen ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
                     {isProfileOpen && (
@@ -552,7 +598,11 @@ export function Navbar() {
                     <button
                       type="button"
                       onClick={openBuyAndShip}
-                      className={`relative isolate w-full overflow-hidden rounded-xl py-2.5 text-xs font-extrabold shadow-xs cursor-pointer ${isActive("/buy-and-ship") ? "bg-[#0A3E9B] text-white" : "bg-white text-[#0B56D9]"}`}
+                      className={`relative isolate w-full overflow-hidden rounded-xl py-2.5 text-xs font-extrabold shadow-xs cursor-pointer ${
+                        isRouteActive("/buy-and-ship")
+                          ? "bg-[#0A3E9B] text-white"
+                          : "bg-white text-[#0B56D9]"
+                      }`}
                     >
                       <span
                         aria-hidden="true"
@@ -564,137 +614,148 @@ export function Navbar() {
                     <button
                       type="button"
                       onClick={openOrderAndSend}
-                      className={`w-full rounded-xl border border-white/40 py-2.5 text-xs font-extrabold transition-colors hover:bg-white/20 cursor-pointer ${isActive("/order-and-send") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white"}`}
+                      className={`w-full rounded-xl border border-white/40 py-2.5 text-xs font-extrabold transition-colors hover:bg-white/20 cursor-pointer ${
+                        isRouteActive("/order-and-send")
+                          ? "bg-white text-[#0B56D9]"
+                          : "bg-white/15 text-white"
+                      }`}
                     >
                       Order &amp; Send
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  {/* Secondary Links */}
+                  <div className="space-y-1 rounded-2xl bg-white/10 p-2">
                     <a
                       href="/shop#shop-directory"
-                      onClick={(event) => handleNavigation(event, "/shop#shop-directory")}
-                      className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold transition-colors ${isActive("/shop") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white hover:bg-white/20"}`}
+                      onClick={(event) =>
+                        handleNavigation(event, "/shop#shop-directory")
+                      }
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+                        isRouteActive("/shop")
+                          ? "bg-white text-[#0B56D9]"
+                          : "text-white hover:bg-white/15"
+                      }`}
                     >
+                      <ShoppingBag className="h-4 w-4" />
                       Shop Directory
                     </a>
+
+                    <a
+                      href="/track-shipment"
+                      onClick={(event) =>
+                        handleNavigation(event, "/track-shipment")
+                      }
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+                        isRouteActive("/track-shipment")
+                          ? "bg-white text-[#0B56D9]"
+                          : "text-white hover:bg-white/15"
+                      }`}
+                    >
+                      <Package className="h-4 w-4" />
+                      Tracking
+                    </a>
+
                     <a
                       href="/nri"
                       onClick={(event) => handleNavigation(event, "/nri")}
-                      className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold shadow-xs ${isActive("/nri") ? "bg-[#0A3E9B] text-white" : "bg-white text-[#0B56D9]"}`}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+                        isRouteActive("/nri")
+                          ? "bg-white text-[#0B56D9]"
+                          : "text-white hover:bg-white/15"
+                      }`}
                     >
+                      <MapPin className="h-4 w-4" />
                       NRI Services
+                    </a>
+
+                    <a
+                      href="/#how-it-works"
+                      onClick={(event) =>
+                        handleNavigation(event, "/#how-it-works")
+                      }
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+                        isHashActive("#how-it-works")
+                          ? "bg-white text-[#0B56D9]"
+                          : "text-white hover:bg-white/15"
+                      }`}
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                      How It Works
+                    </a>
+
+                    <a
+                      href="/#about"
+                      onClick={(event) => handleNavigation(event, "/#about")}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-white/15"
+                    >
+                      <Info className="h-4 w-4" />
+                      About Pick O Pick
+                    </a>
+
+                    <a
+                      href="/contact"
+                      onClick={(event) => handleNavigation(event, "/contact")}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+                        isRouteActive("/contact")
+                          ? "bg-white text-[#0B56D9]"
+                          : "text-white hover:bg-white/15"
+                      }`}
+                    >
+                      <ContactRound className="h-4 w-4" />
+                      Contact Us
+                    </a>
+
+                    <a
+                      href="/shipping-estimate"
+                      onClick={(event) =>
+                        handleNavigation(event, "/shipping-estimate")
+                      }
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+                        isRouteActive("/shipping-estimate")
+                          ? "bg-white text-[#0B56D9]"
+                          : "text-white hover:bg-white/15"
+                      }`}
+                    >
+                      <Calculator className="h-4 w-4" />
+                      Shipment Estimation
                     </a>
                   </div>
 
-                  <a
-                    href="/track-shipment"
-                    onClick={(event) =>
-                      handleNavigation(event, "/track-shipment")
-                    }
-                    className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold transition-colors ${isActive("/track-shipment") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white hover:bg-white/20"}`}
-                  >
-                    Tracking
-                  </a>
-
-                  <a
-                    href="/#how-it-works"
-                    onClick={(event) => handleNavigation(event, "/#how-it-works")}
-                    className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold transition-colors ${isHashActive("#how-it-works") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white hover:bg-white/20"}`}
-                  >
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    How It Works
-                  </a>
-
-                  {/* Mobile Company Section */}
-                  <div>
-                    <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/90">
-                      About Us
-                    </p>
-                    <div className="space-y-1 rounded-2xl bg-white/10 p-2">
-                      {companyLinks.map((link) => {
-                        const Icon = link.icon;
-                        return (
-                          <a
-                            key={link.name}
-                            href={link.href}
-                            onClick={(event) =>
-                              handleNavigation(event, link.href)
-                            }
-                            className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-white/15"
-                          >
-                            <Icon className="h-4 w-4 shrink-0 text-white/80" />
-                            <span>{link.name}</span>
-                          </a>
-                        );
-                      })}
+                  {/* Auth Actions in Mobile */}
+                  {!isLoggedIn ? (
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/20">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          setIsLoginOpen(true);
+                        }}
+                        className="rounded-xl border border-white/40 py-2.5 text-center text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white/15"
+                      >
+                        Login
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          setIsRegisterOpen(true);
+                        }}
+                        className="rounded-xl bg-white py-2.5 text-center text-xs font-extrabold uppercase tracking-wide text-[#0B56D9] shadow-sm transition-colors hover:bg-blue-50"
+                      >
+                        Sign Up
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Mobile Global Offices Section */}
-                  <div>
-                    <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/90">
-                      Global Offices
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {globalOffices.map((office) => (
-                        <div
-                          key={office.country}
-                          className="flex flex-col items-center rounded-xl bg-white p-2.5 text-center shadow-xs"
-                        >
-                          <div className="h-4 w-6 overflow-hidden rounded-[2px] border border-slate-200">
-                            <img
-                              src={office.flag}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <p className="mt-1.5 text-[11px] font-extrabold text-[#0A1931] leading-tight">
-                            {office.country}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Mobile Profile / Auth Section */}
-                  {isLoggedIn ? (
-                    <div className="rounded-2xl bg-white p-2 text-[#0A1931]">
-                      <div className="flex items-center gap-2 px-2 py-2">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0B56D9] text-white">
-                          <UserRound className="h-4 w-4" />
-                        </span>
-                        <span className="text-sm font-extrabold">
-                          {customerName}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => openAccountPage("/profile")}
-                          className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-bold text-[#0A1931]"
-                        >
-                          My profile
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => openAccountPage("/orders")}
-                          className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-bold text-[#0A1931]"
-                        >
-                          Orders
-                        </button>
-                      </div>
-                      <div className="border-t border-slate-100 pt-2 mt-2">
-                        <button
-                          type="button"
-                          onClick={handleLogout}
-                          className="w-full rounded-xl bg-red-50 py-2 text-xs font-bold text-red-600"
-                        >
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  ) : null}
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600/80 py-2.5 text-xs font-extrabold uppercase tracking-wide text-white hover:bg-red-600"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  )}
                 </div>
               </motion.div>
             )}

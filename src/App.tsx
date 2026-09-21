@@ -23,6 +23,7 @@ const ShopPage = lazy(() => import("./app/pages/Shop"));
 const TrackShipmentPage = lazy(() => import("./app/pages/TrackShipment"));
 const BuyAndShipPage = lazy(() => import("./app/pages/BuyAndShip"));
 const OrderAndSendPage = lazy(() => import("./app/pages/OrderAndSend"));
+const AdminRedirectPage = lazy(() => import("./app/admin/page"));
 
 export default function App() {
   return (
@@ -37,6 +38,10 @@ export default function App() {
         }
       >
         <Routes>
+          {/* Direct Admin Portal Redirect */}
+          <Route path="/admin" element={<AdminRedirectPage />} />
+          <Route path="/admin/*" element={<AdminRedirectPage />} />
+
           {/* Layout wrapper */}
           <Route path="/" element={<Layout />}>
             {/* Core pages */}

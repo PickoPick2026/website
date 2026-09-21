@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Lenis from "lenis";
 
 import {
   Hero,
@@ -41,24 +40,6 @@ export default function Home() {
 
   // 🚀 LENIS ONLY FOR HERO PAGE (optional but better)
   useEffect(() => {
-    if (isLoggedIn) return;
-
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => lenis.destroy();
-  }, [isLoggedIn]);
-
-  useEffect(() => {
     const openConsultation = () => setIsConsultationOpen(true);
     window.addEventListener("pickopick:open-consultation", openConsultation);
     return () =>
@@ -73,7 +54,7 @@ export default function Home() {
     if (window.location.hash) {
       const id = window.location.hash.replace("#", "");
       window.setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(id)?.scrollIntoView();
       }, 150);
     }
   }, []);

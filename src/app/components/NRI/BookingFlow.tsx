@@ -249,7 +249,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
   const handleNextStep = () => {
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(prev + 1, 6));
-      window.scrollTo({ top: document.getElementById('booking-portal')?.offsetTop || 0, behavior: 'smooth' });
+      window.scrollTo({ top: document.getElementById('booking-portal')?.offsetTop || 0 });
     }
   };
 
