@@ -53,6 +53,10 @@
       "dest": "/api/estimate-request.js"
     },
     {
+      "src": "/api/service-requests",
+      "dest": "/api/service-requests.js"
+    },
+    {
       "src": "/api/estimate",
       "dest": "/api/estimate.js"
     },

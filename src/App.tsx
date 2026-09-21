@@ -21,50 +21,55 @@ const ShippingEstimatePage = lazy(() => import("./app/pages/ShippingEstimate"));
 const ContactPage = lazy(() => import("./app/pages/Contact"));
 const ShopPage = lazy(() => import("./app/pages/Shop"));
 const TrackShipmentPage = lazy(() => import("./app/pages/TrackShipment"));
-
+const BuyAndShipPage = lazy(() => import("./app/pages/BuyAndShip"));
+const OrderAndSendPage = lazy(() => import("./app/pages/OrderAndSend"));
 
 export default function App() {
   return (
     <BrowserRouter>
       <SeoHead />
       <WhatsAppButton />
-    
+
       <Toaster position="bottom-right" richColors closeButton />
-      <Suspense fallback={<main className="min-h-screen bg-white" aria-label="Loading page" />}>
-      <Routes>
-      
-        {/* Layout wrapper */}
-        <Route path="/" element={<Layout />}>
-          
-          {/* Default page */}
-          <Route index element={<Home />} />
-           <Route path="terms" element={<TermsPage />} />
-           <Route path="privacy" element={<PrivacyPolicyPage />} />
-           <Route path="prohibited" element={<ProhibitedItemsPage />} />
-           <Route path="refund" element={<RefundPage />} />
-           <Route path="nri" element={<NriPage />} />
-           <Route path="shipping-estimate" element={<ShippingEstimatePage />} />
-           <Route path="contact" element={<ContactPage />} />
-           <Route path="shop" element={<ShopPage />} />
-           <Route path="track-shipment" element={<TrackShipmentPage />} />
+      <Suspense
+        fallback={
+          <main className="min-h-screen bg-white" aria-label="Loading page" />
+        }
+      >
+        <Routes>
+          {/* Layout wrapper */}
+          <Route path="/" element={<Layout />}>
+            {/* Core pages */}
+            <Route index element={<Home />} />
+            <Route path="buy-and-ship" element={<BuyAndShipPage />} />
+            <Route path="order-and-send" element={<OrderAndSendPage />} />
+            <Route path="shop" element={<ShopPage />} />
+            <Route path="nri" element={<NriPage />} />
+            <Route path="track-shipment" element={<TrackShipmentPage />} />
+            <Route
+              path="shipping-estimate"
+              element={<ShippingEstimatePage />}
+            />
+            <Route path="contact" element={<ContactPage />} />
 
-          {/* After login pages */}
-          <Route path="cart" element={<Cart />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="transaction/:id" element={<TransactionDetail />} />
-          <Route path="addresses" element={<Addresses />} />
-          <Route path="wallet" element={<Wallet />} />
-           <Route path="profile" element={<Profile />} />
+            {/* Policy pages */}
+            <Route path="terms" element={<TermsPage />} />
+            <Route path="privacy" element={<PrivacyPolicyPage />} />
+            <Route path="prohibited" element={<ProhibitedItemsPage />} />
+            <Route path="refund" element={<RefundPage />} />
 
-          {/* Unknown routes → home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Customer Account pages */}
+            <Route path="cart" element={<Cart />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="transaction/:id" element={<TransactionDetail />} />
+            <Route path="addresses" element={<Addresses />} />
+            <Route path="wallet" element={<Wallet />} />
+            <Route path="profile" element={<Profile />} />
 
-        </Route>
-         
-         
-      
-
-      </Routes>
+            {/* Fallback → home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
       </Suspense>
     </BrowserRouter>
   );

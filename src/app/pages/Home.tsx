@@ -68,6 +68,16 @@ export default function Home() {
       );
   }, []);
 
+  // Hash navigation handler (e.g. #plan-shipment)
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.replace("#", "");
+      window.setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      }, 150);
+    }
+  }, []);
+
   // 🎯 CONDITIONAL RENDER
   return (
     <main className="bg-white text-slate-900">
@@ -93,8 +103,6 @@ export default function Home() {
       {/* ABOUT US: OUR STORY & CAPABILITIES */}
       <AboutUs />
 
-      
-
       {/* 7-STEP JOURNEY */}
       <StoryFlow />
 
@@ -103,8 +111,6 @@ export default function Home() {
 
       {/* SHOPPING DIRECTORY MARQUEE */}
       <ShoppingDirectoryMarquee />
-
-      {/* SIDE-BY-SIDE PROMO BANNERS: TASTE OF INDIA & BEAUTIFUL INDIAN WEAR */}
 
       {/* CUSTOMER TESTIMONIALS */}
       <Testimonials />

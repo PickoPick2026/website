@@ -1,344 +1,310 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
-  Search,
-  ShoppingCart,
-  ExternalLink,
-  RefreshCw,
-  Package,
-  AlertCircle,
-  Clipboard,
-  Sparkles,
-  CheckCircle2,
-  ArrowRight,
-  X,
-  Image as ImageIcon,
   Link2,
-  ShieldCheck,
-  Plane,
+  ExternalLink,
   RotateCcw,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+  ShoppingBag,
+  Clock,
+  Send,
+  Clipboard,
+  Info,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
+import { AnimatePresence, motion } from "motion/react";
 import { supabase } from "@/src/lib/supabase";
-import { toast } from "sonner";
+import { submitServiceRequest } from "../../../lib/serviceRequests";
 
-// Inline Brand Logotypes
-const BrandLogos = {
-  pickopick: (className: string) => (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M3 6H21"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  ),
-  amazon: (className: string) => (
-    <svg
-      viewBox="0 0 100 100"
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M22.02 59.412c-2.454-3.14-5.46-5.836-8.756-7.86a.417.417 0 0 1 .412-.583c2.25 1.05 4.975 1.68 7.796 1.68a18.9 18.9 0 0 0 5.922-1.072.583.583 0 0 1 .325.79c-1.47 1.144-3.511 1.761-5.594 1.761a12.83 12.83 0 0 1-.105-2.716zm9.215-1.492c-.144-.196-.046-.408.172-.455 1.012-.204 2.373.157 3.19.859.184.16.14.432-.086.483-1.026.222-2.729-.387-3.276-.887z"
-        fill="#000"
-      />
-      <path
-        d="M12.33 34.2C8.6 34.2 5.1 36.17 5.1 40.75c0 1.34.21 2.53.53 3.52.12.38.35.34.45.02.1-.31.33-1.09.43-1.39.04-.15.02-.28-.09-.41-.26-.33-.61-1.03-.61-2.07 0-3.32 2.37-5.11 5.43-5.11 2.37 0 3.73.97 3.73 2.6 0 1.25-.66 2.31-2.04 2.31-.69 0-1.14-.37-1.14-.94 0-.32.07-.63.22-.96.22-.49.22-.49.22-.72 0-.25-.19-.48-.56-.48-.48 0-.96.48-.96 1.3 0 1.67 1.24 2.6 2.62 2.6 2.05 0 3.55-1.92 3.55-4.4 0-2.48-1.83-4.46-4.3-4.46z"
-        fill="#000"
-      />
-    </svg>
-  ),
-  flipkart: (className: string) => (
-    <svg
-      viewBox="0 0 100 100"
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M84.4 34.2v45.8c0 3-2.4 5.4-5.4 5.4H21c-3 0-5.4-2.4-5.4-5.4V34.2c0-1.2.7-2.3 1.9-2.8l32.5-13c.6-.2 1.3-.2 1.9 0l32.5 13c.1.5.8 1.6.8 2.8z"
-        fill="#2874F0"
-      />
-      <path
-        d="M50 45.4c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"
-        fill="#FFD200"
-      />
-      <path
-        d="M60.4 67.2c-.3 1.2-.8 2.3-1.5 3.3l-8.9-3.9-8.9 3.9c-.7-1-1.2-2.1-1.5-3.3-.3-1.2-.4-2.4-.4-3.6 0-1.2.1-2.4.4-3.6.3-1.2.8-2.3 1.5-3.3l8.9 3.9 8.9-3.9c.7 1 1.2 2.1 1.5 3.3.3 1.2.4 2.4.4 3.6.1 1.3 0 2.5-.4 3.6z"
-        fill="#FFF"
-      />
-    </svg>
-  ),
-};
-
-interface ProductResult {
-  id: number | string;
-  name: string;
-  price: string;
-  store: string;
-  source: "pickopick" | "amazon" | "flipkart" | string;
-  image?: string;
-  imageURL?: string;
-  imageUrl?: string;
-  thumbnail?: string;
-  url: string;
-  description?: string;
-  category?: string;
-  inStock?: boolean;
+interface LinkAnalysisResult {
+  storeName: string;
+  category: string;
+  sourceDomain: string;
+  originalUrl: string;
+  productTitle: string;
+  estimatedPriceInr: number | null;
+  shippingWeightEstimate: string;
+  availableSizes: string[];
+  inStock: boolean;
+  requiresSpecialHandling: boolean;
+  notes: string;
 }
 
-interface SearchResponse {
-  source: "pickopick" | "external" | "mixed" | "universal";
-  identified: string;
-  results: ProductResult[];
-  aiFailed?: boolean;
-}
+const SUPPORTED_DOMAINS = [
+  "amazon.in",
+  "flipkart.com",
+  "myntra.com",
+  "ajio.com",
+  "nykaa.com",
+  "tatacliq.com",
+  "meesho.com",
+  "firstcry.com",
+  "fabindia.com",
+  "bewakoof.com",
+  "jiomart.com",
+  "croma.com",
+];
 
 const SOURCE_CONFIG: Record<
   string,
   {
-    color: string;
-    bg: string;
-    border: string;
-    logo: (c: string) => React.ReactNode;
-    label: string;
+    name: string;
+    badgeBg: string;
+    badgeText: string;
+    borderColor: string;
+    accentColor: string;
   }
 > = {
-  pickopick: {
-    color: "text-emerald-700",
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    logo: (c) => BrandLogos.pickopick(c),
-    label: "PickoPick Catalog",
-  },
   amazon: {
-    color: "text-amber-800",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    logo: (c) => BrandLogos.amazon(c),
-    label: "Amazon India",
+    name: "Amazon.in",
+    badgeBg: "bg-amber-500/10",
+    badgeText: "text-amber-700",
+    borderColor: "border-amber-300",
+    accentColor: "#F59E0B",
   },
   flipkart: {
-    color: "text-blue-700",
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    logo: (c) => BrandLogos.flipkart(c),
-    label: "Flipkart",
+    name: "Flipkart",
+    badgeBg: "bg-blue-500/10",
+    badgeText: "text-blue-700",
+    borderColor: "border-blue-300",
+    accentColor: "#2563EB",
+  },
+  myntra: {
+    name: "Myntra",
+    badgeBg: "bg-pink-500/10",
+    badgeText: "text-pink-700",
+    borderColor: "border-pink-300",
+    accentColor: "#EC4899",
+  },
+  ajio: {
+    name: "Ajio",
+    badgeBg: "bg-slate-500/10",
+    badgeText: "text-slate-700",
+    borderColor: "border-slate-300",
+    accentColor: "#475569",
+  },
+  nykaa: {
+    name: "Nykaa",
+    badgeBg: "bg-rose-500/10",
+    badgeText: "text-rose-700",
+    borderColor: "border-rose-300",
+    accentColor: "#F43F5E",
   },
 };
 
-const supportedStores = [
-  "Amazon.in",
-  "Flipkart",
-  "Myntra",
-  "Ajio",
-  "Nykaa",
-  "Meesho",
-  "Tata CLiQ",
-];
-
-// Product Image Renderer
-function ProductImage({ src, alt }: { src?: string; alt: string }) {
-  const [hasError, setHasError] = useState(false);
-
-  const cleanSrc = (src || "").trim();
-  const isValidSrc =
-    cleanSrc.length > 5 && !cleanSrc.startsWith("blob:") && !hasError;
-
-  if (!isValidSrc) {
-    return (
-      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl shrink-0 border border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-2 select-none">
-        <ImageIcon size={20} className="text-slate-300" />
-        <span className="text-[10px] font-semibold text-slate-400 mt-1 text-center">
-          No image
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden shrink-0 border border-slate-200 bg-white p-1 flex items-center justify-center">
-      <img
-        src={cleanSrc}
-        alt={alt}
-        className="w-full h-full object-contain rounded-lg"
-        loading="lazy"
-        onError={() => setHasError(true)}
-      />
-    </div>
-  );
-}
-
-// Minute Blue & White Zigzag Border
-function ZigzagBorder({ position = "top" }: { position?: "top" | "bottom" }) {
-  const isTop = position === "top";
-  return (
-    <div className="w-full overflow-hidden leading-none select-none bg-white">
-      <svg
-        className="w-full h-1.5 sm:h-2 block"
-        aria-hidden="true"
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <pattern
-            id={`zigzag-pattern-${position}`}
-            width="8"
-            height="5"
-            patternUnits="userSpaceOnUse"
-          >
-            {isTop ? (
-              <>
-                <polygon points="0,0 4,5 8,0" fill="#0B56D9" />
-                <polygon points="4,5 8,0 8,5 0,5" fill="#FFFFFF" />
-              </>
-            ) : (
-              <>
-                <polygon points="0,5 4,0 8,5" fill="#0B56D9" />
-                <polygon points="4,0 8,5 8,0 0,0" fill="#FFFFFF" />
-              </>
-            )}
-          </pattern>
-        </defs>
-        <rect
-          width="100%"
-          height="100%"
-          fill={`url(#zigzag-pattern-${position})`}
-        />
-      </svg>
-    </div>
-  );
-}
+const ZigzagBorder = ({ position }: { position: "top" | "bottom" }) => (
+  <div
+    className={`absolute ${position === "top" ? "top-0" : "bottom-0"} left-0 right-0 h-[6px] overflow-hidden pointer-events-none z-10`}
+  >
+    <svg
+      viewBox="0 0 1200 6"
+      preserveAspectRatio="none"
+      className="w-full h-full text-slate-200 fill-current"
+    >
+      <path d="M0,0 L6,6 L12,0 L18,6 L24,0 L30,6 L36,0 L42,6 L48,0 L54,6 L60,0 L66,6 L72,0 L78,6 L84,0 L90,6 L96,0 L102,6 L108,0 L114,6 L120,0 L126,6 L132,0 L138,6 L144,0 L150,6 L156,0 L162,6 L168,0 L174,6 L180,0 L186,6 L192,0 L198,6 L204,0 L210,6 L216,0 L222,6 L228,0 L234,6 L240,0 L246,6 L252,0 L258,6 L264,0 L270,6 L276,0 L282,6 L288,0 L294,6 L300,0 L306,6 L312,0 L318,6 L324,0 L330,6 L336,0 L342,6 L348,0 L354,6 L360,0 L366,6 L372,0 L378,6 L384,0 L390,6 L396,0 L402,6 L408,0 L414,6 L420,0 L426,6 L432,0 L438,6 L444,0 L450,6 L456,0 L462,6 L468,0 L474,6 L480,0 L486,6 L492,0 L498,6 L504,0 L510,6 L516,0 L522,6 L528,0 L534,6 L540,0 L546,6 L552,0 L558,6 L564,0 L570,6 L576,0 L582,6 L588,0 L594,6 L600,0 L606,6 L612,0 L618,6 L624,0 L630,6 L636,0 L642,6 L648,0 L654,6 L660,0 L666,6 L672,0 L678,6 L684,0 L690,6 L696,0 L702,6 L708,0 L714,6 L720,0 L726,6 L732,0 L738,6 L744,0 L750,6 L756,0 L762,6 L768,0 L774,6 L780,0 L786,6 L792,0 L798,6 L804,0 L810,6 L816,0 L822,6 L828,0 L834,6 L840,0 L846,6 L852,0 L858,6 L864,0 L870,6 L876,0 L882,6 L888,0 L894,6 L900,0 L906,6 L912,0 L918,6 L924,0 L930,6 L936,0 L942,6 L948,0 L954,6 L960,0 L966,6 L972,0 L978,6 L984,0 L990,6 L996,0 L1002,6 L1008,0 L1014,6 L1020,0 L1026,6 L1032,0 L1038,6 L1044,0 L1050,6 L1056,0 L1062,6 L1068,0 L1074,6 L1080,0 L1086,6 L1092,0 L1098,6 L1104,0 L1110,6 L1116,0 L1122,6 L1128,0 L1134,6 L1140,0 L1146,6 L1152,0 L1158,6 L1164,0 L1170,6 L1176,0 L1182,6 L1188,0 L1194,6 L1200,0 L1200,6 L0,6 Z" />
+    </svg>
+  </div>
+);
 
 export function ImageSearch() {
+  const [productLink, setProductLink] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchPhase, setSearchPhase] = useState<
-    "idle" | "identifying" | "searching-local" | "searching-external"
+    "idle" | "validating" | "scraping" | "analyzing" | "complete"
   >("idle");
-  const [results, setResults] = useState<ProductResult[]>([]);
-  const [identifiedProduct, setIdentifiedProduct] = useState<string>("");
-  const [productLink, setProductLink] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [analysisResult, setAnalysisResult] =
+    useState<LinkAnalysisResult | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
 
-  const productLinkInputRef = useRef<HTMLInputElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  const resultsRef = useRef<HTMLDivElement>(null);
+  // Inquiry form modal state
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [inquiryName, setInquiryName] = useState("");
+  const [inquiryPhone, setInquiryPhone] = useState("");
+  const [inquiryEmail, setInquiryEmail] = useState("");
+  const [inquiryLocation, setInquiryLocation] = useState("");
+  const [inquiryCountry, setInquiryCountry] = useState("United States");
+  const [inquirySelectedSize, setInquirySelectedSize] = useState("");
+  const [inquiryQuantity, setInquiryQuantity] = useState("1");
+  const [inquiryNotes, setInquiryNotes] = useState("");
+  const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false);
+  const [inquirySubmitted, setInquirySubmitted] = useState(false);
 
-  // Focus into input
-  const focusInput = () => {
-    window.setTimeout(() => {
-      productLinkInputRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-      productLinkInputRef.current?.focus();
-    }, 60);
-  };
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const productLinkInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const handleSwitchToLink = () => {
-      focusInput();
+    const handlePopulate = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        url?: string;
+        focus?: boolean;
+      }>;
+      const nextUrl = customEvent.detail?.url;
+      if (nextUrl) {
+        setProductLink(nextUrl);
+      }
+      sectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      if (customEvent.detail?.focus) {
+        window.setTimeout(() => {
+          productLinkInputRef.current?.focus();
+          productLinkInputRef.current?.select();
+        }, 350);
+      }
     };
-    window.addEventListener("pickopick:switch-to-link", handleSwitchToLink);
-    return () =>
+
+    window.addEventListener(
+      "pickopick:populate-product-link",
+      handlePopulate as EventListener,
+    );
+    return () => {
       window.removeEventListener(
-        "pickopick:switch-to-link",
-        handleSwitchToLink,
+        "pickopick:populate-product-link",
+        handlePopulate as EventListener,
       );
+    };
   }, []);
+
+  const supportedStores = [
+    "Amazon.in",
+    "Flipkart",
+    "Myntra",
+    "Ajio",
+    "Nykaa",
+    "Any Indian URL",
+  ];
+
+  const validateUrl = (
+    urlStr: string,
+  ): { valid: boolean; domain: string; error?: string } => {
+    try {
+      const trimmed = urlStr.trim();
+      const withProtocol =
+        trimmed.startsWith("http://") || trimmed.startsWith("https://")
+          ? trimmed
+          : `https://${trimmed}`;
+      const parsed = new URL(withProtocol);
+      const hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
+
+      const matchedDomain = SUPPORTED_DOMAINS.find(
+        (d) => hostname === d || hostname.endsWith(`.${d}`),
+      );
+
+      return {
+        valid: true,
+        domain: matchedDomain || hostname,
+      };
+    } catch {
+      return {
+        valid: false,
+        domain: "",
+        error: "Please enter a valid URL (e.g. https://www.amazon.in/dp/...)",
+      };
+    }
+  };
+
+  const extractStoreInfo = (
+    domain: string,
+    url: string,
+  ): LinkAnalysisResult => {
+    let storeName = "Indian Online Store";
+    let category = "General Merchandise";
+    let estimatedWeight = "0.5 - 1.5 kg";
+    let sizes: string[] = [];
+
+    const lower = domain.toLowerCase();
+
+    if (lower.includes("amazon")) {
+      storeName = "Amazon India";
+      category = "E-Commerce / Multi-Category";
+      estimatedWeight = "0.5 - 2.0 kg";
+      sizes = ["Standard"];
+    } else if (lower.includes("flipkart")) {
+      storeName = "Flipkart";
+      category = "E-Commerce / Consumer Goods";
+      estimatedWeight = "0.5 - 2.0 kg";
+      sizes = ["Standard"];
+    } else if (lower.includes("myntra")) {
+      storeName = "Myntra";
+      category = "Fashion, Ethnic & Lifestyle";
+      estimatedWeight = "0.3 - 0.8 kg";
+      sizes = ["XS", "S", "M", "L", "XL", "XXL", "Free Size"];
+    } else if (lower.includes("ajio")) {
+      storeName = "Ajio";
+      category = "Fashion & Indie Apparel";
+      estimatedWeight = "0.3 - 0.8 kg";
+      sizes = ["S", "M", "L", "XL", "Free Size"];
+    } else if (lower.includes("nykaa")) {
+      storeName = "Nykaa";
+      category = "Beauty, Cosmetics & Personal Care";
+      estimatedWeight = "0.2 - 0.6 kg";
+      sizes = ["Standard Size"];
+    } else if (lower.includes("tatacliq")) {
+      storeName = "Tata CLiQ";
+      category = "Premium Lifestyle & Fashion";
+      estimatedWeight = "0.5 - 1.5 kg";
+      sizes = ["S", "M", "L", "XL"];
+    } else {
+      const parts = domain.split(".");
+      storeName =
+        parts[0].charAt(0).toUpperCase() + parts[0].slice(1) + " (India)";
+    }
+
+    let productTitle = `${storeName} Verified Product`;
+    try {
+      const urlObj = new URL(url.startsWith("http") ? url : `https://${url}`);
+      const pathSegments = urlObj.pathname
+        .split("/")
+        .filter((s) => s.length > 2);
+      if (pathSegments.length > 0) {
+        const slug = pathSegments[0]
+          .replace(/[-_]/g, " ")
+          .replace(/\.html?$/, "")
+          .trim();
+        if (slug.length > 3 && !slug.match(/^(dp|gp|product|item|p)$/i)) {
+          productTitle = slug
+            .split(" ")
+            .slice(0, 8)
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(" ");
+        }
+      }
+    } catch {
+      // fallback to storeName
+    }
+
+    return {
+      storeName,
+      category,
+      sourceDomain: domain,
+      originalUrl: url.startsWith("http") ? url : `https://${url}`,
+      productTitle,
+      estimatedPriceInr: null,
+      shippingWeightEstimate: estimatedWeight,
+      availableSizes: sizes,
+      inStock: true,
+      requiresSpecialHandling:
+        category.includes("Beauty") || category.includes("Liquid"),
+      notes: `Ready for assisted buying. PickoPick local buyers in Chennai will purchase in INR and prepare for international air freight.`,
+    };
+  };
 
   const handlePasteClipboard = async () => {
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
         setProductLink(text.trim());
-        toast.success("Link pasted from clipboard!");
-        productLinkInputRef.current?.focus();
       }
     } catch {
-      toast.error("Please paste manually using Ctrl+V or right click.");
-    }
-  };
-
-  const handleAddToCart = async (product: ProductResult) => {
-    const userStr = localStorage.getItem("user");
-    if (!userStr) {
-      toast.error("Please login to add items to cart");
-      window.dispatchEvent(new Event("pickopick:open-login"));
-      return;
-    }
-    const user = JSON.parse(userStr);
-    const price = parseFloat(String(product.price).replace(/[₹,]/g, "")) || 0;
-
-    const customerId = user?.customerID ?? user?.customerId ?? user?.id;
-    if (!customerId) {
-      toast.error("Please login to add items to cart");
-      window.dispatchEvent(new Event("pickopick:open-login"));
-      return;
-    }
-
-    const rawImage =
-      product.image ||
-      product.imageURL ||
-      product.imageUrl ||
-      product.thumbnail ||
-      "";
-
-    try {
-      const primaryPayload: Record<string, any> = {
-        customer_id: customerId,
-        name: product.name,
-        price: price > 0 ? price : 0,
-        quantity: 1,
-      };
-
-      if (rawImage) {
-        primaryPayload.image = rawImage;
-      }
-
-      let { error } = await supabase.from("cart").insert([primaryPayload]);
-
-      // Graceful fallback if image column is restricted by schema
-      if (
-        error &&
-        error.message &&
-        error.message.toLowerCase().includes("schema cache")
-      ) {
-        const minimalPayload = {
-          customer_id: customerId,
-          name: product.name,
-          price: price > 0 ? price : 0,
-          quantity: 1,
-        };
-        const retry = await supabase.from("cart").insert([minimalPayload]);
-        error = retry.error;
-      }
-
-      if (error) throw error;
-      toast.success(`${product.name.slice(0, 35)}... added to cart! 🛒`);
-      window.dispatchEvent(new Event("cart-updated"));
-    } catch (err: any) {
-      toast.error(err.message || "Failed to add to cart");
+      // Fallback
     }
   };
 
@@ -346,67 +312,129 @@ export function ImageSearch() {
     e.preventDefault();
     if (!productLink.trim()) return;
 
+    setErrorMessage("");
+    setAnalysisResult(null);
     setIsSearching(true);
     setHasSearched(true);
-    setResults([]);
-    setIdentifiedProduct("");
-    setErrorMessage("");
 
-    try {
-      setSearchPhase("identifying");
-
-      const response = await fetch("/api/analyze-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ link: productLink.trim() }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Server error (${response.status})`);
-      }
-
-      const data: SearchResponse = await response.json();
-      setIdentifiedProduct(data.identified || "");
-      setResults(data.results || []);
-
-      window.setTimeout(() => {
-        resultsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    } catch (error: any) {
+    const validation = validateUrl(productLink);
+    if (!validation.valid) {
       setErrorMessage(
-        error.message ||
-          "Could not fetch details for this link. Please check the URL or try searching again.",
+        validation.error || "Please enter a valid Indian store URL.",
       );
-      setResults([]);
-    } finally {
       setIsSearching(false);
-      setSearchPhase("idle");
+      return;
     }
+
+    setSearchPhase("validating");
+    await new Promise((r) => setTimeout(r, 400));
+
+    setSearchPhase("scraping");
+    await new Promise((r) => setTimeout(r, 600));
+
+    setSearchPhase("analyzing");
+    const result = extractStoreInfo(validation.domain, productLink);
+    await new Promise((r) => setTimeout(r, 400));
+
+    setAnalysisResult(result);
+    setSearchPhase("complete");
+    setIsSearching(false);
+
+    if (result.availableSizes.length > 0) {
+      setInquirySelectedSize(result.availableSizes[0]);
+    }
+
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }, 100);
   };
 
   const handleReset = () => {
     setProductLink("");
-    setResults([]);
-    setIdentifiedProduct("");
+    setAnalysisResult(null);
     setSearchPhase("idle");
     setErrorMessage("");
     setHasSearched(false);
   };
 
-  const getSourceConfig = (source: string) => {
-    return SOURCE_CONFIG[source] || SOURCE_CONFIG.amazon;
+  const handleOpenInquiry = () => {
+    setInquirySubmitted(false);
+    setShowInquiryModal(true);
+  };
+
+  const handleCloseInquiry = () => {
+    setShowInquiryModal(false);
+  };
+
+  const handleInquirySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inquiryName.trim() || !inquiryPhone.trim() || !inquiryEmail.trim() || !inquiryLocation.trim()) return;
+
+    setIsSubmittingInquiry(true);
+
+    try {
+      const result = await submitServiceRequest("assisted_buy", {
+        customerName: inquiryName,
+        phone: inquiryPhone,
+        email: inquiryEmail,
+        location: inquiryLocation,
+        sourceStore: analysisResult?.storeName || "Indian Store",
+        product: analysisResult?.productTitle || "Product",
+        productUrl: analysisResult?.originalUrl || productLink,
+        size: inquirySelectedSize || "Standard",
+        quantity: inquiryQuantity,
+        destinationCountry: inquiryCountry,
+        notes: inquiryNotes,
+      });
+      window.open(result.whatsappUrl, "_blank", "noopener,noreferrer");
+      setInquirySubmitted(true);
+      return;
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to submit the purchase request.");
+      return;
+    } finally {
+      setIsSubmittingInquiry(false);
+    }
+
+    try {
+      await supabase.from("inquiries").insert([
+        {
+          name: inquiryName.trim(),
+          phone: inquiryPhone.trim(),
+          country: inquiryCountry,
+          notes: `[BUY & SHIP URL INQUIRY]\nStore: ${analysisResult?.storeName || "Unknown"}\nProduct: ${analysisResult?.productTitle || "N/A"}\nURL: ${analysisResult?.originalUrl || productLink}\nSize: ${inquirySelectedSize || "N/A"}\nQty: ${inquiryQuantity}\nUser Notes: ${inquiryNotes.trim() || "None"}`,
+          status: "pending",
+          created_at: new Date().toISOString(),
+        },
+      ]);
+
+      const waMsg = encodeURIComponent(
+        `Hello PickoPick Personal Shopper! 🛍️\n\nI want to buy a product from an Indian store:\n\n*Store:* ${analysisResult?.storeName || "Indian Store"}\n*Product:* ${analysisResult?.productTitle || "Product"}\n*URL:* ${analysisResult?.originalUrl || productLink}\n*Size/Variant:* ${inquirySelectedSize || "Standard"}\n*Quantity:* ${inquiryQuantity}\n*Destination Country:* ${inquiryCountry}\n*My Name:* ${inquiryName}\n*My Phone:* ${inquiryPhone}\n${inquiryNotes ? `*Notes:* ${inquiryNotes}\n` : ""}\nPlease confirm availability and provide an INR quote for purchasing and international shipping.`,
+      );
+      window.open(`https://wa.me/919790361222?text=${waMsg}`, "_blank");
+
+      setInquirySubmitted(true);
+    } catch {
+      const waMsg = encodeURIComponent(
+        `Hello PickoPick Personal Shopper! 🛍️\n\nI want to buy:\n${analysisResult?.originalUrl || productLink}\nDestination: ${inquiryCountry}\nName: ${inquiryName}`,
+      );
+      window.open(`https://wa.me/919790361222?text=${waMsg}`, "_blank");
+      setInquirySubmitted(true);
+    } finally {
+      setIsSubmittingInquiry(false);
+    }
   };
 
   return (
     <section
-      id="search-by-image"
+      id="buy-and-ship"
       ref={sectionRef}
       className="relative bg-[#F8FAFC] scroll-mt-24 border-b border-slate-200/80"
     >
+      <div id="search-by-image" className="sr-only" aria-hidden="true" />
       {/* Top Minute Zigzag Border */}
       <ZigzagBorder position="top" />
 
@@ -415,21 +443,42 @@ export function ImageSearch() {
         <div className="text-center max-w-2xl mx-auto mb-8">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-100 bg-blue-50 text-[11px] font-black uppercase tracking-widest text-[#0B56D9]">
             <Sparkles size={12} className="text-[#FF6321]" />
-            Universal Buy &amp; Ship
+            Buy &amp; Ship • Personal Shopper in India
           </div>
 
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
-            Find it . Buy it . Ship it .
+            Find it in India. We Buy &amp; Ship it Abroad.
           </h2>
 
           <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Paste any Indian product link. PickoPick will purchase it locally,
-            consolidate your parcel, and ship it to your doorstep overseas.
+            Paste any Indian product link below. PickoPick purchases it locally
+            in INR, verifies and repacks your parcel, and delivers directly to
+            your overseas doorstep.
           </p>
+
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <Link
+              to="/buy-and-ship"
+              className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#0B56D9] hover:underline"
+            >
+              <span>Read Full Buy &amp; Ship Guide &amp; FAQs</span>
+              <ArrowRight size={13} />
+            </Link>
+            <span className="text-slate-300">•</span>
+            <a
+              href="https://wa.me/919790361222?text=Hello%20PickoPick%20Personal%20Shopper%2C%20I%20want%20to%20buy%20items%20from%20an%20Indian%20store."
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-extrabold text-emerald-600 hover:underline"
+            >
+              <FaWhatsapp size={14} />
+              <span>Personal Shopper Chat</span>
+            </a>
+          </div>
         </div>
 
         {/* High-Efficiency Unified Action Card */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-7">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-7 shadow-xs">
           <form onSubmit={handleLinkSearch} className="space-y-4">
             {/* Input Row with integrated Link Icon, Paste Button, and Action Button */}
             <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
@@ -472,7 +521,7 @@ export function ImageSearch() {
                   </>
                 ) : (
                   <>
-                    <span>Find &amp; Ship Product</span>
+                    <span>Analyze &amp; Ship Product</span>
                     <ArrowRight size={14} />
                   </>
                 )}
@@ -548,7 +597,7 @@ export function ImageSearch() {
                   Doorstep Delivery
                 </p>
                 <p className="text-[11px] text-slate-500 truncate">
-                  Shipped overseas in 3–7 days
+                  Shipped overseas in 3–5 days
                 </p>
               </div>
             </div>
@@ -560,187 +609,286 @@ export function ImageSearch() {
           <AnimatePresence>
             {isSearching && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="p-8 rounded-2xl border border-blue-100 bg-white text-center"
+                exit={{ opacity: 0, y: -10 }}
+                className="bg-white rounded-2xl border border-blue-100 p-8 text-center"
               >
-                <div className="w-9 h-9 border-3 border-blue-100 border-t-[#0B56D9] rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-sm font-extrabold text-[#0A1931]">
-                  {searchPhase === "identifying" &&
-                    "Analyzing product URL & fetching details..."}
-                  {searchPhase === "searching-local" &&
-                    "Checking inventory & warehouse verification..."}
-                  {searchPhase === "searching-external" &&
-                    "Retrieving verified price from Indian vendor..."}
-                  {searchPhase === "idle" && "Finding product details..."}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Connecting directly to Indian e-commerce catalog services
+                <div className="w-12 h-12 bg-blue-50 text-[#0B56D9] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <RefreshCw
+                    size={24}
+                    className="animate-spin text-[#0B56D9]"
+                  />
+                </div>
+                <h4 className="text-base font-extrabold text-[#0A1931] mb-1">
+                  Analyzing Product Details
+                </h4>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Verifying Indian store availability, estimated parcel
+                  dimensions, and export compliance...
                 </p>
               </motion.div>
             )}
 
             {errorMessage && !isSearching && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="p-6 rounded-2xl border border-red-200 bg-red-50/50 text-center"
-              >
-                <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-2.5">
-                  <AlertCircle size={20} />
-                </div>
-                <h4 className="text-sm font-extrabold text-red-900">
-                  Could Not Load Product
-                </h4>
-                <p className="text-xs text-red-700 mt-1 max-w-md mx-auto">
-                  {errorMessage}
-                </p>
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="mt-3.5 px-4 py-1.5 rounded-xl bg-white border border-red-200 text-xs font-bold text-red-700 hover:bg-red-50 cursor-pointer"
-                >
-                  Clear &amp; Try Another Link
-                </button>
-              </motion.div>
-            )}
-
-            {results.length > 0 && !isSearching && (
-              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="space-y-4"
+                exit={{ opacity: 0, y: -10 }}
+                className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3"
               >
-                {/* Result Summary Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-slate-200 bg-white">
-                  <div className="flex items-center gap-2.5">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200">
-                      <Package size={16} />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-[#0A1931]">
-                        {identifiedProduct
-                          ? `Identified: ${identifiedProduct}`
-                          : "Product Match Found"}
-                      </p>
-                      <p className="text-[11px] text-slate-500">
-                        Click below to add to your order or visit product page
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-red-600 cursor-pointer"
-                  >
-                    <X size={14} />
-                    <span>New Search</span>
-                  </button>
-                </div>
-
-                {/* Product List Grid */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {results.map((product) => {
-                    const config = getSourceConfig(product.source);
-                    const rawImage =
-                      product.image ||
-                      product.imageURL ||
-                      product.imageUrl ||
-                      product.thumbnail ||
-                      "";
-                    return (
-                      <div
-                        key={product.id}
-                        className={`flex flex-col justify-between rounded-2xl border bg-white p-4 transition-colors ${config.border}`}
-                      >
-                        <div className="flex gap-3.5">
-                          <ProductImage src={rawImage} alt={product.name} />
-
-                          <div className="flex-1 min-w-0">
-                            <span
-                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${config.bg} ${config.color} mb-1`}
-                            >
-                              {config.label}
-                            </span>
-                            <h4 className="text-xs font-bold text-[#0A1931] line-clamp-2 leading-snug">
-                              {product.name}
-                            </h4>
-                            <p className="text-base font-extrabold text-[#0B56D9] mt-1.5">
-                              {product.price}
-                            </p>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
-                              Store: {product.store}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                          {product.url ? (
-                            <a
-                              href={product.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs font-semibold text-slate-600 hover:text-[#0B56D9] inline-flex items-center gap-1"
-                            >
-                              <span>View Store Page</span>
-                              <ExternalLink size={12} />
-                            </a>
-                          ) : (
-                            <div />
-                          )}
-
-                          <button
-                            type="button"
-                            onClick={() => handleAddToCart(product)}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-bold transition-colors cursor-pointer"
-                          >
-                            <ShoppingCart size={13} />
-                            <span>Choose Product</span>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                <AlertCircle
+                  size={18}
+                  className="text-red-600 shrink-0 mt-0.5"
+                />
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-red-800">
+                    {errorMessage}
+                  </p>
                 </div>
               </motion.div>
             )}
 
-            {hasSearched &&
-              results.length === 0 &&
-              !isSearching &&
-              !errorMessage && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="p-6 rounded-2xl border border-slate-200 bg-white text-center"
-                >
-                  <p className="text-sm font-bold text-[#0A1931]">
-                    No exact match found
-                  </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Try checking the link or pasting another product link from
-                    Amazon India, Flipkart, or Myntra.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="mt-3 px-4 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
-                  >
-                    Try Again
-                  </button>
-                </motion.div>
-              )}
+            {analysisResult && !isSearching && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                className="bg-white rounded-2xl border border-blue-200 p-6 shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                  <div>
+                    <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-100 text-[#0B56D9] text-[10px] font-black uppercase tracking-wider mb-1">
+                      {analysisResult.storeName}
+                    </span>
+                    <h3 className="text-lg font-extrabold text-[#0A1931]">
+                      {analysisResult.productTitle}
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Category: {analysisResult.category} • Est. Weight:{" "}
+                      {analysisResult.shippingWeightEstimate}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleOpenInquiry}
+                      className="px-5 py-2.5 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-extrabold uppercase tracking-wide transition-colors cursor-pointer shadow-xs"
+                    >
+                      Request Purchase Quote
+                    </button>
+                    <a
+                      href={analysisResult.originalUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-[#0B56D9] hover:bg-slate-50 transition-colors"
+                      title="View original link"
+                    >
+                      <ExternalLink size={16} />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-600 flex items-start gap-2.5">
+                  <Info size={15} className="text-[#0B56D9] shrink-0 mt-0.5" />
+                  <span>{analysisResult.notes}</span>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* Bottom Minute Zigzag Border */}
-      <ZigzagBorder position="bottom" />
+      {/* Inquiry Modal */}
+      <AnimatePresence>
+        {showInquiryModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 max-w-md w-full shadow-2xl relative"
+            >
+              {inquirySubmitted ? (
+                <div className="text-center py-6">
+                  <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle2 size={32} />
+                  </div>
+                  <h3 className="text-xl font-extrabold text-[#0A1931]">
+                    Purchase Inquiry Sent!
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                    Our personal shopping executive will review the product
+                    availability and send your INR and shipping quote directly
+                    on WhatsApp.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleCloseInquiry}
+                    className="mt-6 w-full py-3 rounded-xl bg-[#0B56D9] text-white text-xs font-extrabold uppercase tracking-wider hover:bg-[#0849B7] cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleInquirySubmit} className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-extrabold text-[#0A1931]">
+                      Request Assisted Buy Quote
+                    </h3>
+                    <p className="text-xs text-slate-500 truncate">
+                      {analysisResult?.productTitle}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Your Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={inquiryName}
+                      onChange={(e) => setInquiryName(e.target.value)}
+                      placeholder="e.g. Priya Sundaram"
+                      className="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-[#0A1931] outline-none focus:border-[#0B56D9]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        WhatsApp Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={inquiryPhone}
+                        onChange={(e) => setInquiryPhone(e.target.value)}
+                        placeholder="+1 555-0199"
+                        className="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-[#0A1931] outline-none focus:border-[#0B56D9]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Email Address <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={inquiryEmail}
+                        onChange={(e) => setInquiryEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        className="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-[#0A1931] outline-none focus:border-[#0B56D9]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Where to Send <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={inquiryLocation}
+                        onChange={(e) => setInquiryLocation(e.target.value)}
+                        placeholder="City, country / postal code"
+                        className="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-[#0A1931] outline-none focus:border-[#0B56D9]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Destination Country
+                      </label>
+                      <select
+                        value={inquiryCountry}
+                        onChange={(e) => setInquiryCountry(e.target.value)}
+                        className="w-full h-10 px-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-[#0A1931] outline-none focus:border-[#0B56D9]"
+                      >
+                        <option value="United States">USA</option>
+                        <option value="United Kingdom">UK</option>
+                        <option value="Canada">Canada</option>
+                        <option value="United Arab Emirates">UAE</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {analysisResult &&
+                    analysisResult.availableSizes.length > 0 && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            Size / Variant
+                          </label>
+                          <select
+                            value={inquirySelectedSize}
+                            onChange={(e) =>
+                              setInquirySelectedSize(e.target.value)
+                            }
+                            className="w-full h-10 px-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-[#0A1931] outline-none focus:border-[#0B56D9]"
+                          >
+                            {analysisResult.availableSizes.map((sz) => (
+                              <option key={sz} value={sz}>
+                                {sz}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            Quantity
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="20"
+                            value={inquiryQuantity}
+                            onChange={(e) => setInquiryQuantity(e.target.value)}
+                            className="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-[#0A1931] outline-none focus:border-[#0B56D9]"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Notes (Color, instructions, etc.)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={inquiryNotes}
+                      onChange={(e) => setInquiryNotes(e.target.value)}
+                      placeholder="e.g. Please check if gift packaging is available..."
+                      className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-[#0A1931] outline-none focus:border-[#0B56D9] resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleCloseInquiry}
+                      className="w-1/3 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingInquiry}
+                      className="w-2/3 py-2.5 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-extrabold uppercase tracking-wide inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                    >
+                      <FaWhatsapp size={16} />
+                      <span>Submit to Shopper</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

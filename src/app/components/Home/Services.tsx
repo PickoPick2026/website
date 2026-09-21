@@ -25,13 +25,13 @@ const services = [
   },
   {
     num: "05",
-    image: "/images/services/free-storage.jpg",
+    image: "/images/services/free-storage.webp",
     title: "Free Storage",
     desc: "Store your items securely in our warehouse for up to 30 days at no additional cost.",
   },
   {
     num: "06",
-    image: "/images/services/secure-payments.jpg",
+    image: "/images/services/secure-payments.webp",
     title: "Secure Payments",
     desc: "Pay easily in your local currency using international credit cards or PayPal.",
   },

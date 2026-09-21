@@ -1,6 +1,11 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /cart
+Disallow: /orders
+Disallow: /profile
+Disallow: /addresses
+Disallow: /wallet
 
 # Search and answer-engine crawlers
 User-agent: Googlebot

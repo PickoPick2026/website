@@ -1,12 +1,35 @@
 import { FormEvent, useState } from 'react';
 import { Clock3, Mail, MapPin, Phone, Send } from 'lucide-react';
+import { toast } from 'sonner';
+import { submitServiceRequest } from '../../lib/serviceRequests';
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSent(true);
+    const form = event.currentTarget;
+    const values = Object.fromEntries(new FormData(form).entries());
+    setIsSubmitting(true);
+    try {
+      const result = await submitServiceRequest('contact', {
+        customerName: String(values.name || ''),
+        email: String(values.email || ''),
+        phone: String(values.phone || ''),
+        location: String(values.location || ''),
+        topic: String(values.topic || ''),
+        message: String(values.message || ''),
+      });
+      setSent(true);
+      form.reset();
+      window.open(result.whatsappUrl, '_blank', 'noopener,noreferrer');
+      toast.success(result.emailSent ? 'Message sent to WhatsApp and email.' : 'Message sent to WhatsApp.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to send your message.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -57,12 +80,13 @@ export default function ContactPage() {
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <label className="text-xs font-bold text-slate-700">Full name<input required name="name" className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 px-3 text-sm outline-none focus:border-[#0B56D9]" /></label>
               <label className="text-xs font-bold text-slate-700">Email address<input required type="email" name="email" className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 px-3 text-sm outline-none focus:border-[#0B56D9]" /></label>
-              <label className="text-xs font-bold text-slate-700">Phone number<input name="phone" type="tel" className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 px-3 text-sm outline-none focus:border-[#0B56D9]" /></label>
+              <label className="text-xs font-bold text-slate-700">Phone number<input required name="phone" type="tel" className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 px-3 text-sm outline-none focus:border-[#0B56D9]" /></label>
+              <label className="text-xs font-bold text-slate-700">Location<input required name="location" placeholder="City, country" className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 px-3 text-sm outline-none focus:border-[#0B56D9]" /></label>
               <label className="text-xs font-bold text-slate-700">How can we help?<select name="topic" className="mt-1.5 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none focus:border-[#0B56D9]"><option>International shipping</option><option>Shop from India</option><option>NRI services</option><option>Other inquiry</option></select></label>
             </div>
             <label className="mt-4 block text-xs font-bold text-slate-700">Message<textarea required name="message" rows={5} className="mt-1.5 w-full rounded-xl border border-slate-300 p-3 text-sm outline-none focus:border-[#0B56D9]" /></label>
             {sent && <p className="mt-4 rounded-xl bg-blue-50 px-4 py-3 text-sm font-semibold text-[#0B56D9]">Thanks — your message has been received. Our team will contact you shortly.</p>}
-            <button type="submit" className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-6 py-3 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7]"><Send className="h-4 w-4" />Send message</button>
+            <button disabled={isSubmitting} type="submit" className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-6 py-3 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] disabled:opacity-60"><Send className="h-4 w-4" />{isSubmitting ? 'Sending…' : 'Send to WhatsApp + Email'}</button>
           </form>
         </div>
       </section>

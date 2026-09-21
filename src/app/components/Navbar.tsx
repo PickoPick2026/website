@@ -14,6 +14,7 @@ import {
   Calculator,
   HelpCircle,
   Info,
+  ArrowLeft,
 } from "lucide-react";
 import { RegisterModal } from "./RegisterModal";
 import { LoginModal } from "./LoginModal";
@@ -22,7 +23,7 @@ import { supabase } from "@/src/lib/supabase";
 
 const companyLinks = [
   {
-    name: "About Pick O Pick",
+    name: "About Us",
     href: "#about",
     description: "Learn about our India-to-world service",
     icon: Info,
@@ -38,12 +39,6 @@ const companyLinks = [
     href: "/shipping-estimate",
     description: "Calculate international shipping rates",
     icon: Calculator,
-  },
-  {
-    name: "How It Works",
-    href: "#how-it-works",
-    description: "Your package journey from India",
-    icon: HelpCircle,
   },
 ];
 
@@ -182,6 +177,12 @@ export function Navbar() {
     setIsMobileMenuOpen(false);
     setActiveMenu(null);
   };
+  const isActive = (path: string) =>
+    location.pathname === path ||
+    (path === "/" && location.pathname === "/") ||
+    (path === "/shop" && location.pathname === "/shop");
+  const isHashActive = (hash: string) =>
+    location.pathname === "/" && location.hash === hash;
   const openAccountPage = (path: string) => {
     closeMenus();
     navigate(path);
@@ -196,19 +197,33 @@ export function Navbar() {
   };
   const openBuyAndShip = () => {
     closeMenus();
-    navigate("/shop");
+    navigate("/buy-and-ship#assisted-buy-form");
+  };
+  const openOrderAndSend = () => {
+    closeMenus();
+    navigate("/order-and-send#order-and-send-form");
   };
 
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-50">
-        <nav className="relative w-full border-b border-[#DE4D17] bg-[#FF6321]">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-5 sm:h-[68px] sm:px-6 lg:px-8">
+        <nav className="relative w-full border-b border-[#D94F18] bg-[#FF6321] shadow-[0_2px_14px_rgba(10,25,49,0.12)]">
+          <div className="mx-auto flex h-[68px] max-w-[1440px] items-center gap-2 px-4 sm:h-[74px] sm:gap-3 sm:px-6 lg:px-8">
+            {location.pathname !== "/" && (
+              <button
+                type="button"
+                onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/70 text-white transition-colors hover:bg-white/15"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+            )}
             {/* Logo navigates to Home / scrolls to top */}
             <a
               href="/"
               onClick={handleLogoClick}
-              className="flex shrink-0 items-center rounded-xl bg-white px-2 py-1"
+              className="flex shrink-0 items-center rounded-xl border border-white/40 bg-white px-2 py-1 shadow-sm"
               aria-label="Pick O Pick home"
             >
               <img
@@ -219,27 +234,19 @@ export function Navbar() {
             </a>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden h-full items-center gap-1.5 lg:flex">
+            <div className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 xl:flex">
               <a
-                href="/track-shipment"
-                onClick={(event) => handleNavigation(event, "/track-shipment")}
-                className="rounded-lg px-3 py-2 text-sm font-extrabold text-white transition-colors hover:bg-white/15"
+                href="/shop#shop-directory"
+                onClick={(event) => handleNavigation(event, "/shop#shop-directory")}
+                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors ${isActive("/shop") ? "bg-white text-[#0B56D9]" : "text-white hover:bg-white/15"}`}
               >
-                Tracking
-              </a>
-
-              <a
-                href="/nri"
-                onClick={(event) => handleNavigation(event, "/nri")}
-                className="rounded-full bg-[#0B56D9] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-white transition-transform hover:-translate-y-0.5 hover:bg-[#0B56D9]/90"
-              >
-                NRI Services
+                Shop Directory
               </a>
 
               <button
                 type="button"
                 onClick={openBuyAndShip}
-                className="relative isolate overflow-hidden rounded-full bg-white px-3.5 py-2.5 text-[11px] font-extrabold uppercase tracking-wide text-[#0B56D9] transition-transform hover:-translate-y-0.5"
+                className={`relative isolate overflow-hidden whitespace-nowrap rounded-full px-3.5 py-2.5 text-[11px] font-extrabold uppercase tracking-wide transition-transform hover:-translate-y-0.5 cursor-pointer shadow-sm ${isActive("/buy-and-ship") ? "bg-[#0849B7] text-white ring-2 ring-white/70" : "bg-white text-[#0B56D9] hover:bg-blue-50"}`}
                 aria-label="Start Buy and Ship"
               >
                 <span
@@ -248,6 +255,31 @@ export function Navbar() {
                 />
                 <span className="relative">Buy &amp; Ship</span>
               </button>
+
+              <button
+                type="button"
+                onClick={openOrderAndSend}
+                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors hover:bg-white/15 cursor-pointer ${isActive("/order-and-send") ? "bg-white text-[#0B56D9]" : "text-white"}`}
+                aria-label="Order and Send"
+              >
+                Order &amp; Send
+              </button>
+
+              <a
+                href="/nri"
+                onClick={(event) => handleNavigation(event, "/nri")}
+                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors hover:bg-white/15 ${isActive("/nri") ? "bg-[#0B56D9] text-white ring-2 ring-white/60" : "text-white"}`}
+              >
+                NRI Services
+              </a>
+
+              <a
+                href="/track-shipment"
+                onClick={(event) => handleNavigation(event, "/track-shipment")}
+                className={`whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-extrabold transition-colors hover:bg-white/15 ${isActive("/track-shipment") ? "bg-white text-[#0B56D9]" : "text-white"}`}
+              >
+                Tracking
+              </a>
 
               {/* Company Compact Dropdown Menu */}
               <div
@@ -262,14 +294,14 @@ export function Navbar() {
                       cur === "Company" ? null : "Company",
                     )
                   }
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${
+                  className={`inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg px-2.5 py-2.5 text-[13px] font-bold transition-colors ${
                     activeMenu === "Company"
                       ? "bg-white text-[#0B56D9]"
                       : "text-white hover:bg-white/15"
                   }`}
                   aria-expanded={activeMenu === "Company"}
                 >
-                  Company
+                  About Us
                   <ChevronDown
                     className={`h-4 w-4 transition-transform duration-200 ${
                       activeMenu === "Company" ? "rotate-180" : ""
@@ -312,81 +344,49 @@ export function Navbar() {
                             </a>
                           );
                         })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Global Offices Direct Dropdown Menu */}
-              <div
-                className="relative"
-                onMouseEnter={() => handleMouseEnter("Global Offices")}
-                onMouseLeave={handleMouseLeave}
-              >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setActiveMenu((cur) =>
-                      cur === "Global Offices" ? null : "Global Offices",
-                    )
-                  }
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-bold transition-colors ${
-                    activeMenu === "Global Offices"
-                      ? "bg-white text-[#0B56D9]"
-                      : "text-white hover:bg-white/15"
-                  }`}
-                  aria-expanded={activeMenu === "Global Offices"}
-                >
-                  Global Offices
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform duration-200 ${
-                      activeMenu === "Global Offices" ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                <AnimatePresence>
-                  {activeMenu === "Global Offices" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute left-0 top-full mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl z-50"
-                    >
-                      <div className="space-y-1">
-                        {globalOffices.map((office) => (
-                          <div
-                            key={office.country}
-                            className="flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-slate-50"
-                          >
-                            <div className="flex h-7 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white shadow-xs">
-                              <img
-                                src={office.flag}
-                                alt={`${office.country} flag`}
-                                className="h-full w-full object-cover"
-                              />
-                            </div>
-                            <div>
-                              <p className="text-xs font-extrabold text-[#0A1931]">
-                                {office.country}
-                              </p>
-                              <p className="text-[10px] text-slate-500">
-                                {office.location}
-                              </p>
-                            </div>
+                        <div className="my-2 border-t border-slate-100 pt-2">
+                          <p className="px-2.5 pb-1.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                            Global Offices
+                          </p>
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {globalOffices.map((office) => (
+                              <div
+                                key={office.country}
+                                className="rounded-xl bg-slate-50 p-2 text-center"
+                              >
+                                <div className="mx-auto h-4 w-6 overflow-hidden rounded-[2px] border border-slate-200 bg-white">
+                                  <img
+                                    src={office.flag}
+                                    alt={`${office.country} flag`}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                                <p className="mt-1 text-[10px] font-bold leading-tight text-[#0A1931]">
+                                  {office.country}
+                                </p>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
+
+              <a
+                href="/#how-it-works"
+                onClick={(event) => handleNavigation(event, "/#how-it-works")}
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2.5 text-[13px] font-bold transition-colors ${isHashActive("#how-it-works") ? "bg-white text-[#0B56D9]" : "text-white hover:bg-white/15"}`}
+              >
+                <HelpCircle className="h-4 w-4" />
+                How It Works
+              </a>
+
             </div>
 
             {/* Desktop Auth Area: Clearly Visible in the Top Navbar */}
-            <div className="hidden items-center gap-2 lg:flex">
+            <div className="hidden items-center gap-2 xl:flex">
               {isLoggedIn ? (
                 <>
                   <button
@@ -485,7 +485,7 @@ export function Navbar() {
             </div>
 
             {/* Mobile Header Actions */}
-            <div className="flex items-center gap-2 lg:hidden">
+            <div className="ml-auto flex shrink-0 items-center gap-1.5 xl:hidden">
               {isLoggedIn ? (
                 <button
                   type="button"
@@ -501,22 +501,22 @@ export function Navbar() {
                   )}
                 </button>
               ) : (
-                <div className="flex items-center gap-1.5">
+                <>
                   <button
                     type="button"
                     onClick={() => setIsLoginOpen(true)}
-                    className="rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold uppercase text-white hover:bg-white/15"
+                    className="shrink-0 rounded-lg px-1.5 py-2 text-[10px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-white/15 sm:px-2.5 sm:text-[11px]"
                   >
                     Login
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsRegisterOpen(true)}
-                    className="rounded-full bg-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-[#0B56D9]"
+                    className="shrink-0 rounded-full bg-white px-2.5 py-2 text-[10px] font-extrabold uppercase tracking-wide text-[#0B56D9] shadow-sm transition-colors hover:bg-blue-50 sm:px-3.5 sm:text-[11px]"
                   >
                     Create Account
                   </button>
-                </div>
+                </>
               )}
               <button
                 type="button"
@@ -544,45 +544,72 @@ export function Navbar() {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
-                className="overflow-hidden border-t border-white/30 bg-[#FF6321] lg:hidden"
+                className="overflow-hidden border-t border-white/30 bg-[#FF6321] xl:hidden"
               >
                 <div className="space-y-4 px-4 py-5 sm:px-6">
-                  {/* Primary Mobile Links */}
+                  {/* Primary Service Actions */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={openBuyAndShip}
+                      className={`relative isolate w-full overflow-hidden rounded-xl py-2.5 text-xs font-extrabold shadow-xs cursor-pointer ${isActive("/buy-and-ship") ? "bg-[#0A3E9B] text-white" : "bg-white text-[#0B56D9]"}`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="buy-ship-shine pointer-events-none absolute inset-y-0 -left-10 w-7 bg-gradient-to-r from-transparent via-blue-100 to-transparent"
+                      />
+                      <span className="relative">Buy &amp; Ship</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={openOrderAndSend}
+                      className={`w-full rounded-xl border border-white/40 py-2.5 text-xs font-extrabold transition-colors hover:bg-white/20 cursor-pointer ${isActive("/order-and-send") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white"}`}
+                    >
+                      Order &amp; Send
+                    </button>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-2">
                     <a
-                      href="/track-shipment"
-                      onClick={(event) =>
-                        handleNavigation(event, "/track-shipment")
-                      }
-                      className="flex items-center justify-center rounded-xl bg-white/15 py-2.5 text-xs font-extrabold text-white transition-colors hover:bg-white/20"
+                      href="/shop#shop-directory"
+                      onClick={(event) => handleNavigation(event, "/shop#shop-directory")}
+                      className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold transition-colors ${isActive("/shop") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white hover:bg-white/20"}`}
                     >
-                      Tracking
+                      Shop Directory
                     </a>
                     <a
                       href="/nri"
                       onClick={(event) => handleNavigation(event, "/nri")}
-                      className="flex items-center justify-center rounded-xl bg-white py-2.5 text-xs font-extrabold text-[#0B56D9] shadow-xs"
+                      className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold shadow-xs ${isActive("/nri") ? "bg-[#0A3E9B] text-white" : "bg-white text-[#0B56D9]"}`}
                     >
                       NRI Services
                     </a>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={openBuyAndShip}
-                    className="relative isolate w-full overflow-hidden rounded-xl bg-white py-2.5 text-xs font-extrabold text-[#0B56D9] shadow-xs"
+                  <a
+                    href="/track-shipment"
+                    onClick={(event) =>
+                      handleNavigation(event, "/track-shipment")
+                    }
+                    className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold transition-colors ${isActive("/track-shipment") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white hover:bg-white/20"}`}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="buy-ship-shine pointer-events-none absolute inset-y-0 -left-10 w-7 bg-gradient-to-r from-transparent via-blue-100 to-transparent"
-                    />
-                    <span className="relative">Buy &amp; Ship From India</span>
-                  </button>
+                    Tracking
+                  </a>
+
+                  <a
+                    href="/#how-it-works"
+                    onClick={(event) => handleNavigation(event, "/#how-it-works")}
+                    className={`flex items-center justify-center rounded-xl py-2.5 text-xs font-extrabold transition-colors ${isHashActive("#how-it-works") ? "bg-white text-[#0B56D9]" : "bg-white/15 text-white hover:bg-white/20"}`}
+                  >
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    How It Works
+                  </a>
 
                   {/* Mobile Company Section */}
                   <div>
                     <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/90">
-                      Company
+                      About Us
                     </p>
                     <div className="space-y-1 rounded-2xl bg-white/10 p-2">
                       {companyLinks.map((link) => {
@@ -651,58 +678,23 @@ export function Navbar() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => openAccountPage("/shop")}
-                          className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-bold text-[#0A1931]"
-                        >
-                          Products
-                        </button>
-                        <button
-                          type="button"
                           onClick={() => openAccountPage("/orders")}
                           className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-bold text-[#0A1931]"
                         >
                           Orders
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => openAccountPage("/addresses")}
-                          className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-bold text-[#0A1931]"
-                        >
-                          Addresses
-                        </button>
+                      </div>
+                      <div className="border-t border-slate-100 pt-2 mt-2">
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="col-span-2 rounded-xl bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600"
+                          className="w-full rounded-xl bg-red-50 py-2 text-xs font-bold text-red-600"
                         >
                           Logout
                         </button>
                       </div>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/20">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsMobileMenuOpen(false);
-                          setIsLoginOpen(true);
-                        }}
-                        className="w-full rounded-xl border border-white/60 bg-white/10 py-2.5 text-xs font-extrabold uppercase text-white transition-colors hover:bg-white/20"
-                      >
-                        Login
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsMobileMenuOpen(false);
-                          setIsRegisterOpen(true);
-                        }}
-                        className="w-full rounded-xl bg-white py-2.5 text-xs font-extrabold uppercase text-[#0B56D9] transition-colors hover:bg-blue-50"
-                      >
-                        Create Account
-                      </button>
-                    </div>
-                  )}
+                  ) : null}
                 </div>
               </motion.div>
             )}
@@ -713,7 +705,7 @@ export function Navbar() {
       <RegisterModal
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
-        onLoginClick={() => {
+        onSwitchToLogin={() => {
           setIsRegisterOpen(false);
           setIsLoginOpen(true);
         }}
@@ -721,7 +713,7 @@ export function Navbar() {
       <LoginModal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
-        onRegisterClick={() => {
+        onSwitchToRegister={() => {
           setIsLoginOpen(false);
           setIsRegisterOpen(true);
         }}

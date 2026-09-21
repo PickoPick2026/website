@@ -14,6 +14,7 @@ import { POPULAR_NRI_COUNTRIES } from './data/mockData';
 export const BlockSlotModule: React.FC = () => {
   const [formData, setFormData] = useState({
     customerName: '',
+    customerEmail: '',
     destinationCountry: 'USA',
     preferredDate: '',
     preferredTimeSlot: '11:00 AM â€“ 01:00 PM (Midday Slot B)',
@@ -30,8 +31,8 @@ export const BlockSlotModule: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.preferredDate || !formData.whatsappNumber.trim()) {
-      setError('Please select a preferred date and provide your WhatsApp number.');
+    if (!formData.customerName.trim() || !formData.customerEmail.trim() || !formData.preferredDate || !formData.whatsappNumber.trim()) {
+      setError('Please complete your name, email, preferred date, and WhatsApp number.');
       return;
     }
 
@@ -128,8 +129,22 @@ export const BlockSlotModule: React.FC = () => {
                       </label>
                       <input
                         type="text"
+                        required
                         value={formData.customerName}
                         onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                        className="w-full p-3 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0A1931]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.customerEmail}
+                        onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
                         className="w-full p-3 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0A1931]"
                       />
                     </div>

@@ -232,7 +232,7 @@ const handleAddToCart = async (product: any) => {
             style={{ clipPath: "inset(-10rem 0 0 0)" }}
           >
             <img
-              src="/images/marketplace-concierge-v1.png"
+              src="/images/marketplace-concierge-v1.webp"
               alt="Pick O Pick concierge with Indian products ready to ship"
               className="absolute bottom-0 right-[-1.5rem] h-[355px] w-auto max-w-[105%] object-contain sm:right-[-2.5rem] sm:h-[425px] lg:right-[-3rem] lg:h-[420px]"
             />

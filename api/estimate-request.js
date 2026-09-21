@@ -40,7 +40,7 @@ export default async function handler(req, res) {
       email,
       name: customerName,
       code: data.request_code,
-      subject: "Your Pick O Pick shipping estimate request",
+      subject: "Your Pick O Pick Shipping Estimate Request Has Been Received",
       message: "We received your shipping estimate request and will contact you with a verified quotation.",
       whatsappUrlValue: customerWhatsappUrl,
       details: [

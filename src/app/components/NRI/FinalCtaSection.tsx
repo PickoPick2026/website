@@ -37,7 +37,7 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
             onClick={onOpenConsultation}
             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50 sm:w-auto"
           >
-            <span>BOOK FREE CONSULTATION</span>
+            <span>REQUEST A CALLBACK</span>
             <ArrowRight className="w-4 h-4 text-[#FF6321]" />
           </button>
 

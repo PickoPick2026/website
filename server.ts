@@ -711,6 +711,90 @@ app.post("/api/auth/login", async (req, res) => {
     ] });
   });
 
+  app.post("/api/service-requests", async (req, res) => {
+    const serviceConfig: Record<string, { prefix: string; subject: string; message: string }> = {
+      buy_and_ship: {
+        prefix: "BUY",
+        subject: "Your Pick O Pick Buy & Ship Request Has Been Received",
+        message: "We received your Buy & Ship request. Our personal shopper will verify the item, store availability, and delivery options before sharing a quote.",
+      },
+      order_and_send: {
+        prefix: "SEND",
+        subject: "Your Pick O Pick Order & Send Request Has Been Received",
+        message: "We received your Order & Send request. Our logistics team will review the pickup and destination details and contact you with the next steps.",
+      },
+      exclusive_sourcing: {
+        prefix: "EXCL",
+        subject: "Your Pick O Pick Exclusive Sourcing Request Has Been Received",
+        message: "We received your exclusive sourcing request. Our India-side team will check availability for the requested regional items and contact you with a quote.",
+      },
+      contact: {
+        prefix: "CONT",
+        subject: "Your Pick O Pick Contact Request Has Been Received",
+        message: "We received your message. A Pick O Pick team member will get back to you shortly.",
+      },
+      assisted_buy: {
+        prefix: "ABUY",
+        subject: "Your Pick O Pick Assisted Buy Request Has Been Received",
+        message: "We received your assisted buying request. Our personal shopper will verify the product and send the next steps shortly.",
+      },
+    };
+
+    try {
+      const { serviceType, payload } = req.body || {};
+      const config = serviceConfig[String(serviceType || "")];
+      const text = (value: unknown) => typeof value === "string" ? value.trim() : "";
+      if (!config || !payload || typeof payload !== "object") {
+        return res.status(400).json({ error: "A valid service request is required." });
+      }
+
+      const dataPayload = payload as Record<string, unknown>;
+      const customerName = text(dataPayload.customerName || dataPayload.fullName || dataPayload.name);
+      const phone = text(dataPayload.phone || dataPayload.whatsappNumber || dataPayload.mobileNumber);
+      const email = text(dataPayload.email || dataPayload.customerEmail);
+      const location = text(dataPayload.location || dataPayload.destinationLocation || dataPayload.destinationCountry || dataPayload.country);
+      if (!customerName || !phone || !email || !location) {
+        return res.status(400).json({ error: "Please provide your name, phone number, email, and location." });
+      }
+
+      const requestCode = `POP-${config.prefix}-${Date.now().toString().slice(-8)}-${Math.floor(100 + Math.random() * 900)}`;
+      const record = {
+        request_code: requestCode,
+        service_type: String(serviceType),
+        status: "NEW",
+        customer_name: customerName,
+        phone,
+        email,
+        location,
+        payload: dataPayload,
+      };
+      const { data, error } = await supabase.from("service_requests").insert(record).select("request_code, created_at").single();
+      if (error) {
+        console.error("Service request insert error:", error);
+        return res.status(500).json({ error: "We could not save your request. Please try again shortly." });
+      }
+
+      const requestWhatsAppUrl = `https://wa.me/919790361222?text=${encodeURIComponent(`Hello Pick O Pick, my ${String(serviceType).replace(/_/g, " ")} reference is ${data.request_code}.`)}`;
+      const details: Array<[string, unknown]> = [
+        ["Service", String(serviceType).replace(/_/g, " ")],
+        ["Customer", customerName],
+        ["Phone", phone],
+        ["Email", email],
+        ["Location", location],
+      ];
+      Object.entries(dataPayload).forEach(([key, value]) => {
+        if (!["customerName", "fullName", "name", "phone", "whatsappNumber", "mobileNumber", "email", "customerEmail", "location", "destinationLocation", "destinationCountry", "country"].includes(key) && value !== null && value !== undefined && text(String(value))) {
+          details.push([key.replace(/([A-Z])/g, " $1"), String(value)]);
+        }
+      });
+      const emailSent = await sendNriConsultationConfirmation(email, customerName, data.request_code, config.subject, config.message, details.slice(0, 17), requestWhatsAppUrl);
+      return res.status(201).json({ success: true, requestId: data.request_code, createdAt: data.created_at, emailSent, whatsappUrl: requestWhatsAppUrl });
+    } catch (error) {
+      console.error("Service request API error:", error);
+      return res.status(500).json({ error: "Unable to submit your request right now." });
+    }
+  });
+
   // Separate public endpoints, while retaining shared validation/persistence locally.
   // The complete form is retained in JSONB so staff can review every submitted detail.
   app.post(["/api/nri-requests", "/api/estimate-request"], async (req, res) => {
@@ -778,7 +862,7 @@ app.post("/api/auth/login", async (req, res) => {
           estimateRecord.email || "",
           estimateRecord.customer_name,
           estimateData.request_code,
-          "Your Pick O Pick shipping estimate request",
+          "Your Pick O Pick Shipping Estimate Request Has Been Received",
           "We received your shipping estimate request and will contact you with a verified quotation.",
           [["Destination", country], ["Package", estimateRecord.package_type], ["Approx. weight", approxWeightKg ? `${approxWeightKg} kg` : ""], ["Dimensions", estimateRecord.dimensions], ["Requirement", estimateRecord.requirement_description]],
           estimateWhatsAppUrl,
