@@ -17,6 +17,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
+import { ServiceVisualShowcase } from "../components/ServiceVisualShowcase";
 
 function FormInput({
   label,
@@ -458,6 +459,36 @@ export default function BuyAndShipPage() {
           </div>
         </div>
       </section>
+
+      <ServiceVisualShowcase
+        eyebrow="A simpler way to shop India"
+        title="Your personal shopper handles the details"
+        description="Share what you found, and our India-side team will purchase, check, and prepare it for international delivery."
+        items={[
+          {
+            title: "Shop from Indian stores",
+            description: "Send us a product link or tell us what you are looking for.",
+            image: "/images/nri-services/shop-from-india.webp",
+            alt: "Indian products prepared for a Pick O Pick shopping request",
+          },
+          {
+            title: "Purchase and verify",
+            description: "We help with local checkout and check your items when they arrive.",
+            image: "/images/nri-trust/source-with-confidence.webp",
+            alt: "Pick O Pick team checking an incoming order",
+          },
+          {
+            title: "Pack and ship together",
+            description: "Combine parcels and send your purchases to your overseas address.",
+            image: "/images/nri-services/consolidation.webp",
+            alt: "Multiple Indian purchases packed together for international shipping",
+          },
+        ]}
+        ctaTitle="Found something you want from India?"
+        ctaDescription="Share the product link and we’ll take it from there."
+        ctaLabel="Start an assisted buy"
+        targetId="assisted-buy-form"
+      />
 
       {/* Assisted Buy Form Section */}
       <section

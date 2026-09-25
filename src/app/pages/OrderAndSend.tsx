@@ -18,6 +18,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
+import { ServiceVisualShowcase } from "../components/ServiceVisualShowcase";
 
 function FormInput({
   label,
@@ -349,6 +350,36 @@ export default function OrderAndSendPage() {
           </div>
         </div>
       </section>
+
+      <ServiceVisualShowcase
+        eyebrow="Care from pickup to delivery"
+        title="A reliable journey for every parcel"
+        description="We collect your items in India, prepare them carefully, and arrange international delivery to your destination."
+        items={[
+          {
+            title: "Doorstep collection",
+            description: "Arrange pickup from your home, family, or supplier in India.",
+            image: "/images/nri-services/personal-items.webp",
+            alt: "Personal items ready to be shipped from India",
+          },
+          {
+            title: "Careful repacking",
+            description: "We inspect and repack parcels to help protect items and reduce excess volume.",
+            image: "/images/nri-trust/professional-packing.webp",
+            alt: "Pick O Pick checking and packing an international parcel",
+          },
+          {
+            title: "Worldwide air delivery",
+            description: "Choose international courier delivery with tracking to your door.",
+            image: "/images/nri-trust/international-shipping.webp",
+            alt: "Pick O Pick global air and courier shipping network",
+          },
+        ]}
+        ctaTitle="Ready to send a parcel from India?"
+        ctaDescription="Tell us what you’re sending and where it needs to go."
+        ctaLabel="Book a pickup"
+        targetId="order-and-send-form"
+      />
 
       {/* Quote & Booking Form Section */}
       <section
