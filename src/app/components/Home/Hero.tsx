@@ -1,10 +1,9 @@
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function Hero() {
   const [cargoId, setCargoId] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const handleTrack = (event: FormEvent<HTMLFormElement>) => {
@@ -21,29 +20,19 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative mt-[68px] min-h-[420px] overflow-hidden bg-white scroll-mt-24 sm:mt-[76px] sm:min-h-[90vh]"
+      className="relative mt-[68px] overflow-hidden bg-white scroll-mt-24 sm:mt-[76px]"
     >
       <img
-        src="/images/hero-global-delivery-v5.webp"
-        alt="Pick O Pick connecting India to the world by air cargo"
-        className="absolute inset-0 h-full w-full object-cover object-bottom"
+        src="/images/worldwide-shipping-and-south-indian-sweets-banner.webp"
+        alt="Pick O Pick worldwide shipping with international landmarks and South Indian sweets"
+        className="block h-auto w-full"
       />
 
-      <div className="relative z-10 mx-auto flex min-h-[420px] max-w-6xl flex-col items-center px-5 pt-14 text-center sm:h-full sm:min-h-[90vh] sm:px-8">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#0B56D9]">
-          India to the world
-        </p>
-        <h1 className="mt-4 max-w-4xl text-3xl font-bold tracking-tight text-[#073E96] sm:text-5xl sm:whitespace-nowrap lg:text-6xl">
-          To Home From Your Hometown
-        </h1>
-        <p className="mt-4 max-w-2xl text-xl font-semibold leading-relaxed text-[#0B56D9] sm:text-2xl lg:text-3xl">
-          India Has It. We'll Deliver It.
-        </p>
-
+      <div className="bg-white px-4 py-4 sm:px-8 sm:py-5">
         {/* Cargo ID Form */}
         <form
           onSubmit={handleTrack}
-          className="mt-6 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 shadow-sm sm:flex-row sm:rounded-full"
+          className="mx-auto flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 shadow-sm sm:flex-row sm:rounded-full"
         >
           <label className="sr-only" htmlFor="hero-cargo-id">
             Cargo ID
@@ -51,7 +40,6 @@ export function Hero() {
           <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
             <Search className="h-4 w-4 shrink-0 text-[#0B56D9]" />
             <input
-              ref={inputRef}
               id="hero-cargo-id"
               value={cargoId}
               onChange={(event) => setCargoId(event.target.value)}

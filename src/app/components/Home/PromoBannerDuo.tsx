@@ -21,26 +21,11 @@ export function PromoBannerDuo() {
               loading="lazy"
             />
 
-            {/* Subtle soft gradient to guarantee razor-sharp text readability on all viewports */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0D52BD]/35 via-transparent to-transparent pointer-events-none" />
-
-            {/* Text & Button Content */}
-            <div className="relative z-10 p-5 sm:p-7 md:p-6 lg:p-8 xl:p-10 max-w-[55%] sm:max-w-[52%]">
-              <h3 className="text-lg sm:text-2xl md:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white tracking-tight leading-[1.15]">
-                Send the <br />
-                Taste <span className="text-[#FFC72C]">of India</span> <br />
-                Across the World
-              </h3>
-
-              <div className="mt-3.5 sm:mt-5 md:mt-4 lg:mt-6">
-                <span className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-[#073E96]/80 group-hover:bg-[#073E96] text-white text-[11px] sm:text-xs lg:text-sm font-bold border border-white/25 backdrop-blur-sm transition-all">
-                  <span>Shop Sweets &amp; Snacks</span>
-                  <ArrowRight
-                    size={14}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
-                </span>
-              </div>
+            <div className="absolute inset-0 flex items-end p-4 sm:p-6 lg:p-8">
+              <span className="relative z-10 inline-flex items-center gap-2 rounded-full border border-white/30 bg-[#073E96]/90 px-4 py-2 text-xs font-bold text-white shadow-lg backdrop-blur-sm transition-colors group-hover:bg-[#073E96] sm:px-5 sm:py-2.5 sm:text-sm">
+                <span>Shop Sweets &amp; Snacks</span>
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </span>
             </div>
           </Link>
 
@@ -58,28 +43,11 @@ export function PromoBannerDuo() {
               loading="lazy"
             />
 
-            {/* Subtle soft gradient to guarantee razor-sharp text readability on all viewports */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFF5EA]/35 via-transparent to-transparent pointer-events-none" />
-
-            {/* Text & Button Content */}
-            <div className="relative z-10 p-5 sm:p-7 md:p-6 lg:p-8 xl:p-10 max-w-[55%] sm:max-w-[52%]">
-              <h3 className="text-lg sm:text-2xl md:text-xl lg:text-2xl xl:text-3xl font-extrabold text-[#0A1931] tracking-tight leading-[1.15]">
-                Beautiful <br />
-                Indian Wear <br />
-                <span className="font-semibold text-sm sm:text-lg md:text-base lg:text-xl text-[#0E2A5C]">
-                  for Every Occasion
-                </span>
-              </h3>
-
-              <div className="mt-3.5 sm:mt-5 md:mt-4 lg:mt-6">
-                <span className="inline-flex items-center gap-2 px-4 sm:px-6 py-1.5 sm:py-2.5 rounded-full bg-white/95 group-hover:bg-white text-[#0A1931] text-[11px] sm:text-xs lg:text-sm font-bold border border-slate-200/90 transition-all shadow-xs">
-                  <span>Shop Indian Wear</span>
-                  <ArrowRight
-                    size={14}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
-                </span>
-              </div>
+            <div className="absolute inset-0 flex items-end p-4 sm:p-6 lg:p-8">
+              <span className="relative z-10 inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-white/95 px-4 py-2 text-xs font-bold text-[#0A1931] shadow-lg backdrop-blur-sm transition-colors group-hover:bg-white sm:px-5 sm:py-2.5 sm:text-sm">
+                <span>Shop Indian Wear</span>
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </span>
             </div>
           </Link>
         </div>

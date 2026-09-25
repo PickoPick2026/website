@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowRight, Search, Sparkles, Filter, X } from "lucide-react";
+import { ArrowRight, Search, X } from "lucide-react";
 import { ShoppingDirectory } from "../components/ShoppingDirectory";
 import { supabase } from "@/src/lib/supabase";
 
@@ -99,29 +99,6 @@ export default function ShopPage() {
       ?.scrollIntoView();
   };
 
-  const handleQuickCategory = (category: any) => {
-    const catId = String(category.categoryID);
-    if (selectedCategoryId === catId) {
-      // Toggle off
-      clearCategoryFilter();
-      return;
-    }
-    setSelectedCategoryId(catId);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("category", category.categoryName);
-    setSearchParams(newParams);
-    document
-      .querySelector("#shop-directory")
-      ?.scrollIntoView();
-  };
-
-  const clearCategoryFilter = () => {
-    setSelectedCategoryId("");
-    const newParams = new URLSearchParams(searchParams);
-    newParams.delete("category");
-    setSearchParams(newParams);
-  };
-
   const handleSearchInputChange = (value: string) => {
     setSearchInput(value);
     setQuery(value.trim());
@@ -141,37 +118,25 @@ export default function ShopPage() {
     setSearchParams({});
   };
 
-  const activeCategoryObj = categories.find(
-    (c) => String(c.categoryID) === String(selectedCategoryId),
-  );
-
   return (
     <main className="bg-white pt-[68px] sm:pt-[76px]">
-      <section className="relative overflow-hidden bg-white">
+      <section className="relative h-[220px] overflow-hidden bg-white sm:h-[280px] lg:h-[330px]">
         <img
           src="/images/shop-bg.webp"
           alt="Pick O Pick global marketplace"
           className="absolute inset-0 h-full w-full object-cover object-bottom"
         />
-        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-8 text-center sm:px-6 sm:py-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0B56D9]">
-            <Sparkles className="h-3 w-3" />
-            Pick O Pick Marketplace
-          </span>
-
-          <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-[#073E96] sm:text-3xl">
-            Shop From India Online
+        <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/35 to-transparent" />
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-end px-4 pb-6 text-center sm:px-6 sm:pb-8">
+          <h1 className="mb-3 text-xl font-extrabold tracking-tight text-[#0A1931] sm:text-2xl">
+            Find the products you love from India
           </h1>
-          <p className="mt-1 max-w-xl text-sm text-slate-600">
-            Browse authentic Indian products by category. We verify, pack, and
-            express ship directly to your international doorstep.
-          </p>
 
           {/* Search Bar */}
           <form
             id="shop-search"
             onSubmit={handleSearch}
-            className="mt-4 flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 sm:flex-row sm:rounded-full shadow-xs"
+            className="flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-blue-100 bg-white/95 p-2 shadow-lg backdrop-blur-sm sm:flex-row sm:rounded-full"
           >
             <label htmlFor="shop-search-input" className="sr-only">
               Search the marketplace
@@ -205,54 +170,6 @@ export default function ShopPage() {
             </button>
           </form>
 
-          {/* Category Chips Bar */}
-          <div className="mt-4 flex max-w-4xl flex-wrap justify-center items-center gap-2">
-            <button
-              type="button"
-              onClick={clearCategoryFilter}
-              className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
-                !selectedCategoryId
-                  ? "bg-[#0B56D9] text-white shadow-xs"
-                  : "border border-blue-100 bg-white text-[#0B56D9] hover:bg-blue-50"
-              }`}
-            >
-              All Categories
-            </button>
-            {categories.map((category) => {
-              const isSelected =
-                String(category.categoryID) === String(selectedCategoryId);
-              return (
-                <button
-                  key={category.categoryID}
-                  type="button"
-                  onClick={() => handleQuickCategory(category)}
-                  className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-[#0B56D9] text-white shadow-xs ring-2 ring-[#0B56D9]/30"
-                      : "border border-blue-100 bg-white text-[#0B56D9] hover:bg-blue-50"
-                  }`}
-                >
-                  {category.categoryName}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active Filter Indicator */}
-          {activeCategoryObj && (
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-[#0B56D9] font-bold">
-              <Filter size={12} />
-              <span>Filtered by: {activeCategoryObj.categoryName}</span>
-              <button
-                type="button"
-                onClick={clearCategoryFilter}
-                className="hover:text-red-500 transition-colors ml-1 p-0.5"
-                title="Remove filter"
-              >
-                <X size={12} />
-              </button>
-            </div>
-          )}
         </div>
       </section>
 

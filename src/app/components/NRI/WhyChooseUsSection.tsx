@@ -36,11 +36,11 @@ export const WhyChooseUsSection: React.FC = () => {
                 key={pillar.title}
                 className="rounded-2xl bg-white border border-slate-200/80 p-6 sm:p-7 hover:border-[#0B56D9]/40 transition-colors duration-200"
               >
-                <div className="w-16 h-16 sm:w-[72px] sm:h-[72px] mb-5 flex items-center justify-center">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center sm:h-[72px] sm:w-[72px]">
                   <img
                     src={trustIllustrations[pillar.title]}
                     alt=""
-                    className="w-full h-full object-contain"
+                    className="h-full w-full object-contain"
                     loading="lazy"
                   />
                 </div>

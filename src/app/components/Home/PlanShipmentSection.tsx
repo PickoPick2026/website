@@ -203,24 +203,21 @@ export function PlanShipmentSection() {
       <div id="plan-shipment" className="sr-only" aria-hidden="true" />
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Section Header */}
-        <div className="max-w-3xl mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
+        <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
             <Sparkles size={13} className="text-[#FF6321]" />
             Order &amp; Send • Doorstep Pickup &amp; Courier
           </div>
 
-          <h2 className="mt-4 text-3xl sm:text-5xl font-extrabold tracking-tight text-[#0A1931] leading-tight">
-            From Your Door in India. <br className="hidden sm:inline" />
-            <span className="text-[#0B56D9]">To Your World Overseas.</span>
+          <h2 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-[#0A1931] sm:text-5xl">
+            India to your doorstep, <span className="text-[#0B56D9]">worldwide.</span>
           </h2>
 
-          <p className="mt-3 text-base sm:text-lg text-slate-600 font-normal leading-relaxed">
-            Doorstep pickup from any Indian city, free repackaging to eliminate
-            dead weight, and express worldwide air delivery. Instant quotes
-            shared directly on WhatsApp and email.
+          <p className="mx-auto mt-3 max-w-2xl text-base font-normal leading-relaxed text-slate-600 sm:text-lg">
+            We collect across India, repack to reduce shipping weight, and deliver worldwide. Get a quick quote by WhatsApp or email.
           </p>
 
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-4 flex justify-center">
             <Link
               to="/order-and-send"
               className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#0B56D9] hover:underline"

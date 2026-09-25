@@ -42,6 +42,24 @@ const getImageUrl = (imageField: unknown) => {
   }
 };
 
+const exclusiveItems = [
+  {
+    title: "Tirupati Laddu",
+    desc: "Authentic temple prasadam, sourced to order.",
+    image: "/images/sweets/tirupati-laddu.webp",
+  },
+  {
+    title: "Tirunelveli Halwa",
+    desc: "Traditional, rich Tirunelveli halwa.",
+    image: "/images/sweets/tirunelveli-halwa.webp",
+  },
+  {
+    title: "Thoothukudi Macaroon",
+    desc: "The famous cashew macaroon from Thoothukudi.",
+    image: "/images/sweets/thoothukudi-macaroon.webp",
+  },
+];
+
 export function ShoppingDirectory({
   searchQuery = "",
   categoryFilter = "",
@@ -511,46 +529,36 @@ export function ShoppingDirectory({
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {[
-                {
-                  title: "Thirupathi Laddu",
-                  desc: "Authentic temple prasadam, air-shipped fresh.",
-                },
-                {
-                  title: "Thirunelveli Halwa",
-                  desc: "World-famous pure ghee wheat halwa.",
-                },
-                {
-                  title: "Thoothukudi Macrooni",
-                  desc: "Traditional coastal cashew macaroon.",
-                },
-              ].map((item) => {
-                const isSelected = exclusiveList.includes(item.title);
+              {exclusiveItems.map((item) => {
+                const selectedItems = exclusiveList.split(",").map((value) => value.trim()).filter(Boolean);
+                const isSelected = selectedItems.includes(item.title);
                 return (
                   <button
                     key={item.title}
                     type="button"
+                    aria-pressed={isSelected}
                     onClick={() => {
-                      setExclusiveList((prev) =>
-                        prev.includes(item.title)
-                          ? prev
-                          : prev
-                            ? `${prev}, ${item.title}`
-                            : item.title,
-                      );
+                      const nextItems = isSelected
+                        ? selectedItems.filter((value) => value !== item.title)
+                        : [...selectedItems, item.title];
+                      setExclusiveList(nextItems.join(", "));
                     }}
-                    className={`group rounded-2xl border p-5 text-left transition-all cursor-pointer ${
+                    className={`group relative rounded-2xl border p-3 text-left transition-all cursor-pointer ${
                       isSelected
                         ? "border-[#0B56D9] bg-blue-50/80 shadow-xs ring-1 ring-[#0B56D9]"
                         : "border-slate-200 bg-[#F7F9FF] hover:border-[#0B56D9] hover:bg-blue-50/40"
                     }`}
                   >
-                    <p className="text-sm sm:text-base font-extrabold text-[#0A1931] group-hover:text-[#0B56D9] transition-colors">
+                    <span className="relative block aspect-square overflow-hidden rounded-xl bg-white">
+                      <img src={item.image} alt={item.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" />
+                      {isSelected && <span className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#0B56D9] text-white shadow"><CheckCircle2 className="h-5 w-5" /></span>}
+                    </span>
+                    <span className="mt-3 block text-sm font-extrabold text-[#0A1931] transition-colors group-hover:text-[#0B56D9] sm:text-base">
                       {item.title}
-                    </p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
+                    </span>
+                    <span className="mt-1 block text-xs leading-relaxed text-slate-600">
                       {item.desc}
-                    </p>
+                    </span>
                   </button>
                 );
               })}
