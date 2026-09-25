@@ -10,7 +10,7 @@ interface HeroSectionProps {
 export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenConsultation, onStartBooking }) => (
   <section
     className="relative overflow-hidden border-b border-blue-100 bg-white bg-cover bg-bottom pb-16 pt-28 text-white sm:pb-20 sm:pt-32 lg:pb-24 lg:pt-36"
-    style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')" }}
+    style={{ backgroundImage: "url('/images/nri-services/nri-services-indian-spices.webp')" }}
   >
     <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-8">
       <h1 className="text-[clamp(1.75rem,5vw,3rem)] font-extrabold leading-[1.1] tracking-tight">India is home. We’ll bring it to you.</h1>
