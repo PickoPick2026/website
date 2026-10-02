@@ -12,6 +12,7 @@ import {
   UserRound,
   X,
   Calculator,
+  Building2,
   Info,
   ArrowLeft,
 } from "lucide-react";
@@ -290,7 +291,7 @@ export function Navbar() {
                 onClick={(event) => handleNavigation(event, "/nri")}
                 className={linkClass(isRouteActive("/nri"))}
               >
-                Premium Services
+                NRI Premium Services
               </a>
 
               {/* 4. Shop Directory (login required — this is the only gated area) */}
@@ -338,8 +339,8 @@ export function Navbar() {
                   }`}
                   aria-expanded={activeMenu === "Estimation"}
                 >
-                  <Calculator className="h-3.5 w-3.5" />
-                  Shipment Estimation
+                  <Building2 className="h-3.5 w-3.5" />
+                  Company
                   <ChevronDown
                     className={`h-3.5 w-3.5 transition-transform duration-200 ${
                       activeMenu === "Estimation" ? "rotate-180" : ""
@@ -652,7 +653,7 @@ export function Navbar() {
                       }`}
                     >
                       <MapPin className="h-4 w-4" />
-                      Premium Services
+                      NRI Premium Services
                     </a>
 
                     <a

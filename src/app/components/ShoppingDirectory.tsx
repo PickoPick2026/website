@@ -462,11 +462,6 @@ export function ShoppingDirectory({
                       <p className="min-h-[2.5rem] text-sm font-bold leading-snug text-[#0A1931] line-clamp-2">
                         {product.productName}
                       </p>
-                      {product.price && (
-                        <p className="mt-1 text-xs font-extrabold text-[#0B56D9]">
-                          ₹{product.price}
-                        </p>
-                      )}
                     </div>
                   </div>
                   <div className="p-3.5 sm:p-4 pt-0">

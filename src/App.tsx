@@ -1,10 +1,32 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import Layout from "./app/components/Layout";
 import Home from "./app/pages/Home";
 import { Toaster } from "sonner";
 import WhatsAppButton from "./app/components/WhatsAppButton";
 import { SeoHead } from "./app/components/SeoHead";
+
+// Every navigation starts at the top of the new page (React Router does not
+// reset scroll by default). Pages with #hash targets handle their own
+// scrolling, so those are skipped here.
+function ScrollToTop() {
+  const { pathname, search, hash } = useLocation();
+  useEffect(() => {
+    // Stop the browser from restoring stale scroll positions on navigation.
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  }, []);
+  useEffect(() => {
+    if (hash) return;
+    window.scrollTo(0, 0);
+  }, [pathname, search, hash]);
+  return null;
+}
 
 const Cart = lazy(() => import("./app/pages/Cart"));
 const Orders = lazy(() => import("./app/pages/Orders"));
@@ -28,6 +50,7 @@ const AdminRedirectPage = lazy(() => import("./app/admin/page"));
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <SeoHead />
       <WhatsAppButton />
 
