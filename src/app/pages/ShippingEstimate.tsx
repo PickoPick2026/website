@@ -145,7 +145,7 @@ export default function ShippingEstimatePage() {
       {/* ───────── Form ───────── */}
       <section className="relative z-10 mx-auto -mt-24 max-w-6xl px-4 pb-20 sm:px-8">
         <div className="grid items-start gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_30px_70px_-40px_rgba(11,86,217,0.55)] sm:p-9">
+          <div className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-9">
             {result ? (
               <div className="py-10 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-[#0B56D9]">
@@ -308,7 +308,7 @@ export default function ShippingEstimatePage() {
 
                 <button
                   disabled={submitting}
-                  className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] text-sm font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#0B56D9]/25 transition-colors hover:bg-[#0849B7] disabled:opacity-60"
+                  className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] text-sm font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] disabled:opacity-60"
                 >
                   {submitting ? "Sending request..." : "Request a verified quote"}
                   {!submitting && (

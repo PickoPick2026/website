@@ -292,21 +292,11 @@ export function ShoppingDirectory({
   return (
     <section
       id="shop-directory"
-      className="scroll-mt-24 py-12 sm:py-16"
+      className="scroll-mt-24 pb-12 pt-6 sm:pb-16 sm:pt-8"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
         {/* Tabs */}
-        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0B56D9]">
-              {activeTab === "directory" ? "Shop the catalog" : "Sourcing desk"}
-            </p>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-[#0A1931] sm:text-3xl">
-              {activeTab === "directory"
-                ? activeCategoryObj?.categoryName || "All Products"
-                : "Exclusive Sourcing"}
-            </h2>
-          </div>
+        <div className="mb-6 flex justify-center sm:mb-8">
           <div className="inline-flex w-full rounded-2xl border border-slate-200 bg-white p-1 sm:w-fit">
             <button
               type="button"

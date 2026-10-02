@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Boxes, MessageSquare, Plane, PlayCircle } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Box, Boxes, MessageSquare, Plane, Pause, Play, PlayCircle } from 'lucide-react';
 
 const steps = [
   {
@@ -29,7 +29,25 @@ const steps = [
 ];
 
 // "How It Works" — the first (Package Journey) video sits above the steps.
-export const ProcessSection: React.FC = () => (
+export const ProcessSection: React.FC = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const toggleVideo = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    try {
+      if (video.paused) {
+        await video.play();
+      } else {
+        video.pause();
+      }
+    } catch {
+      // autoplay/play rejection — leave the icon state as-is
+    }
+  };
+
+  return (
   <section id="how-it-works" className="border-b border-slate-200 bg-white py-14 sm:py-18 scroll-mt-28">
     <div className="mx-auto max-w-6xl px-4 sm:px-8">
       <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
@@ -42,18 +60,32 @@ export const ProcessSection: React.FC = () => (
         </p>
       </div>
 
-      {/* First video — Package Journey */}
-      <div className="mx-auto mb-10 w-full max-w-sm overflow-hidden rounded-3xl border border-blue-100 bg-[#0A1931] sm:mb-12">
+      {/* First video — Package Journey (play / pause via the overlay icon) */}
+      <div className="group relative mx-auto mb-10 w-full max-w-sm overflow-hidden rounded-3xl border border-blue-100 bg-[#0A1931] sm:mb-12">
         <video
+          ref={videoRef}
           src="/videos/video.mp4"
-          controls
           preload="metadata"
           playsInline
+          onClick={toggleVideo}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => setIsPlaying(false)}
           className="aspect-[9/16] w-full object-contain"
           aria-label="Pick O Pick package journey video"
         >
           <track kind="captions" />
         </video>
+        <button
+          type="button"
+          onClick={toggleVideo}
+          aria-label={isPlaying ? "Pause video" : "Play video"}
+          className={`absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-[#0B56D9] shadow-lg transition-all hover:scale-105 cursor-pointer ${
+            isPlaying ? "opacity-0 group-hover:opacity-100 focus:opacity-100" : "opacity-100"
+          }`}
+        >
+          {isPlaying ? <Pause className="h-7 w-7 fill-current" /> : <Play className="ml-1 h-7 w-7 fill-current" />}
+        </button>
         <p className="flex items-center justify-center gap-2 bg-white px-4 py-3 text-[11px] font-bold uppercase tracking-widest text-slate-500">
           <PlayCircle className="h-4 w-4 text-[#0B56D9]" />
           Package Journey — how your parcel travels
@@ -91,4 +123,5 @@ export const ProcessSection: React.FC = () => (
       </div>
     </div>
   </section>
-);
+  );
+};

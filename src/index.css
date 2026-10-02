@@ -244,3 +244,76 @@ html, body {
 .iti__flag {
   background-image: url("https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/img/flags.png");
 }
+
+/* A moving light reflection over the existing blue service button. */
+.brand-shine-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.brand-shine-button::after {
+  content: "";
+  position: absolute;
+  inset: -50% auto -50% -80%;
+  width: 50%;
+  background: linear-gradient(
+    105deg,
+    transparent 10%,
+    rgb(255 255 255 / 12%) 35%,
+    rgb(255 255 255 / 48%) 50%,
+    rgb(255 255 255 / 12%) 65%,
+    transparent 90%
+  );
+  transform: skewX(-18deg);
+  animation: brand-button-shine 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.brand-shine-text {
+  display: inline-block;
+  color: #0b56d9;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .brand-shine-text {
+    background-image: linear-gradient(
+      110deg,
+      #0849b7 40%,
+      #4389ed 46%,
+      #b8dcff 50%,
+      #4389ed 54%,
+      #0849b7 60%
+    );
+    background-size: 300% 100%;
+    background-position: 100% center;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: brand-text-shine 4s ease-in-out infinite;
+  }
+}
+
+@keyframes brand-button-shine {
+  0%, 15% { left: -80%; }
+  55%, 100% { left: 140%; }
+}
+
+@keyframes brand-text-shine {
+  0%, 15% { background-position: 100% center; }
+  65%, 100% { background-position: 0% center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-shine-button::after { animation: none; }
+  .brand-shine-text { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .brand-shine-button::after { display: none; }
+  .brand-shine-text {
+    background: none;
+    color: LinkText;
+    animation: none;
+  }
+}

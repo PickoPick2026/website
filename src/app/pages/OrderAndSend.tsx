@@ -346,7 +346,7 @@ export default function OrderAndSendPage() {
           <div className="grid items-start gap-8 lg:grid-cols-12">
             <form
               onSubmit={handleSubmitQuote}
-              className="space-y-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(11,86,217,0.5)] sm:p-9 lg:col-span-7"
+              className="space-y-8 rounded-[28px] border border-slate-200 bg-white p-6 sm:p-9 lg:col-span-7"
             >
               <FormGroup step="1" title="Pickup & parcel">
                 <FormInput
@@ -463,7 +463,7 @@ export default function OrderAndSendPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] text-sm font-extrabold text-white shadow-lg shadow-[#0B56D9]/25 transition-colors hover:bg-[#0849B7] disabled:opacity-60"
+                  className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] text-sm font-extrabold text-white transition-colors hover:bg-[#0849B7] disabled:opacity-60"
                 >
                   <FaWhatsapp size={18} />
                   <span>

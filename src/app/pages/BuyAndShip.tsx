@@ -434,7 +434,7 @@ export default function BuyAndShipPage() {
           <div className="grid items-start gap-8 lg:grid-cols-12">
             <form
               onSubmit={handleSubmitRequest}
-              className="space-y-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(11,86,217,0.5)] sm:p-9 lg:col-span-7"
+              className="space-y-8 rounded-[28px] border border-slate-200 bg-white p-6 sm:p-9 lg:col-span-7"
             >
               <FormGroup step="1" title="The product">
                 <FieldLabel label="Product URL or Item Description" required>
@@ -534,7 +534,7 @@ export default function BuyAndShipPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] text-sm font-extrabold text-white shadow-lg shadow-[#0B56D9]/25 transition-colors hover:bg-[#0849B7] disabled:opacity-60"
+                  className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] text-sm font-extrabold text-white transition-colors hover:bg-[#0849B7] disabled:opacity-60"
                 >
                   <FaWhatsapp size={18} />
                   <span>
@@ -676,7 +676,7 @@ export default function BuyAndShipPage() {
                 </>
               );
               const cardClass =
-                "group flex flex-col rounded-[24px] border border-slate-200 bg-white p-5 transition-all hover:-translate-y-1 hover:border-[#0B56D9]/40 hover:shadow-[0_20px_40px_-28px_rgba(11,86,217,0.6)]";
+                "group flex flex-col rounded-[24px] border border-slate-200 bg-white p-5 transition-all hover:-translate-y-1 hover:border-[#0B56D9]/40";
               return s.external ? (
                 <a
                   key={s.name}

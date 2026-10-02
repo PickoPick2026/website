@@ -10,6 +10,7 @@ import Layout from "./app/components/Layout";
 import Home from "./app/pages/Home";
 import { Toaster } from "sonner";
 import WhatsAppButton from "./app/components/WhatsAppButton";
+import FloatingSocialMenu from "./app/components/FloatingSocialMenu";
 import { SeoHead } from "./app/components/SeoHead";
 
 // Every navigation starts at the top of the new page (React Router does not
@@ -52,6 +53,7 @@ export default function App() {
       <ScrollToTop />
       <SeoHead />
       <WhatsAppButton />
+      <FloatingSocialMenu />
 
       <Toaster position="bottom-right" richColors closeButton />
       <Suspense

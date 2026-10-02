@@ -318,7 +318,7 @@ export function Navbar() {
           </span>
         </a>
 
-        <nav className="relative w-full border-b border-slate-200/80 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
+        <nav className="relative w-full border-b border-slate-200/80 bg-white">
           <div className="mx-auto flex h-[64px] max-w-[1440px] items-center gap-2 px-4 sm:h-[68px] sm:gap-3 sm:px-6 lg:px-8">
             {location.pathname !== "/" && (
               <button
@@ -338,7 +338,7 @@ export function Navbar() {
             <a
               href="/"
               onClick={handleLogoClick}
-              className="flex shrink-0 items-center"
+              className="flex shrink-0 items-center bg-white"
               aria-label="Pick O Pick home"
             >
               <img
@@ -353,7 +353,7 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={() => goTo("/buy-and-ship")}
-                className={`whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-extrabold uppercase tracking-wide text-white transition-colors ${
+                className={`brand-shine-button whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-extrabold uppercase tracking-wide text-white transition-colors ${
                   isLinkActive("/buy-and-ship")
                     ? "bg-[#0849B7] ring-2 ring-[#0B56D9]/30"
                     : "bg-[#0B56D9] hover:bg-[#0849B7]"
@@ -375,7 +375,9 @@ export function Navbar() {
                   onClick={(event) => handleNavigation(event, item.href)}
                   className={linkClass(isLinkActive(item.href))}
                 >
-                  {item.label}
+                  <span className={item.href === "/nri" ? "brand-shine-text" : undefined}>
+                    {item.label}
+                  </span>
                 </a>
               ))}
 
@@ -411,7 +413,7 @@ export function Navbar() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 6 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full z-50 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_24px_60px_-20px_rgba(11,86,217,0.35)]"
+                      className="absolute right-0 top-full z-50 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2"
                     >
                       {COMPANY_LINKS.map(({ label, href, icon: Icon, hint }) => (
                         <a
@@ -503,7 +505,7 @@ export function Navbar() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 4 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-[0_24px_60px_-20px_rgba(11,86,217,0.35)]"
+                          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5"
                         >
                           {ACCOUNT_LINKS.map(({ label, href, icon: Icon }) => (
                             <button
@@ -600,7 +602,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed inset-y-0 right-0 z-[61] flex w-[86%] max-w-sm flex-col bg-white shadow-2xl xl:hidden"
+              className="fixed inset-y-0 right-0 z-[61] flex w-[86%] max-w-sm flex-col bg-white xl:hidden"
             >
               <div className="flex h-16 items-center justify-between border-b border-slate-100 px-5">
                 <img src="/PICKLogo.png" alt="Pick O Pick" className="h-10 w-auto" />
@@ -620,7 +622,7 @@ export function Navbar() {
                   <button
                     type="button"
                     onClick={() => goTo("/buy-and-ship")}
-                    className="flex flex-col items-start gap-3 rounded-2xl bg-[#0B56D9] p-4 text-left text-white"
+                    className="brand-shine-button flex flex-col items-start gap-3 rounded-2xl bg-[#0B56D9] p-4 text-left text-white"
                   >
                     <ShoppingBag className="h-5 w-5" />
                     <span className="text-sm font-extrabold">Buy &amp; Ship</span>
@@ -661,7 +663,11 @@ export function Navbar() {
                         >
                           <Icon className="h-4 w-4" />
                         </span>
-                        <span className="flex-1">{label}</span>
+                        <span className="flex-1">
+                          <span className={href === "/nri" ? "brand-shine-text" : undefined}>
+                            {label}
+                          </span>
+                        </span>
                         <ArrowRight className="h-4 w-4 text-slate-300" />
                       </a>
                     );

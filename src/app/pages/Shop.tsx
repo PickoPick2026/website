@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowRight, Globe2, Search, ShieldCheck, Truck, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { ShoppingDirectory } from "../components/ShoppingDirectory";
 import { CrossLinkBanner } from "../components/ServicePage";
 import { CartDrawer } from "../components/Shop/CartDrawer";
@@ -160,100 +160,51 @@ export default function ShopPage() {
   };
 
   return (
-    <main className="bg-[#F7F9FF] pt-[100px] sm:pt-[106px]">
+    <main className="bg-[#F7F9FF] pt-24 sm:pt-[100px]">
       {/* ───────── Hero banner ───────── */}
-      <section className="mx-auto max-w-7xl px-4 pt-4 sm:px-8 sm:pt-6">
-        <div className="relative overflow-hidden rounded-[32px] bg-[#0B56D9]">
-          <img
-            src="/images/shop-bg.webp"
-            alt="Saree, sweets, filter coffee and pickles packed in a Pick O Pick box for worldwide delivery"
-            className="absolute inset-0 h-full w-full object-cover object-right-bottom"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B56D9] via-[#0B56D9]/80 to-[#0B56D9]/0 sm:via-[#0B56D9]/70 lg:to-transparent" />
-
-          <div className="relative z-10 max-w-xl px-6 pb-24 pt-10 text-white sm:px-10 sm:pb-28 sm:pt-14 lg:px-14">
-            <span className="inline-block rounded-full border border-white/25 bg-white/15 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest">
-              Pick O Pick Marketplace
-            </span>
-            <h1 className="mt-4 text-[clamp(1.9rem,4.5vw,3.25rem)] font-extrabold leading-[1.06] tracking-tight">
-              Find the products you love from India
+      <section className="relative w-full">
+        <img
+          src="/images/shop-bg.png"
+          alt=""
+          width={2172}
+          height={724}
+          fetchPriority="high"
+          className="block h-auto w-full"
+        />
+        <div className="absolute inset-0 flex items-center justify-center px-3 py-1 text-center sm:px-6">
+          <div className="w-full max-w-3xl">
+            <h1 className="mx-auto max-w-2xl text-[clamp(1rem,3.6vw,3rem)] font-extrabold leading-tight tracking-tight text-[#0B56D9]">
+              Explore the products you love from India
             </h1>
-            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-blue-50">
-              <li className="inline-flex items-center gap-1.5">
-                <ShieldCheck size={14} /> Authentic Indian products
-              </li>
-              <li className="inline-flex items-center gap-1.5">
-                <Truck size={14} /> Combined international shipping
-              </li>
-              <li className="inline-flex items-center gap-1.5">
-                <Globe2 size={14} /> Delivered worldwide
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Search card overlapping the banner */}
-        <div className="relative z-20 mx-auto -mt-14 max-w-4xl px-2 sm:-mt-16 sm:px-6">
-          <div className="rounded-3xl border border-blue-100 bg-white p-3 shadow-[0_30px_60px_-30px_rgba(11,86,217,0.5)] sm:p-4">
             <form
               id="shop-search"
               onSubmit={handleSearch}
-              className="flex flex-col gap-2 sm:flex-row"
+              className="mx-auto mt-2 flex h-11 w-full max-w-xl items-center gap-2 rounded-xl border border-white/80 bg-white/95 px-3 text-left shadow-md backdrop-blur-sm sm:mt-5 sm:h-14 sm:gap-3 sm:rounded-2xl sm:px-5"
             >
               <label htmlFor="shop-search-input" className="sr-only">
-                Search the marketplace
+                Search Indian products
               </label>
-              <div className="flex h-14 flex-1 items-center gap-3 rounded-2xl bg-[#F7F9FF] px-4 transition-shadow focus-within:ring-4 focus-within:ring-[#0B56D9]/10">
-                <Search className="h-5 w-5 shrink-0 text-[#0B56D9]" />
-                <input
-                  id="shop-search-input"
-                  value={searchInput}
-                  onChange={(event) =>
-                    handleSearchInputChange(event.target.value)
-                  }
-                  placeholder="Search sarees, sweets, pooja items, groceries..."
-                  className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#0A1931] outline-none placeholder:text-slate-400"
-                />
-                {searchInput && (
-                  <button
-                    type="button"
-                    onClick={() => handleSearchInputChange("")}
-                    className="rounded-full p-1.5 text-slate-400 hover:bg-white hover:text-slate-600"
-                    aria-label="Clear search"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="group inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] px-8 text-xs font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-[#0849B7]"
-              >
-                Search
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </button>
+              <Search className="h-4 w-4 shrink-0 text-[#0B56D9] sm:h-5 sm:w-5" />
+              <input
+                id="shop-search-input"
+                value={searchInput}
+                onChange={(event) =>
+                  handleSearchInputChange(event.target.value)
+                }
+                placeholder="Search sarees, sweets, pooja items, groceries..."
+                className="h-full min-w-0 flex-1 bg-transparent text-xs font-semibold text-[#0A1931] outline-none placeholder:text-slate-400 sm:text-sm"
+              />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => handleSearchInputChange("")}
+                  className="rounded-full p-1.5 text-slate-400 hover:bg-white hover:text-slate-600"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </form>
-
-            {categories.length > 0 && (
-              <div className="mt-3 flex items-center gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide">
-                <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  Popular:
-                </span>
-                {categories.slice(0, 6).map((cat) => (
-                  <button
-                    key={cat.categoryID}
-                    type="button"
-                    onClick={() => {
-                      selectCategory(String(cat.categoryID));
-                      document.querySelector("#shop-directory")?.scrollIntoView();
-                    }}
-                    className="shrink-0 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-[#0B56D9] hover:bg-blue-50 hover:text-[#0B56D9]"
-                  >
-                    {cat.categoryName}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </section>
