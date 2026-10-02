@@ -15,7 +15,6 @@ const PAGE_DATA: Record<string, { title: string; description: string; keywords: 
   '/terms': { title: 'Terms of Service | Pick O Pick', description: 'Read the Pick O Pick terms of service.', keywords: 'Pick O Pick terms of service' },
   '/privacy': { title: 'Privacy Policy | Pick O Pick', description: 'Read the Pick O Pick privacy policy.', keywords: 'Pick O Pick privacy policy' },
   '/refund': { title: 'Refund Policy | Pick O Pick', description: 'Read the Pick O Pick refund policy.', keywords: 'Pick O Pick refund policy' },
-  '/cart': { title: 'Cart | Pick O Pick', description: 'Customer cart.', keywords: '', noIndex: true },
   '/orders': { title: 'Orders | Pick O Pick', description: 'Customer orders.', keywords: '', noIndex: true },
   '/addresses': { title: 'Addresses | Pick O Pick', description: 'Customer addresses.', keywords: '', noIndex: true },
   '/wallet': { title: 'Wallet | Pick O Pick', description: 'Customer wallet.', keywords: '', noIndex: true },

@@ -1,55 +1,44 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   Truck,
   ArrowRight,
-  Sparkles,
   CheckCircle2,
   ShieldCheck,
   Plane,
   AlertTriangle,
-  HelpCircle,
   Scale,
   FileText,
   Clock,
   Check,
   X,
+  MapPin,
+  CalendarCheck,
+  Home,
+  Globe2,
+  Percent,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
+import {
+  BluePanel,
+  COUNTRY_OPTIONS,
+  CrossLinkBanner,
+  FaqAccordion,
+  FieldLabel,
+  FormGroup,
+  FormInput,
+  HeroPrimaryButton,
+  HeroSecondaryButton,
+  PageHero,
+  SectionHeader,
+  StatsBar,
+  StepsTimeline,
+  fieldClass,
+} from "../components/ServicePage";
 
-function FormInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  required = true,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  type?: string;
-  required?: boolean;
-}) {
-  return (
-    <div>
-      <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input
-        required={required}
-        type={type}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="w-full h-11 px-3.5 bg-[#F8FAFC] border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-[#0A1931] outline-none transition-colors focus:border-[#0B56D9] focus:bg-white"
-      />
-    </div>
-  );
-}
+const WHATSAPP_COURIER_URL =
+  "https://wa.me/919790361222?text=Hello%20PickoPick%20Courier%2C%20I%20want%20to%20schedule%20a%20doorstep%20pickup%20in%20India.";
 
 const POPULAR_PICKUP_CITIES = [
   "Chennai",
@@ -78,23 +67,50 @@ const PARCEL_CATEGORIES = [
 const STEPS = [
   {
     num: "01",
+    icon: CalendarCheck,
     title: "Schedule Pickup Online",
     desc: "Enter the pickup address in India and destination details abroad. Choose your preferred pickup time slot.",
   },
   {
     num: "02",
+    icon: Home,
     title: "Doorstep Collection in India",
     desc: "Our courier executive visits the Indian address, hands over an instant receipt, and safely collects the parcel.",
   },
   {
     num: "03",
+    icon: Scale,
     title: "Box Trimming & Repacking",
     desc: "At our central hub, we inspect, trim empty dead space, custom repack, and share WhatsApp photo/video proof.",
   },
   {
     num: "04",
+    icon: Plane,
     title: "Express Air Delivery Abroad",
     desc: "Dispatched via DHL, FedEx, or Aramex with customs clearance and handed over at your foreign doorstep in 3–5 days.",
+  },
+];
+
+const SAVINGS = [
+  {
+    icon: Scale,
+    title: "Volumetric Box Trimming",
+    text: "Couriers charge by box volume. We cut down oversized cartons and save you up to 40% on freight.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Tamper-Evident Packaging",
+    text: "Multi-layer security tape, moisture protection, and reinforced corrugated boxes.",
+  },
+  {
+    icon: FileText,
+    title: "Customs Compliance",
+    text: "We generate compliant commercial invoices and food declaration paperwork for smooth overseas clearance.",
+  },
+  {
+    icon: Clock,
+    title: "3–5 Days Express Air Transit",
+    text: "Direct air cargo via DHL, FedEx, and Aramex with continuous live tracking.",
   },
 ];
 
@@ -141,6 +157,13 @@ const FAQS = [
   },
 ];
 
+const pillClass = (active: boolean) =>
+  `rounded-xl border text-xs font-bold transition-colors ${
+    active
+      ? "border-[#0B56D9] bg-[#0B56D9] text-white"
+      : "border-slate-200 bg-[#F8FAFC] text-slate-700 hover:border-[#0B56D9]/40"
+  }`;
+
 export default function OrderAndSendPage() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -165,7 +188,7 @@ export default function OrderAndSendPage() {
     }
   }, []);
 
-  const handleSubmitQuote = async (e: React.FormEvent) => {
+  const handleSubmitQuote = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!pickupCity.trim()) {
@@ -236,75 +259,46 @@ export default function OrderAndSendPage() {
 
   return (
     <main className="min-h-screen bg-white text-[#0A1931]">
-      {/* Hero Section: Consistent with NRI Hero & About Us pattern */}
-      <section
-        className="relative overflow-hidden border-b border-blue-100 bg-[#0B56D9] bg-cover bg-bottom pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-20 text-white"
-        style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')" }}
-      >
-        {/* Solid brand blue overlay matching AboutUs & HeroSection pattern */}
-        <div className="absolute inset-0 bg-[#0B56D9]/85 backdrop-blur-[0.5px] z-0" />
+      {/* ───────── Hero ───────── */}
+      <PageHero
+        eyebrow="Order & Send • Doorstep Pickup & Courier"
+        title="Doorstep Pickup in India."
+        highlight="Express Delivery Worldwide."
+        description="Have homemade delicacies, sweets, garments, documents, or personal gifts at home in India? We collect directly from your Indian doorstep across 25,000+ pincodes, repack to trim volumetric dead weight, and express-courier to 200+ countries."
+        image="/images/nri-trust/international-shipping.webp"
+        imageAlt="Pick O Pick plane, ship and truck delivering parcels worldwide"
+        floatingChips={[
+          { icon: Home, label: "Free doorstep collection" },
+          { icon: Scale, label: "Volumetric box trimming" },
+          { icon: Plane, label: "3–5 day express" },
+        ]}
+        actions={
+          <>
+            <HeroPrimaryButton href="#order-and-send-form">
+              Schedule Doorstep Pickup
+            </HeroPrimaryButton>
+            <HeroSecondaryButton href={WHATSAPP_COURIER_URL}>
+              <FaWhatsapp size={16} />
+              Chat on WhatsApp
+            </HeroSecondaryButton>
+          </>
+        }
+      />
 
-        <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-8 text-center">
-          {/* Header pill badge */}
-          <span className="inline-block text-[11px] font-black uppercase tracking-widest text-white px-3 py-1 rounded-full bg-white/15 border border-white/25">
-            Order &amp; Send • Doorstep Pickup &amp; Courier
-          </span>
+      <StatsBar
+        stats={[
+          { icon: MapPin, value: "25,000+", label: "Pickup pincodes" },
+          { icon: Percent, value: "Up to 40%", label: "Freight saved by repacking" },
+          { icon: Globe2, value: "200+", label: "Destination countries" },
+          { icon: Plane, value: "3–5 days", label: "Express delivery" },
+        ]}
+      />
 
-          <h1 className="mt-4 text-[clamp(1.75rem,5vw,3rem)] font-extrabold leading-[1.1] tracking-tight">
-            Doorstep Pickup in India. Express Delivery Worldwide.
-          </h1>
-
-          <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg leading-relaxed text-white/85">
-            Have homemade delicacies, sweets, garments, documents, or personal
-            gifts at home in India? We collect directly from your Indian
-            doorstep across 25,000+ pincodes, repack to trim volumetric dead
-            weight, and express-courier to 200+ countries.
-          </p>
-
-          {/* Action buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
-            <a
-              href="#order-and-send-form"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-xs font-extrabold tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50 cursor-pointer"
-            >
-              <span>SCHEDULE DOORSTEP PICKUP</span>
-              <ArrowRight className="h-4 w-4" />
-            </a>
-
-            <a
-              href="https://wa.me/919790361222?text=Hello%20PickoPick%20Courier%2C%20I%20want%20to%20schedule%20a%20doorstep%20pickup%20in%20India."
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3.5 text-xs font-extrabold tracking-wider text-white transition-colors hover:bg-white/20 cursor-pointer"
-            >
-              <FaWhatsapp className="h-4 w-4" />
-              <span>CHAT ON WHATSAPP</span>
-            </a>
-          </div>
-
-          {/* Trust points */}
-          <div className="mx-auto mt-9 flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-3 border-t border-white/35 pt-5 text-xs text-white/80">
-            <span className="inline-flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[#0B56D9]" />
-              Free Doorstep Collection
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <Scale className="h-4 w-4 text-[#0B56D9]" />
-              Volumetric Box Trimming
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <Plane className="h-4 w-4 text-[#0B56D9]" />
-              3–5 Days Express Delivery
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Pickup Hub Quick Links Bar */}
-      <section className="bg-[#F8FAFC] border-b border-slate-200/80 py-4 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs">
-          <span className="font-extrabold text-[#0A1931] uppercase tracking-wider text-[11px] mr-1">
-            Major Pickup Hubs:
+      {/* ───────── Pickup hubs ribbon ───────── */}
+      <section className="pt-10">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 px-4 sm:px-8">
+          <span className="mr-1 text-[11px] font-black uppercase tracking-widest text-slate-400">
+            Major pickup hubs
           </span>
           {POPULAR_PICKUP_CITIES.map((city) => (
             <button
@@ -312,90 +306,110 @@ export default function OrderAndSendPage() {
               type="button"
               onClick={() => {
                 setPickupCity(city);
-                document
-                  .getElementById("order-and-send-form")
-                  ?.scrollIntoView();
+                document.getElementById("order-and-send-form")?.scrollIntoView();
               }}
-              className="px-3 py-1 rounded-full bg-white border border-slate-200/80 text-slate-700 hover:border-[#0B56D9]/40 hover:text-[#0B56D9] transition-colors cursor-pointer text-xs font-medium"
+              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-[#0B56D9] hover:bg-blue-50 hover:text-[#0B56D9]"
             >
+              <MapPin size={11} />
               {city}
             </button>
           ))}
         </div>
       </section>
 
-      {/* How Order & Send Works (4-Step Section) */}
-      <section className="py-16 sm:py-20 bg-white border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <Sparkles size={12} className="text-[#0B56D9]" />
-              End-to-End Reliability
-            </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
-              How Order &amp; Send <span className="text-[#0B56D9]">Works</span>
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-              Effortless doorstep collection from your family or suppliers in
-              India to your home overseas.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {STEPS.map((s) => (
-              <div
-                key={s.num}
-                className="bg-[#F8FAFC] rounded-2xl border border-slate-200/80 p-6 sm:p-7 flex flex-col justify-between hover:border-[#0B56D9]/40 transition-colors duration-200"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-black text-[#0B56D9] px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100">
-                      Step {s.num}
-                    </span>
-                  </div>
-
-                  <h3 className="text-base font-extrabold text-[#0A1931] tracking-tight">
-                    {s.title}
-                  </h3>
-
-                  <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    {s.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* ───────── How it works ───────── */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-8">
+          <SectionHeader
+            eyebrow="End-to-end reliability"
+            title="How Order & Send"
+            highlight="Works"
+            description="Effortless doorstep collection from your family or suppliers in India to your home overseas."
+          />
+          <StepsTimeline steps={STEPS} />
         </div>
       </section>
 
-      {/* Quote & Booking Form Section */}
+      {/* ───────── Booking form ───────── */}
       <section
         id="order-and-send-form"
-        className="py-16 sm:py-20 bg-[#F8FAFC] border-b border-slate-200/80 scroll-mt-24"
+        className="scroll-mt-24 border-y border-slate-200/80 bg-[#F7F9FF] py-16 sm:py-24"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-            {/* Left Form Card (7 cols) */}
-            <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-7 sm:p-9 hover:border-[#0B56D9]/40 transition-colors duration-200">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 text-[#0B56D9] flex items-center justify-center shrink-0">
-                    <Truck size={20} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-extrabold text-[#0A1931] tracking-tight">
-                      Order &amp; Send — Book Doorstep Pickup
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      We’ll calculate discounted freight rates and dispatch our
-                      courier to the Indian address.
-                    </p>
+        <div className="mx-auto max-w-6xl px-4 sm:px-8">
+          <SectionHeader
+            eyebrow="Book a pickup"
+            title="Schedule your"
+            highlight="doorstep pickup"
+            description="We’ll calculate discounted freight rates and dispatch our courier to the Indian address."
+          />
+
+          <div className="grid items-start gap-8 lg:grid-cols-12">
+            <form
+              onSubmit={handleSubmitQuote}
+              className="space-y-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(11,86,217,0.5)] sm:p-9 lg:col-span-7"
+            >
+              <FormGroup step="1" title="Pickup & parcel">
+                <FormInput
+                  label="Pickup City / Town (India)"
+                  value={pickupCity}
+                  onChange={setPickupCity}
+                  placeholder="e.g. Chennai, Mylapore or 600004"
+                />
+
+                <div>
+                  <span className="mb-1.5 block text-xs font-bold text-slate-700">
+                    Approximate Weight
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {WEIGHT_TIERS.map((tier) => (
+                      <button
+                        key={tier}
+                        type="button"
+                        aria-pressed={approxWeight === tier}
+                        onClick={() => setApproxWeight(tier)}
+                        className={`px-4 py-2.5 ${pillClass(approxWeight === tier)}`}
+                      >
+                        {tier}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
 
-              <form onSubmit={handleSubmitQuote} className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <span className="mb-1.5 block text-xs font-bold text-slate-700">
+                    Parcel Category
+                  </span>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {PARCEL_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        aria-pressed={parcelType === cat}
+                        onClick={() => setParcelType(cat)}
+                        className={`p-3 text-left leading-tight ${pillClass(parcelType === cat)}`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <FieldLabel label="Share Product Links or List Items to Send" required>
+                  <textarea
+                    required
+                    rows={3}
+                    value={productLinks}
+                    onChange={(e) => setProductLinks(e.target.value)}
+                    placeholder="Share product links from Myntra, Meesho, Instagram, Flipkart, Amazon etc., or list personal items (e.g. homemade sweets, clothes, documents)..."
+                    className={`${fieldClass.replace("h-12 ", "")} resize-none py-3`}
+                  />
+                </FieldLabel>
+              </FormGroup>
+
+              <div className="border-t border-dashed border-slate-200" />
+
+              <FormGroup step="2" title="Your details">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
                     label="Sender / Customer Name"
                     value={customerName}
@@ -410,374 +424,216 @@ export default function OrderAndSendPage() {
                     type="tel"
                   />
                 </div>
+                <FormInput
+                  label="Email Address"
+                  value={customerEmail}
+                  onChange={setCustomerEmail}
+                  placeholder="you@example.com"
+                  type="email"
+                />
+              </FormGroup>
 
-                <div className="grid sm:grid-cols-2 gap-4">
+              <div className="border-t border-dashed border-slate-200" />
+
+              <FormGroup step="3" title="Delivery abroad">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
-                    label="Email Address"
-                    value={customerEmail}
-                    onChange={setCustomerEmail}
-                    placeholder="you@example.com"
-                    type="email"
-                  />
-                  <FormInput
-                    label="Where to Send (Destination City / Zip Code)"
+                    label="Destination City / Zip Code"
                     value={destinationLocation}
                     onChange={setDestinationLocation}
                     placeholder="e.g. London, UK EC1A 1BB"
                   />
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <FormInput
-                    label="Pickup City / Town (India)"
-                    value={pickupCity}
-                    onChange={setPickupCity}
-                    placeholder="e.g. Chennai, Mylapore or 600004"
-                  />
-
-                  <div>
-                    <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Destination Country
-                    </label>
+                  <FieldLabel label="Destination Country">
                     <select
                       value={destinationCountry}
                       onChange={(e) => setDestinationCountry(e.target.value)}
-                      className="w-full h-11 px-3.5 bg-[#F8FAFC] border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-[#0A1931] outline-none transition-colors focus:border-[#0B56D9] focus:bg-white"
+                      className={fieldClass}
                     >
-                      <option value="United States">United States (USA)</option>
-                      <option value="United Kingdom">
-                        United Kingdom (UK)
-                      </option>
-                      <option value="Canada">Canada</option>
-                      <option value="United Arab Emirates">
-                        United Arab Emirates (UAE)
-                      </option>
-                      <option value="Australia">Australia</option>
-                      <option value="Singapore">Singapore</option>
-                      <option value="Germany">Germany</option>
-                      <option value="Malaysia">Malaysia</option>
-                      <option value="Other Country">Other Country</option>
+                      {COUNTRY_OPTIONS.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
                     </select>
-                  </div>
+                  </FieldLabel>
                 </div>
+              </FormGroup>
 
-                {/* Weight selector pills */}
-                <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Approximate Weight Tier
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {WEIGHT_TIERS.map((tier) => (
-                      <button
-                        key={tier}
-                        type="button"
-                        onClick={() => setApproxWeight(tier)}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                          approxWeight === tier
-                            ? "bg-[#0B56D9] text-white border border-[#0B56D9]"
-                            : "bg-[#F8FAFC] border border-slate-200 text-slate-700 hover:border-[#0B56D9]/40"
-                        }`}
-                      >
-                        {tier}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Parcel category pills */}
-                <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Parcel Category
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {PARCEL_CATEGORIES.map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setParcelType(cat)}
-                        className={`p-2 text-left rounded-xl text-[11px] font-bold leading-tight transition-colors cursor-pointer ${
-                          parcelType === cat
-                            ? "bg-[#0B56D9] text-white border border-[#0B56D9]"
-                            : "bg-[#F8FAFC] border border-slate-200 text-slate-700 hover:border-[#0B56D9]/40"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Product Links / Item Details */}
-                <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Share Product Links or List Items to Send{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    required
-                    rows={3}
-                    value={productLinks}
-                    onChange={(e) => setProductLinks(e.target.value)}
-                    placeholder="Share product links from Myntra, Meesho, Instagram, Flipkart, Amazon etc., or list personal items (e.g. homemade sweets, clothes, documents)..."
-                    className="w-full p-3 bg-[#F8FAFC] border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-[#0A1931] outline-none transition-colors focus:border-[#0B56D9] focus:bg-white"
+              <div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="group inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] text-sm font-extrabold text-white shadow-lg shadow-[#0B56D9]/25 transition-colors hover:bg-[#0849B7] disabled:opacity-60"
+                >
+                  <FaWhatsapp size={18} />
+                  <span>
+                    {isSubmitting
+                      ? "Submitting..."
+                      : "Send Order & Send Request to WhatsApp & Email"}
+                  </span>
+                  <ArrowRight
+                    size={15}
+                    className="transition-transform group-hover:translate-x-1"
                   />
-                  <p className="mt-1 text-[11px] text-slate-500">
-                    Paste links from Myntra, Meesho, Instagram, Flipkart, Amazon, or describe packages for doorstep pickup.
-                  </p>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full h-12 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-colors inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
-                  >
-                    <FaWhatsapp size={17} />
-                    <span>
-                      {isSubmitting
-                        ? "Submitting..."
-                        : "Send Order & Send Request to WhatsApp & Email"}
-                    </span>
-                    <ArrowRight size={15} />
-                  </button>
-                </div>
-
-                <p className="text-[11px] text-center text-slate-500 pt-1">
+                </button>
+                <p className="pt-3 text-center text-[11px] text-slate-500">
                   Direct connection with our logistics dispatch manager. An
                   official tracking reference code is provided immediately.
                 </p>
-              </form>
-            </div>
-
-            {/* Right Pricing Assurance (5 cols) */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-7 sm:p-9 hover:border-[#0B56D9]/40 transition-colors duration-200">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[11px] font-black uppercase tracking-widest text-[#0B56D9] px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100">
-                    Smart Logistics
-                  </span>
-                  <span className="text-xs font-bold text-slate-400">
-                    Why Pick O Pick
-                  </span>
-                </div>
-
-                <h4 className="text-lg font-extrabold text-[#0A1931] tracking-tight mb-4">
-                  How We Save You Money
-                </h4>
-
-                <div className="space-y-3.5">
-                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8FAFC] border border-slate-100 text-xs sm:text-sm text-slate-700">
-                    <Scale
-                      size={16}
-                      className="text-[#0B56D9] shrink-0 mt-0.5"
-                    />
-                    <div>
-                      <p className="font-extrabold text-[#0A1931] text-xs">
-                        Volumetric Box Trimming
-                      </p>
-                      <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-                        Couriers charge by box volume. We cut down oversized
-                        cartons and save you up to 40% on freight.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8FAFC] border border-slate-100 text-xs sm:text-sm text-slate-700">
-                    <ShieldCheck
-                      size={16}
-                      className="text-[#0B56D9] shrink-0 mt-0.5"
-                    />
-                    <div>
-                      <p className="font-extrabold text-[#0A1931] text-xs">
-                        Tamper-Evident Packaging
-                      </p>
-                      <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-                        Multi-layer security tape, moisture protection, and
-                        reinforced corrugated boxes.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8FAFC] border border-slate-100 text-xs sm:text-sm text-slate-700">
-                    <FileText
-                      size={16}
-                      className="text-[#0B56D9] shrink-0 mt-0.5"
-                    />
-                    <div>
-                      <p className="font-extrabold text-[#0A1931] text-xs">
-                        Customs Compliance
-                      </p>
-                      <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-                        We generate compliant commercial invoices and food
-                        declaration paperwork for smooth overseas clearance.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8FAFC] border border-slate-100 text-xs sm:text-sm text-slate-700">
-                    <Clock
-                      size={16}
-                      className="text-[#0B56D9] shrink-0 mt-0.5"
-                    />
-                    <div>
-                      <p className="font-extrabold text-[#0A1931] text-xs">
-                        3–5 Days Express Air Transit
-                      </p>
-                      <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-                        Direct air cargo via DHL, FedEx, and Aramex with
-                        continuous live tracking.
-                      </p>
-                    </div>
-                  </div>
-                </div>
               </div>
+            </form>
 
-              {/* Cross-Link Card for Buy & Ship */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-7 sm:p-8">
-                <span className="text-[11px] font-black uppercase tracking-widest text-[#0B56D9] px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100">
-                  Need Sourcing Help?
+            {/* Sidebar */}
+            <aside className="space-y-5 lg:sticky lg:top-28 lg:col-span-5">
+              <BluePanel className="rounded-[28px]">
+                <div className="p-7 sm:p-8">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-100">
+                    Smart logistics
+                  </p>
+                  <h3 className="mt-2 text-xl font-extrabold tracking-tight">
+                    How We Save You Money
+                  </h3>
+                  <ul className="mt-6 space-y-4">
+                    {SAVINGS.map(({ icon: Icon, title, text }) => (
+                      <li key={title} className="flex items-start gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#0B56D9]">
+                          <Icon size={16} />
+                        </span>
+                        <span>
+                          <span className="block text-sm font-extrabold">{title}</span>
+                          <span className="mt-0.5 block text-xs leading-relaxed text-blue-100">
+                            {text}
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </BluePanel>
+
+              <a
+                href={WHATSAPP_COURIER_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-center gap-4 rounded-[24px] border border-slate-200 bg-white p-5 transition-colors hover:border-[#0B56D9]/40"
+              >
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                  <FaWhatsapp size={22} />
                 </span>
-                <h4 className="mt-3 text-base font-extrabold text-[#0A1931]">
-                  Want us to buy from Indian shops?
-                </h4>
-                <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  If you don&apos;t have goods in India yet and want our team to
-                  buy online from Indian shops, use our{" "}
-                  <strong>Buy &amp; Ship</strong> assisted personal shopper
-                  service.
-                </p>
-                <Link
-                  to="/buy-and-ship"
-                  className="mt-4 inline-flex items-center gap-1.5 text-xs font-extrabold text-[#0B56D9] hover:underline"
-                >
-                  <span>Go to Buy &amp; Ship Personal Shopper</span>
-                  <ArrowRight size={13} />
-                </Link>
-              </div>
-            </div>
+                <span className="flex-1">
+                  <span className="block text-sm font-extrabold text-[#0A1931]">
+                    Need a pickup today?
+                  </span>
+                  <span className="block text-xs text-slate-500">
+                    Message our dispatch team on WhatsApp.
+                  </span>
+                </span>
+                <ArrowRight
+                  size={16}
+                  className="text-[#0B56D9] transition-transform group-hover:translate-x-1"
+                />
+              </a>
+            </aside>
           </div>
         </div>
       </section>
 
-      {/* Allowed vs Prohibited Comparison Matrix */}
-      <section
-        id="allowed-items"
-        className="py-16 sm:py-20 bg-white border-b border-slate-200/80 scroll-mt-24"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <ShieldCheck size={12} className="text-[#0B56D9]" />
-              Shipping Guidelines
-            </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
-              What Can You Send{" "}
-              <span className="text-[#0B56D9]">From India?</span>
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-              Clear guidelines on compliant air cargo vs aviation prohibited
-              materials.
-            </p>
-          </div>
+      {/* ───────── Allowed vs prohibited ───────── */}
+      <section id="allowed-items" className="scroll-mt-24 py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-8">
+          <SectionHeader
+            eyebrow="Shipping guidelines"
+            title="What Can You Send"
+            highlight="From India?"
+            description="Clear guidelines on compliant air cargo vs aviation prohibited materials."
+          />
 
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-            {/* Allowed Items Card */}
-            <div className="bg-[#F8FAFC] border border-slate-200/80 rounded-2xl p-6 sm:p-7">
-              <div className="flex items-center gap-2 mb-4 border-b border-slate-200/80 pb-3">
-                <div className="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0">
-                  <Check size={15} />
-                </div>
-                <h3 className="text-base font-extrabold text-[#0A1931]">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-[#0B56D9]">
+                  <Check size={18} />
+                </span>
+                <h3 className="text-lg font-extrabold text-[#0A1931]">
                   Allowed &amp; Popular Items
                 </h3>
               </div>
-
-              <div className="space-y-2.5">
-                {ALLOWED_ITEMS.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 text-xs sm:text-sm text-slate-700"
+              <ul className="divide-y divide-slate-100">
+                {ALLOWED_ITEMS.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 py-3 text-sm text-slate-700"
                   >
-                    <CheckCircle2
-                      size={15}
-                      className="text-emerald-600 shrink-0"
-                    />
-                    <span>{item}</span>
-                  </div>
+                    <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[#0B56D9]" />
+                    {item}
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
-            {/* Prohibited Items Card */}
-            <div className="bg-[#F8FAFC] border border-slate-200/80 rounded-2xl p-6 sm:p-7">
-              <div className="flex items-center gap-2 mb-4 border-b border-slate-200/80 pb-3">
-                <div className="w-7 h-7 rounded-full bg-red-50 text-red-600 border border-red-200 flex items-center justify-center shrink-0">
-                  <X size={15} />
-                </div>
-                <h3 className="text-base font-extrabold text-[#0A1931]">
+            <div className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+                  <X size={18} />
+                </span>
+                <h3 className="text-lg font-extrabold text-[#0A1931]">
                   Aviation Prohibited Items
                 </h3>
               </div>
-
-              <div className="space-y-2.5">
-                {PROHIBITED_ITEMS.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 text-xs sm:text-sm text-slate-700"
+              <ul className="divide-y divide-slate-100">
+                {PROHIBITED_ITEMS.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 py-3 text-sm text-slate-700"
                   >
-                    <AlertTriangle
-                      size={15}
-                      className="text-red-500 shrink-0"
-                    />
-                    <span>{item}</span>
-                  </div>
+                    <AlertTriangle size={16} className="mt-0.5 shrink-0 text-red-500" />
+                    {item}
+                  </li>
                 ))}
-              </div>
-
-              <p className="mt-4 text-[11px] text-slate-500 border-t border-slate-200/80 pt-3">
+              </ul>
+              <a
+                href={WHATSAPP_COURIER_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 flex items-center gap-2 rounded-2xl bg-blue-50 p-4 text-xs font-semibold text-slate-700 transition-colors hover:bg-blue-100"
+              >
+                <Truck size={16} className="shrink-0 text-[#0B56D9]" />
                 Unsure about an item? Message our WhatsApp support for instant
                 customs verification before packing.
-              </p>
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQs Section */}
-      <section className="py-16 sm:py-20 bg-[#F8FAFC] border-b border-slate-200/80">
-        <div className="max-w-4xl mx-auto px-4 sm:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <HelpCircle size={12} className="text-[#0B56D9]" />
-              Got Questions?
-            </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
-              Frequently Asked <span className="text-[#0B56D9]">Questions</span>
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-              Questions and answers about our doorstep pickup and international
-              courier process.
-            </p>
-          </div>
-
-          <div className="space-y-3.5">
-            {FAQS.map((faq, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl border border-slate-200/80 p-6 hover:border-[#0B56D9]/40 transition-colors duration-200"
-              >
-                <h3 className="text-sm sm:text-base font-extrabold text-[#0A1931] flex items-center gap-2.5">
-                  <HelpCircle size={16} className="text-[#0B56D9] shrink-0" />
-                  <span>{faq.q}</span>
-                </h3>
-                <p className="mt-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed pl-6">
-                  {faq.a}
-                </p>
-              </div>
-            ))}
-          </div>
+      {/* ───────── FAQs ───────── */}
+      <section className="border-t border-slate-200/80 bg-[#F7F9FF] py-16 sm:py-24">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-8 lg:grid-cols-[0.8fr_1.2fr]">
+          <SectionHeader
+            align="left"
+            eyebrow="Got questions?"
+            title="Frequently Asked"
+            highlight="Questions"
+            description="Questions and answers about our doorstep pickup and international courier process."
+          />
+          <FaqAccordion faqs={FAQS} />
         </div>
       </section>
+
+      <CrossLinkBanner
+        eyebrow="Need sourcing help?"
+        title="Want us to buy from Indian shops?"
+        description={
+          <>
+            If you don&apos;t have goods in India yet and want our team to buy
+            online from Indian shops, use our <strong>Buy &amp; Ship</strong>{" "}
+            assisted personal shopper service.
+          </>
+        }
+        to="/buy-and-ship"
+        cta="Go to Buy & Ship"
+        image="/images/nri-trust/shop-from-india.webp"
+      />
     </main>
   );
 }

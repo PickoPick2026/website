@@ -138,6 +138,7 @@ export function ImageSearch() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const productLinkInputRef = useRef<HTMLInputElement>(null);
+  const [activeStore, setActiveStore] = useState("Any Indian URL");
 
   useEffect(() => {
     const handlePopulate = (event: Event) => {
@@ -433,24 +434,25 @@ export function ImageSearch() {
       <ZigzagBorder position="top" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
-        {/* Compact Header */}
-        <div className="text-center max-w-2xl mx-auto mb-8">
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-100 bg-blue-50 text-[11px] font-black uppercase tracking-widest text-[#0B56D9]">
             <Sparkles size={12} className="text-[#0B56D9]" />
             Buy &amp; Ship • Personal Shopper in India
           </div>
 
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
-            Find it in India. We Buy &amp; Ship it Abroad.
+            Find it in India.{" "}
+            <span className="text-[#0B56D9]">We Buy &amp; Ship it Abroad.</span>
           </h2>
 
-          <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+          <p className="mt-3 text-sm text-slate-600 leading-relaxed">
             Paste any Indian product link below. PickoPick purchases it locally
             in INR, verifies and repacks your parcel, and delivers directly to
             your overseas doorstep.
           </p>
 
-          <div className="mt-4 flex items-center justify-center gap-3">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/buy-and-ship"
               className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#0B56D9] hover:underline"
@@ -471,129 +473,158 @@ export function ImageSearch() {
           </div>
         </div>
 
-        {/* High-Efficiency Unified Action Card */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-7 shadow-xs">
-          <form onSubmit={handleLinkSearch} className="space-y-4">
-            {/* Input Row with integrated Link Icon, Paste Button, and Action Button */}
-            <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
-              <div className="relative flex-1">
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                  <Link2 size={18} className="text-[#0B56D9]" />
+        {/* Action panel — brand image with blue overlay */}
+        <div
+          className="relative overflow-hidden rounded-3xl bg-[#0B56D9] bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/nri-hero-logistics-v2.webp')" }}
+        >
+          <div className="absolute inset-0 z-0 bg-[#0B56D9]/85 backdrop-blur-[0.5px]" />
+
+          <div className="relative z-10 p-5 sm:p-8">
+            {/* Store picker */}
+            <div
+              className="flex flex-wrap items-center gap-2"
+              role="group"
+              aria-label="Supported stores"
+            >
+              <span className="mr-1 text-[11px] font-bold uppercase tracking-wider text-blue-100">
+                Shop from:
+              </span>
+              {supportedStores.map((store) => {
+                const isActive = activeStore === store;
+                return (
+                  <button
+                    key={store}
+                    type="button"
+                    onClick={() => {
+                      setActiveStore(store);
+                      productLinkInputRef.current?.focus();
+                    }}
+                    aria-pressed={isActive}
+                    className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-bold transition-colors ${
+                      isActive
+                        ? "border-white bg-white text-[#0B56D9]"
+                        : "border-white/25 bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                  >
+                    <CheckCircle2 size={11} />
+                    {store}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Link input */}
+            <form onSubmit={handleLinkSearch} className="mt-5">
+              <div className="flex flex-col sm:flex-row items-stretch gap-2.5 rounded-2xl bg-white p-2">
+                <div className="relative flex-1">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <Link2 size={18} className="text-[#0B56D9]" />
+                  </div>
+
+                  <input
+                    ref={productLinkInputRef}
+                    id="product-url-input"
+                    type="url"
+                    placeholder={
+                      activeStore === "Any Indian URL"
+                        ? "Paste a product link from any Indian store..."
+                        : `Paste a ${activeStore} product link...`
+                    }
+                    required
+                    value={productLink}
+                    onChange={(e) => setProductLink(e.target.value)}
+                    className="w-full h-12 pl-11 pr-24 bg-transparent rounded-xl outline-none text-sm text-[#0A1931] placeholder:text-slate-400 font-medium"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={handlePasteClipboard}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-700 hover:border-[#0B56D9] hover:text-[#0B56D9] transition-colors"
+                    title="Paste link from clipboard"
+                  >
+                    <Clipboard size={12} />
+                    <span>Paste</span>
+                  </button>
                 </div>
 
-                <input
-                  ref={productLinkInputRef}
-                  id="product-url-input"
-                  type="url"
-                  placeholder="Paste URL from Amazon.in, Flipkart, Myntra, Ajio, Nykaa..."
-                  required
-                  value={productLink}
-                  onChange={(e) => setProductLink(e.target.value)}
-                  className="w-full h-12 pl-10 pr-24 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-[#0B56D9] outline-none transition-colors text-xs sm:text-sm text-[#0A1931] placeholder:text-slate-400 font-medium"
-                />
-
                 <button
-                  type="button"
-                  onClick={handlePasteClipboard}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-700 hover:border-[#0B56D9] hover:text-[#0B56D9] transition-colors cursor-pointer"
-                  title="Paste link from clipboard"
+                  type="submit"
+                  disabled={isSearching || !productLink.trim()}
+                  className="group h-12 px-6 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-xl font-extrabold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2 shrink-0"
                 >
-                  <Clipboard size={12} />
-                  <span>Paste</span>
+                  {isSearching ? (
+                    <>
+                      <RefreshCw size={14} className="animate-spin" />
+                      <span>Analyzing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Analyze &amp; Ship Product</span>
+                      <ArrowRight
+                        size={14}
+                        className="transition-transform group-hover:translate-x-1"
+                      />
+                    </>
+                  )}
                 </button>
               </div>
 
-              <button
-                type="submit"
-                disabled={isSearching || !productLink.trim()}
-                className="h-12 px-6 bg-[#0B56D9] hover:bg-[#0849B7] text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-              >
-                {isSearching ? (
-                  <>
-                    <RefreshCw size={14} className="animate-spin" />
-                    <span>Analyzing...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Analyze &amp; Ship Product</span>
-                    <ArrowRight size={14} />
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Supported Platforms Strip */}
-            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                <span className="text-slate-400 font-bold text-[11px] uppercase tracking-wider mr-1">
-                  Supported stores:
-                </span>
-                {supportedStores.map((store) => (
-                  <span
-                    key={store}
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-700"
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-1">
+                <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-100">
+                  <ShieldCheck size={13} />
+                  Bought locally in INR by our personal shoppers in Chennai.
+                </p>
+                {productLink && (
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-100 hover:text-white transition-colors"
                   >
-                    <CheckCircle2 size={11} className="text-emerald-600" />
-                    {store}
-                  </span>
-                ))}
+                    <RotateCcw size={11} />
+                    <span>Reset</span>
+                  </button>
+                )}
               </div>
+            </form>
 
-              {productLink && (
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
-                >
-                  <RotateCcw size={11} />
-                  <span>Reset</span>
-                </button>
-              )}
-            </div>
-          </form>
-
-          {/* Efficient 3-Pillar Micro Workflow */}
-          <div className="mt-6 pt-5 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 text-[#0B56D9] flex items-center justify-center shrink-0 font-black text-xs">
-                1
+            {/* Journey: link → India → your door */}
+            <div className="relative mt-8 border-t border-white/20 pt-6">
+              <div
+                aria-hidden="true"
+                className="absolute left-[16.66%] right-[16.66%] top-[2.75rem] hidden border-t-2 border-dashed border-white/35 sm:block"
+              >
+                <Send
+                  size={14}
+                  className="animate-pop-fly absolute -top-[9px] -translate-x-1/2 text-white"
+                />
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-extrabold text-[#0A1931]">
-                  Paste Product URL
-                </p>
-                <p className="text-[11px] text-slate-500 truncate">
-                  From any online Indian store
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 text-[#0B56D9] flex items-center justify-center shrink-0 font-black text-xs">
-                2
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-extrabold text-[#0A1931]">
-                  We Buy Locally
-                </p>
-                <p className="text-[11px] text-slate-500 truncate">
-                  Inspected &amp; repackaged safely
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 font-black text-xs">
-                3
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-extrabold text-[#0A1931]">
-                  Doorstep Delivery
-                </p>
-                <p className="text-[11px] text-slate-500 truncate">
-                  Shipped overseas in 3–5 days
-                </p>
-              </div>
+              <ol className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-2">
+                {[
+                  { icon: Link2, title: "Paste Product URL", sub: "From any online Indian store" },
+                  { icon: ShoppingBag, title: "We Buy Locally", sub: "Inspected & repackaged safely" },
+                  { icon: Clock, title: "Doorstep Delivery", sub: "Shipped overseas in 3–5 days" },
+                ].map((step, i) => {
+                  const StepIcon = step.icon;
+                  return (
+                    <li
+                      key={step.title}
+                      className="relative flex items-center gap-3 sm:flex-col sm:text-center"
+                    >
+                      <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-[#0B56D9]">
+                        <StepIcon size={16} />
+                      </span>
+                      <div>
+                        <p className="text-xs font-extrabold text-white">
+                          <span className="mr-1 text-blue-200">0{i + 1}</span>
+                          {step.title}
+                        </p>
+                        <p className="text-[11px] text-blue-100">{step.sub}</p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
           </div>
         </div>

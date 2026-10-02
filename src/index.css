@@ -64,6 +64,22 @@ html, body {
     animation: fade-in-up 0.45s ease-out;
   }
 
+  /* Plane gliding along a dashed route line */
+  @keyframes pop-fly {
+    0% { left: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+  .animate-pop-fly {
+    animation: pop-fly 3.2s ease-in-out infinite;
+  }
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pop-fly { animation: none; }
+  }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

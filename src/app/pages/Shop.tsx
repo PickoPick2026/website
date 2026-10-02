@@ -1,7 +1,9 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowRight, Search, X } from "lucide-react";
+import { ArrowRight, Globe2, Search, ShieldCheck, Truck, X } from "lucide-react";
 import { ShoppingDirectory } from "../components/ShoppingDirectory";
+import { CrossLinkBanner } from "../components/ServicePage";
+import { CartDrawer } from "../components/Shop/CartDrawer";
 import { supabase } from "@/src/lib/supabase";
 
 export default function ShopPage() {
@@ -10,6 +12,31 @@ export default function ShopPage() {
   const [searchInput, setSearchInput] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // The cart lives in a drawer on this page: open it from ?cart=open
+  // (Navbar from other pages, old /cart links) or the open-cart event.
+  useEffect(() => {
+    if (searchParams.get("cart") === "open") setIsCartOpen(true);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const openCart = () => setIsCartOpen(true);
+    window.addEventListener("pickopick:open-cart", openCart);
+    return () => window.removeEventListener("pickopick:open-cart", openCart);
+  }, []);
+
+  const closeCart = useCallback(() => {
+    setIsCartOpen(false);
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete("cart");
+        return next;
+      },
+      { replace: true },
+    );
+  }, [setSearchParams]);
 
   // Normalize & match category by ID or name
   const matchCategory = (catParam: string, list: any[]) => {
@@ -111,6 +138,20 @@ export default function ShopPage() {
     setSearchParams(newParams);
   };
 
+  const selectCategory = (id: string) => {
+    setSelectedCategoryId(id);
+    const matched = categories.find(
+      (c) => String(c.categoryID) === String(id),
+    );
+    const newParams = new URLSearchParams(searchParams);
+    if (matched) {
+      newParams.set("category", matched.categoryName);
+    } else {
+      newParams.delete("category");
+    }
+    setSearchParams(newParams);
+  };
+
   const clearFilters = () => {
     setSearchInput("");
     setQuery("");
@@ -119,78 +160,121 @@ export default function ShopPage() {
   };
 
   return (
-    <main className="bg-white pt-[100px] sm:pt-[106px]">
-      <section className="relative h-[220px] overflow-hidden bg-white sm:h-[280px] lg:h-[330px]">
-        <img
-          src="/images/shop-bg.webp"
-          alt="Pick O Pick global marketplace"
-          className="absolute inset-0 h-full w-full object-cover object-bottom"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/35 to-transparent" />
-        <div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-end px-4 pb-6 text-center sm:px-6 sm:pb-8">
-          <h1 className="mb-3 text-xl font-extrabold tracking-tight text-[#0A1931] sm:text-2xl">
-            Find the products you love from India
-          </h1>
+    <main className="bg-[#F7F9FF] pt-[100px] sm:pt-[106px]">
+      {/* ───────── Hero banner ───────── */}
+      <section className="mx-auto max-w-7xl px-4 pt-4 sm:px-8 sm:pt-6">
+        <div className="relative overflow-hidden rounded-[32px] bg-[#0B56D9]">
+          <img
+            src="/images/shop-bg.webp"
+            alt="Saree, sweets, filter coffee and pickles packed in a Pick O Pick box for worldwide delivery"
+            className="absolute inset-0 h-full w-full object-cover object-right-bottom"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B56D9] via-[#0B56D9]/80 to-[#0B56D9]/0 sm:via-[#0B56D9]/70 lg:to-transparent" />
 
-          {/* Search Bar */}
-          <form
-            id="shop-search"
-            onSubmit={handleSearch}
-            className="flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-blue-100 bg-white/95 p-2 shadow-lg backdrop-blur-sm sm:flex-row sm:rounded-full"
-          >
-            <label htmlFor="shop-search-input" className="sr-only">
-              Search the marketplace
-            </label>
-            <div className="flex flex-1 items-center gap-2 px-3">
-              <Search className="h-4 w-4 text-[#0B56D9]" />
-              <input
-                id="shop-search-input"
-                value={searchInput}
-                onChange={(event) =>
-                  handleSearchInputChange(event.target.value)
-                }
-                placeholder="Search products, brands, or categories..."
-                className="h-10 min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-slate-400"
-              />
-              {searchInput && (
-                <button
-                  type="button"
-                  onClick={() => handleSearchInputChange("")}
-                  className="text-slate-400 hover:text-slate-600 p-1"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0B56D9] px-6 text-xs font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] sm:rounded-full cursor-pointer"
+          <div className="relative z-10 max-w-xl px-6 pb-24 pt-10 text-white sm:px-10 sm:pb-28 sm:pt-14 lg:px-14">
+            <span className="inline-block rounded-full border border-white/25 bg-white/15 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest">
+              Pick O Pick Marketplace
+            </span>
+            <h1 className="mt-4 text-[clamp(1.9rem,4.5vw,3.25rem)] font-extrabold leading-[1.06] tracking-tight">
+              Find the products you love from India
+            </h1>
+            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-blue-50">
+              <li className="inline-flex items-center gap-1.5">
+                <ShieldCheck size={14} /> Authentic Indian products
+              </li>
+              <li className="inline-flex items-center gap-1.5">
+                <Truck size={14} /> Combined international shipping
+              </li>
+              <li className="inline-flex items-center gap-1.5">
+                <Globe2 size={14} /> Delivered worldwide
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Search card overlapping the banner */}
+        <div className="relative z-20 mx-auto -mt-14 max-w-4xl px-2 sm:-mt-16 sm:px-6">
+          <div className="rounded-3xl border border-blue-100 bg-white p-3 shadow-[0_30px_60px_-30px_rgba(11,86,217,0.5)] sm:p-4">
+            <form
+              id="shop-search"
+              onSubmit={handleSearch}
+              className="flex flex-col gap-2 sm:flex-row"
             >
-              Search <ArrowRight className="h-4 w-4" />
-            </button>
-          </form>
+              <label htmlFor="shop-search-input" className="sr-only">
+                Search the marketplace
+              </label>
+              <div className="flex h-14 flex-1 items-center gap-3 rounded-2xl bg-[#F7F9FF] px-4 transition-shadow focus-within:ring-4 focus-within:ring-[#0B56D9]/10">
+                <Search className="h-5 w-5 shrink-0 text-[#0B56D9]" />
+                <input
+                  id="shop-search-input"
+                  value={searchInput}
+                  onChange={(event) =>
+                    handleSearchInputChange(event.target.value)
+                  }
+                  placeholder="Search sarees, sweets, pooja items, groceries..."
+                  className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#0A1931] outline-none placeholder:text-slate-400"
+                />
+                {searchInput && (
+                  <button
+                    type="button"
+                    onClick={() => handleSearchInputChange("")}
+                    className="rounded-full p-1.5 text-slate-400 hover:bg-white hover:text-slate-600"
+                    aria-label="Clear search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <button
+                type="submit"
+                className="group inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-[#0B56D9] px-8 text-xs font-extrabold uppercase tracking-wider text-white transition-colors hover:bg-[#0849B7]"
+              >
+                Search
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            </form>
 
+            {categories.length > 0 && (
+              <div className="mt-3 flex items-center gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide">
+                <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  Popular:
+                </span>
+                {categories.slice(0, 6).map((cat) => (
+                  <button
+                    key={cat.categoryID}
+                    type="button"
+                    onClick={() => {
+                      selectCategory(String(cat.categoryID));
+                      document.querySelector("#shop-directory")?.scrollIntoView();
+                    }}
+                    className="shrink-0 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-[#0B56D9] hover:bg-blue-50 hover:text-[#0B56D9]"
+                  >
+                    {cat.categoryName}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
       <ShoppingDirectory
         searchQuery={query}
         categoryFilter={selectedCategoryId}
-        onSelectCategory={(id) => {
-          setSelectedCategoryId(id);
-          const matched = categories.find(
-            (c) => String(c.categoryID) === String(id),
-          );
-          const newParams = new URLSearchParams(searchParams);
-          if (matched) {
-            newParams.set("category", matched.categoryName);
-          } else {
-            newParams.delete("category");
-          }
-          setSearchParams(newParams);
-        }}
+        onSelectCategory={selectCategory}
         onClearFilters={clearFilters}
       />
+
+      <CrossLinkBanner
+        eyebrow="Can’t find it here?"
+        title="Paste any Indian product link — we buy it for you."
+        description="Our personal shoppers can purchase from Amazon.in, Myntra, Nykaa, local boutiques and more, then ship it to your doorstep abroad."
+        to="/buy-and-ship"
+        cta="Start Buy & Ship"
+        image="/images/nri-trust/shop-from-india.webp"
+      />
+
+      <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
     </main>
   );
 }

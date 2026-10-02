@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import {
   Search,
   Link as LinkIcon,
@@ -6,7 +7,8 @@ import {
   PlaneTakeoff,
   Globe2,
   PackageCheck,
-  ArrowRight,
+  Play,
+  PlayCircle,
 } from "lucide-react";
 
 const steps = [
@@ -48,7 +50,6 @@ const steps = [
   },
   {
     num: "7",
-    numDone: true,
     icon: PackageCheck,
     title: "Doorstep Arrival",
     desc: "Safely delivered to your home.",
@@ -56,89 +57,128 @@ const steps = [
 ];
 
 export function StoryFlow() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   return (
     <section
       id="how-it-works"
-      className="py-14 sm:py-18 bg-white border-y border-slate-100 relative overflow-hidden scroll-mt-24"
+      className="py-14 sm:py-20 bg-white border-y border-slate-100 scroll-mt-24"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-14">
           <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#0B56D9]">
             How it works
           </span>
-          <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
+          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
             Your Package Journey
           </h2>
-          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-600">
+          <p className="mt-3 text-sm leading-relaxed text-slate-600">
             From the streets of India to your doorstep, follow the seamless path
             of your order.
           </p>
         </div>
 
-        {/* Single-Line Flow (Desktop & Tablet) */}
-        <div className="relative">
-          {/* Continuous Connecting Line behind the icons on desktop */}
-          <div className="hidden lg:block absolute top-6 left-[6%] right-[6%] h-0.5 bg-slate-200 -z-0" />
-          <div className="hidden lg:block absolute top-6 left-[6%] right-[6%] h-0.5 bg-gradient-to-r from-[#0B56D9] via-[#0B56D9] to-emerald-500 -z-0 opacity-40" />
+        <div className="grid items-start gap-10 lg:grid-cols-[1.45fr_1fr] lg:gap-14">
+          {/* ───────── Zigzag journey ───────── */}
+          <ol className="relative">
+            {/* Spine: left edge on mobile, centre on desktop */}
+            <div
+              aria-hidden="true"
+              className="absolute bottom-6 top-6 left-6 w-0.5 border-l-2 border-dashed border-[#0B56D9]/30 md:left-1/2 md:-translate-x-1/2"
+            />
 
-          {/* 7-Step Grid on desktop, horizontal scroll rail on mobile */}
-          <div className="flex lg:grid lg:grid-cols-7 gap-3 lg:gap-3 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 scrollbar-none snap-x snap-mandatory">
             {steps.map((item, index) => {
               const Icon = item.icon;
+              const isRight = index % 2 === 1;
               const isLast = index === steps.length - 1;
               return (
-                <div
+                <li
                   key={item.num}
-                  className="min-w-[170px] sm:min-w-[190px] lg:min-w-0 shrink-0 snap-start flex flex-col items-center text-center relative group"
+                  className="group relative grid grid-cols-[3rem_1fr] items-center gap-4 py-2.5 md:grid-cols-[1fr_3rem_1fr]"
                 >
-                  {/* Icon Node with Number Badge */}
-                  <div className="relative z-10 mb-3.5">
+                  {/* Card — alternates sides on desktop */}
+                  <div
+                    className={`col-start-2 row-start-1 ${
+                      isRight ? "md:col-start-3" : "md:col-start-1 md:text-right"
+                    }`}
+                  >
                     <div
-                      className={`w-12 h-12 rounded-full border-2 bg-white flex items-center justify-center transition-all duration-200 ${
-                        item.numDone
-                          ? "border-emerald-500 text-emerald-600 group-hover:bg-emerald-50"
-                          : "border-[#0B56D9] text-[#0B56D9] group-hover:bg-[#0B56D9] group-hover:text-white"
+                      className={`relative rounded-2xl border bg-white p-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-[#0B56D9]/50 group-hover:shadow-[0_12px_30px_-18px_rgba(11,86,217,0.6)] ${
+                        isLast ? "border-[#0B56D9] bg-blue-50/60" : "border-slate-200"
                       }`}
                     >
-                      <Icon className="w-5 h-5" />
+                      <p className="text-[10px] font-black uppercase tracking-widest text-[#0B56D9]">
+                        Step {item.num.padStart(2, "0")}
+                      </p>
+                      <h4 className="mt-1 text-sm font-extrabold leading-tight text-[#0A1931]">
+                        {item.title}
+                      </h4>
+                      <p className="mt-1 text-xs leading-snug text-slate-500">
+                        {item.desc}
+                      </p>
                     </div>
+                  </div>
 
-                    {/* Clean Number Badge - '1', '2', etc. (NO 'Step' word) */}
+                  {/* Node on the spine */}
+                  <div className="col-start-1 row-start-1 flex justify-center md:col-start-2">
                     <span
-                      className={`absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-[11px] font-black flex items-center justify-center text-white ${
-                        item.numDone ? "bg-emerald-600" : "bg-[#0B56D9]"
+                      className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 transition-colors duration-200 ${
+                        isLast
+                          ? "border-[#0B56D9] bg-[#0B56D9] text-white"
+                          : "border-[#0B56D9] bg-white text-[#0B56D9] group-hover:bg-[#0B56D9] group-hover:text-white"
                       }`}
                     >
-                      {item.num}
+                      <Icon className="h-5 w-5" />
+                      <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#0B56D9] text-[11px] font-black text-white ring-2 ring-white">
+                        {item.num}
+                      </span>
                     </span>
                   </div>
-
-                  {/* Connecting Arrow between steps on desktop */}
-                  {!isLast && (
-                    <div className="hidden lg:flex absolute top-4 -right-2.5 z-10 w-5 h-5 items-center justify-center text-[#0B56D9]/70">
-                      <ArrowRight size={13} strokeWidth={2.5} />
-                    </div>
-                  )}
-
-                  {/* Content Container (Cleanly below the line, zero overlap) */}
-                  <div className="w-full px-1">
-                    <h4 className="text-xs sm:text-sm font-extrabold text-[#0A1931] group-hover:text-[#0B56D9] transition-colors leading-tight">
-                      {item.title}
-                    </h4>
-                    <p className="mt-1.5 text-[11px] text-slate-500 leading-snug">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ol>
 
-          {/* Mobile Swipe Indicator */}
-          <div className="lg:hidden flex items-center justify-center gap-1.5 mt-2 text-[11px] text-slate-400 font-semibold">
-            <span>Swipe to follow journey</span>
-            <ArrowRight size={12} className="text-[#0B56D9]" />
+          {/* ───────── Real journey video ───────── */}
+          <div className="lg:sticky lg:top-28">
+            <div className="relative mx-auto w-full max-w-[340px] overflow-hidden rounded-3xl border border-blue-100 bg-[#F4F8FF] p-2">
+              <div className="group relative overflow-hidden rounded-2xl bg-black">
+                <video
+                  ref={videoRef}
+                  src="/videos/video.mp4"
+                  controls={isPlaying}
+                  preload="metadata"
+                  playsInline
+                  onPlay={() => setIsPlaying(true)}
+                  onEnded={() => setIsPlaying(false)}
+                  className="aspect-[9/16] w-full object-cover"
+                  aria-label="Pick O Pick package journey video"
+                >
+                  Your browser does not support video playback.
+                </video>
+
+                {!isPlaying && (
+                  <button
+                    type="button"
+                    onClick={() => videoRef.current?.play()}
+                    className="absolute inset-0 flex items-center justify-center bg-[#0B56D9]/20 transition-colors hover:bg-[#0B56D9]/10"
+                    aria-label="Play package journey video"
+                  >
+                    <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white text-[#0B56D9] shadow-lg transition-transform group-hover:scale-105">
+                      <span className="absolute inset-0 animate-ping rounded-full bg-white/60" />
+                      <Play className="relative ml-1 h-7 w-7 fill-current" />
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              <p className="flex items-center justify-center gap-2 px-3 py-3 text-[11px] font-bold uppercase tracking-widest text-slate-500">
+                <PlayCircle className="h-4 w-4 text-[#0B56D9]" />
+                Watch your parcel's real journey
+              </p>
+            </div>
           </div>
         </div>
       </div>

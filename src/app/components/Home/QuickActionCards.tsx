@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ShoppingBag,
@@ -6,9 +6,11 @@ import {
   Headset,
   Crown,
   ArrowRight,
-  Package,
+  Plus,
 } from "lucide-react";
 
+// Swap `image` for each card's final creative — transparent/white-background
+// illustrations blend best; photos are shown in a rounded frame instead.
 const actions = [
   {
     id: "buy-and-ship",
@@ -19,6 +21,8 @@ const actions = [
       "Share any product link — our personal shopper purchases, verifies and ships it to your doorstep abroad.",
     cta: "Start Buy & Ship",
     to: "/buy-and-ship",
+    image: "/images/nri-trust/shop-from-india.webp",
+    photo: false,
   },
   {
     id: "order-and-send",
@@ -29,6 +33,8 @@ const actions = [
       "Doorstep pickup anywhere in India, careful repacking and express courier to 200+ countries in 3–5 days.",
     cta: "Schedule a Pickup",
     to: "/order-and-send",
+    image: "/images/nri-trust/international-shipping.webp",
+    photo: false,
   },
   {
     id: "express-consultation",
@@ -39,6 +45,8 @@ const actions = [
       "Rates, timelines, customs, packaging — get answers immediately and book your slot with our concierge team.",
     cta: "Book Free Consultation",
     event: "pickopick:open-consultation",
+    image: "/images/nri-consultation-concierge-v1.webp",
+    photo: true,
   },
   {
     id: "premium-services",
@@ -49,133 +57,146 @@ const actions = [
       "Dedicated service team, priority handling, white-glove support — see what premium gets you.",
     cta: "Explore Premium",
     to: "/nri",
+    image: "/images/nri-trust/professional-packing.webp",
+    photo: false,
   },
 ];
+
+type Action = (typeof actions)[number];
 
 export function QuickActionCards() {
   const [activeIndex, setActiveIndex] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const timer = window.setInterval(
-      () => setActiveIndex((current) => (current + 1) % actions.length),
-      3000,
-    );
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const handleSelect = (index: number) => {
-    setActiveIndex(index);
-    const action = actions[index];
-
-    if (action.event) {
-      window.dispatchEvent(new Event(action.event));
-      return;
-    }
-
-    navigate(action.to!);
-  };
-
-  const openAction = (action: (typeof actions)[number]) => {
+  const openAction = (action: Action) => {
     if (action.event) {
       window.dispatchEvent(new Event(action.event));
       return;
     }
     navigate(action.to!);
   };
-
-  const active = actions[activeIndex];
-  const ActiveIcon = active.icon;
 
   return (
     <section
       id="quick-actions"
-      className="py-12 sm:py-16 bg-[#F8FAFC] border-b border-slate-200/80 scroll-mt-28"
-      aria-label="Quick actions — pickup box"
+      className="border-b border-slate-200/80 bg-white py-14 sm:py-20 scroll-mt-28"
+      aria-label="Quick actions — Pick O Pick services"
     >
-      <div className="mx-auto max-w-5xl px-4 sm:px-8">
-        <div className="mx-auto mb-8 max-w-2xl text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest text-[#0B56D9]">
-            <Package size={12} />
+      <div className="mx-auto max-w-6xl px-4 sm:px-8">
+        {/* Header */}
+        <div className="mb-10 max-w-2xl">
+          <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0B56D9]">
             What will you do today?
-          </span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0A1931]">
-            One box. Every Pick O Pick service.
+          </p>
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-5xl">
+            One <span className="text-[#0B56D9]">box.</span> Every Pick O Pick
+            service.
           </h2>
+          <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
+            Choose a service — each one ships from India straight to your door,
+            wherever you are.
+          </p>
         </div>
 
-        {/* The rotating "pickup box" card */}
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-          <div className="grid items-stretch gap-6 lg:grid-cols-[1.2fr_1fr]">
-            {/* Rotating detail card */}
-            <div
-              key={active.id}
-              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0B56D9] to-[#0849B7] p-6 text-white sm:p-8 animate-fade-in"
-            >
-              <div className="relative z-10">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-xs">
-                    <ActiveIcon className="h-5 w-5" />
-                  </span>
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-white/85">
-                    {active.eyebrow}
-                  </p>
-                </div>
-                <h3 className="mt-4 text-xl font-extrabold tracking-tight sm:text-2xl">
-                  {active.title}
-                </h3>
-                <p className="mt-2 max-w-md text-xs leading-relaxed text-white/85 sm:text-sm">
-                  {active.description}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => openAction(active)}
-                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#0A1931] transition-transform hover:-translate-y-0.5 cursor-pointer"
-                >
-                  {active.cta}
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-            </div>
+        {/* Expanding cards */}
+        <div className="flex flex-col gap-3 lg:h-[460px] lg:flex-row lg:gap-4">
+          {actions.map((action, index) => {
+            const Icon = action.icon;
+            const isActive = index === activeIndex;
+            const num = String(index + 1).padStart(2, "0");
 
-            {/* Service selector tabs */}
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
-              {actions.map((action, index) => {
-                const Icon = action.icon;
-                const isActive = index === activeIndex;
-                return (
+            return (
+              <div
+                key={action.id}
+                className={`relative overflow-hidden rounded-[28px] border transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:min-w-0 ${
+                  isActive
+                    ? "border-[#0B56D9]/40 bg-[#F4F8FF] lg:flex-[5]"
+                    : "border-slate-200 bg-[#F8FAFC] hover:border-[#0B56D9]/40 hover:bg-[#F4F8FF] lg:flex-[1]"
+                }`}
+              >
+                {/* ── Collapsed state ── */}
+                {!isActive && (
                   <button
-                    key={action.id}
                     type="button"
-                    onClick={() => handleSelect(index)}
-                    className={`flex items-center gap-3 rounded-2xl border p-3.5 text-left transition-all cursor-pointer ${
-                      isActive
-                        ? "border-[#0B56D9] bg-blue-50 shadow-sm ring-2 ring-[#0B56D9]/20"
-                        : "border-slate-200 bg-white hover:border-[#0B56D9]/40 hover:bg-slate-50"
-                    }`}
+                    onClick={() => setActiveIndex(index)}
+                    aria-expanded={false}
+                    aria-label={`Open ${action.eyebrow}`}
+                    className="group flex w-full items-center gap-4 p-4 text-left lg:h-full lg:flex-col lg:justify-between lg:p-6 lg:text-center"
                   >
-                    <span
-                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                        isActive
-                          ? "bg-[#0B56D9] text-white"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#0B56D9] transition-colors group-hover:bg-[#0B56D9] group-hover:text-white">
+                      <Icon className="h-5 w-5" />
                     </span>
-                    <span>
-                      <span className="block text-xs font-extrabold leading-tight text-[#0A1931]">
-                        {action.eyebrow}
-                      </span>
-                      <span className="mt-0.5 block text-[10px] font-semibold text-slate-500">
-                        Tap to open
-                      </span>
+                    <span className="flex-1 text-base font-extrabold text-[#0A1931] lg:flex-none lg:rotate-180 lg:whitespace-nowrap lg:text-xl lg:[writing-mode:vertical-rl]">
+                      {action.eyebrow}
+                    </span>
+                    <span className="flex items-center gap-2 text-xs font-black text-[#0B56D9]/60">
+                      <Plus className="h-4 w-4 lg:hidden" />
+                      {num}
                     </span>
                   </button>
-                );
-              })}
-            </div>
-          </div>
+                )}
+
+                {/* ── Expanded state ── */}
+                {isActive && (
+                  <div
+                    key={`open-${action.id}`}
+                    className="animate-fade-in relative flex h-full flex-col p-6 sm:p-8 lg:p-10"
+                  >
+                    <div className="relative z-10 lg:max-w-[52%]">
+                      <p className="inline-flex items-center gap-2 text-xs font-extrabold text-[#0B56D9]">
+                        <Icon className="h-4 w-4" />
+                        {action.eyebrow}
+                      </p>
+                      <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-[#0A1931] sm:text-3xl">
+                        {action.title}
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                        {action.description}
+                      </p>
+                    </div>
+
+                    {/* Creative image */}
+                    {action.photo ? (
+                      <div className="mt-6 overflow-hidden rounded-2xl border-4 border-white lg:absolute lg:bottom-8 lg:right-8 lg:mt-0 lg:h-[78%] lg:w-[40%]">
+                        <img
+                          src={action.image}
+                          alt=""
+                          aria-hidden="true"
+                          loading="lazy"
+                          className="h-56 w-full object-cover object-top lg:h-full"
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        src={action.image}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        className="mx-auto mt-4 h-56 w-auto object-contain mix-blend-multiply lg:absolute lg:bottom-4 lg:right-4 lg:mt-0 lg:h-[82%] lg:w-[46%] lg:object-right-bottom"
+                      />
+                    )}
+
+                    <div className="relative z-10 mt-6 flex items-center gap-4 lg:mt-auto">
+                      <button
+                        type="button"
+                        onClick={() => openAction(action)}
+                        className="group inline-flex items-center gap-2 rounded-full bg-[#0B56D9] px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-[#0B56D9]/25 transition-colors hover:bg-[#0849B7]"
+                      >
+                        {action.cta}
+                        <ArrowRight
+                          size={15}
+                          className="transition-transform group-hover:translate-x-1"
+                        />
+                      </button>
+                      <span className="text-xs font-black text-[#0B56D9]/50">
+                        {num} / 0{actions.length}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

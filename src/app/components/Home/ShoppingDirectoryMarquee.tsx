@@ -1,181 +1,125 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ShoppingBag, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  Sparkles,
+} from "lucide-react";
 import { supabase } from "@/src/lib/supabase";
 
-interface MarqueeProduct {
+interface ShowcaseProduct {
   productID: string | number;
   productName?: string;
   price?: number | string;
-  imageURL?: any;
+  imageURL?: unknown;
   categoryID?: string | number;
 }
 
-interface MarqueeCategory {
+interface ShowcaseCategory {
   categoryID: string | number;
   categoryName?: string;
 }
 
+const MAX_ROW_PRODUCTS = 12;
+
+const getImageUrl = (imageField: unknown) => {
+  try {
+    if (!imageField) return "";
+    const parsed =
+      typeof imageField === "string" ? JSON.parse(imageField) : imageField;
+    const url = Array.isArray(parsed)
+      ? parsed[0]
+      : typeof parsed === "string"
+        ? parsed
+        : "";
+    return url && !url.startsWith("blob:") ? url : "";
+  } catch {
+    return typeof imageField === "string" && !imageField.startsWith("blob:")
+      ? imageField
+      : "";
+  }
+};
+
+const shopUrl = (categoryName?: string) =>
+  categoryName ? `/shop?category=${encodeURIComponent(categoryName)}` : "/shop";
+
+// Home "Browse by Category": category tiles + one swipeable product row.
 export function ShoppingDirectoryMarquee() {
-  const [activeTab, setActiveTab] = useState("directory");
-  const [activeCategory, setActiveCategory] = useState<string | number>("");
-  const [categories, setCategories] = useState<MarqueeCategory[]>([]);
-  const [products, setProducts] = useState<MarqueeProduct[]>([]);
-  const [rowADuration, setRowADuration] = useState(45);
-  const [rowBDuration, setRowBDuration] = useState(55);
-  const rowARef = useRef<HTMLDivElement>(null);
-  const rowBRef = useRef<HTMLDivElement>(null);
+  const [categories, setCategories] = useState<ShowcaseCategory[]>([]);
+  const [products, setProducts] = useState<ShowcaseProduct[]>([]);
+  const [activeCategory, setActiveCategory] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const rowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchData();
+    const fetchData = async () => {
+      const [{ data: catData }, { data: prodData }] = await Promise.all([
+        supabase.from("category").select("categoryID, categoryName"),
+        supabase
+          .from("productTable")
+          .select("productID, productName, price, imageURL, categoryID"),
+      ]);
+      setCategories(catData || []);
+      setProducts(prodData || []);
+      setIsLoading(false);
+    };
+    void fetchData();
   }, []);
 
-  const fetchData = async () => {
-    const { data: catData } = await supabase.from("category").select("*");
-    const { data: prodData } = await supabase.from("productTable").select("*");
-
-    setCategories(catData || []);
-    setProducts(prodData || []);
-  };
-
-  const exclusiveCategory = categories.find(
+  const exclusiveId = categories.find(
     (c) => c.categoryName === "Exclusive",
+  )?.categoryID;
+
+  // Only show categories that actually have products, each with a cover image.
+  const tiles = categories
+    .filter((c) => c.categoryName !== "Exclusive")
+    .map((category) => {
+      const inCategory = products.filter(
+        (p) => String(p.categoryID) === String(category.categoryID),
+      );
+      const cover = inCategory.map((p) => getImageUrl(p.imageURL)).find(Boolean);
+      return { ...category, count: inCategory.length, cover };
+    })
+    .filter((tile) => tile.count > 0);
+
+  const activeTile = tiles.find(
+    (t) => String(t.categoryID) === activeCategory,
   );
-  const regularCategories = categories.filter(
-    (c) => c.categoryName !== "Exclusive",
-  );
 
-  const directoryProducts = products.filter(
-    (p) =>
-      p.categoryID !== exclusiveCategory?.categoryID &&
-      (!activeCategory || p.categoryID === activeCategory),
-  );
+  const rowProducts = products
+    .filter(
+      (p) =>
+        String(p.categoryID) !== String(exclusiveId) &&
+        (!activeCategory || String(p.categoryID) === activeCategory),
+    )
+    .slice(0, MAX_ROW_PRODUCTS);
 
-  const exclusiveProducts = products.filter(
-    (p) => p.categoryID === exclusiveCategory?.categoryID,
-  );
-
-  const shownProducts =
-    activeTab === "directory" ? directoryProducts : exclusiveProducts;
-
-  // Constant px-per-second speed: compute duration from actual row width
-  useEffect(() => {
-    const measure = () => {
-      if (rowARef.current && rowARef.current.scrollWidth > 0) {
-        const half = rowARef.current.scrollWidth / 2;
-        setRowADuration(Math.max(12, half / 35));
-      }
-      if (rowBRef.current && rowBRef.current.scrollWidth > 0) {
-        const half = rowBRef.current.scrollWidth / 2;
-        setRowBDuration(Math.max(12, half / 30));
-      }
-    };
-
-    const raf = requestAnimationFrame(measure);
-    window.addEventListener("resize", measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", measure);
-    };
-  }, [shownProducts, activeTab, activeCategory]);
-
-  const getImageUrl = (imageField: any) => {
-    try {
-      if (!imageField) return "";
-      const parsed =
-        typeof imageField === "string" ? JSON.parse(imageField) : imageField;
-
-      let url = "";
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        url = parsed[0];
-      } else if (typeof parsed === "string") {
-        url = parsed;
-      }
-      if (url.startsWith("blob:")) return "";
-      return url;
-    } catch {
-      return "";
-    }
+  const scrollRow = (direction: 1 | -1) => {
+    const row = rowRef.current;
+    if (!row) return;
+    row.scrollBy({ left: direction * row.clientWidth * 0.8, behavior: "smooth" });
   };
 
-  const renderCard = (product: MarqueeProduct, key: string) => {
-    const targetCat = categories.find(
-      (c) => String(c.categoryID) === String(product.categoryID),
-    );
-    const catUrl = targetCat?.categoryName
-      ? `/shop?category=${encodeURIComponent(targetCat.categoryName)}`
-      : "/shop";
-
-    return (
-      <Link
-        key={key}
-        to={catUrl}
-        className="group w-44 shrink-0 cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all hover:border-[#0B56D9]/50 hover:shadow-md sm:w-56 block"
-      >
-        <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
-          <img
-            src={getImageUrl(product.imageURL) || "/no-image.png"}
-            alt={product.productName || "Product"}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
-        </div>
-        <div className="p-3 sm:p-4">
-          <p className="line-clamp-2 text-xs font-bold text-[#0A1931] sm:text-sm">
-            {product.productName}
-          </p>
-          <div className="mt-1.5 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-[#0B56D9] sm:text-xs">
-              {product.price ? `₹${product.price}` : "View in Shop"}
-            </p>
-            <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#0B56D9] transition-colors inline-flex items-center gap-0.5">
-              Shop <ArrowRight size={10} />
-            </span>
-          </div>
-        </div>
-      </Link>
-    );
+  const selectCategory = (id: string) => {
+    setActiveCategory(id);
+    rowRef.current?.scrollTo({ left: 0, behavior: "smooth" });
   };
-
-  // Duplicate array once so the -50% loop is seamless
-  const marqueeCards = [...shownProducts, ...shownProducts];
-
-  const activeCategoryName = categories.find(
-    (c) => c.categoryID === activeCategory,
-  )?.categoryName;
 
   return (
     <section
       id="shop-directory"
-      className="overflow-hidden border-b border-slate-200 bg-[#F7F9FF] py-16 sm:py-20 scroll-mt-24"
+      className="border-b border-slate-200 bg-[#F7F9FF] py-14 sm:py-20 scroll-mt-24"
     >
-      <style>{`
-        @keyframes pop-marquee-a {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        @keyframes pop-marquee-b {
-          from { transform: translateX(-50%); }
-          to { transform: translateX(0); }
-        }
-        .pop-marquee-a { animation-name: pop-marquee-a; animation-timing-function: linear; animation-iteration-count: infinite; }
-        .pop-marquee-b { animation-name: pop-marquee-b; animation-timing-function: linear; animation-iteration-count: infinite; }
-        .pop-marquee-a:hover, .pop-marquee-b:hover { animation-play-state: paused; }
-        @media (prefers-reduced-motion: reduce) {
-          .pop-marquee-a, .pop-marquee-b { animation: none; }
-        }
-      `}</style>
-
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div className="max-w-xl">
-            <span className="inline-block rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0B56D9]">
               Marketplace Showcase
-            </span>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-4xl">
+            </p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-4xl">
               Browse by Category
             </h2>
             <p className="mt-2 text-sm text-slate-600 sm:text-base">
@@ -183,121 +127,205 @@ export function ShoppingDirectoryMarquee() {
               doorstep worldwide delivery.
             </p>
           </div>
-
-          {/* Tabs */}
-          <div className="inline-flex w-fit rounded-full border border-slate-200 bg-white p-1 shadow-xs">
-            <button
-              onClick={() => setActiveTab("directory")}
-              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activeTab === "directory"
-                  ? "bg-[#0B56D9] text-white shadow-xs"
-                  : "text-slate-500 hover:text-[#0A1931]"
-              }`}
-            >
-              <ShoppingBag size={14} /> Catalog
-            </button>
-            <button
-              onClick={() => setActiveTab("exclusive")}
-              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activeTab === "exclusive"
-                  ? "bg-[#0B56D9] text-white shadow-xs"
-                  : "text-slate-500 hover:text-[#0A1931]"
-              }`}
-            >
-              <Sparkles size={14} /> Exclusive Sourcing
-            </button>
-          </div>
+          <Link
+            to="/shop"
+            className="group inline-flex w-fit items-center gap-2 rounded-full bg-[#0B56D9] px-5 py-3 text-xs font-extrabold text-white transition-colors hover:bg-[#0849B7]"
+          >
+            Open Full Marketplace
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
 
-        {/* Category chips & View All link */}
-        {activeTab === "directory" && (
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
+        {/* Category tiles — swipe on mobile, grid on desktop */}
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 lg:grid-cols-6">
+          <button
+            type="button"
+            onClick={() => selectCategory("")}
+            aria-pressed={!activeCategory}
+            className={`group flex w-28 shrink-0 snap-start flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-all sm:w-auto ${
+              !activeCategory
+                ? "border-[#0B56D9] bg-[#0B56D9] text-white"
+                : "border-slate-200 bg-white text-[#0A1931] hover:border-[#0B56D9]/40"
+            }`}
+          >
+            <span
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+                !activeCategory ? "bg-white/15" : "bg-blue-50 text-[#0B56D9]"
+              }`}
+            >
+              <LayoutGrid size={20} />
+            </span>
+            <span className="text-xs font-extrabold">All products</span>
+          </button>
+
+          {isLoading
+            ? Array.from({ length: 5 }, (_, i) => (
+                <div
+                  key={i}
+                  className="h-[132px] w-28 shrink-0 animate-pulse rounded-2xl bg-white sm:w-auto"
+                />
+              ))
+            : tiles.map((tile) => {
+                const id = String(tile.categoryID);
+                const isActive = activeCategory === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => selectCategory(id)}
+                    aria-pressed={isActive}
+                    className={`group w-28 shrink-0 snap-start overflow-hidden rounded-2xl border bg-white p-1.5 text-left transition-all sm:w-auto ${
+                      isActive
+                        ? "border-[#0B56D9] ring-2 ring-[#0B56D9]/20"
+                        : "border-slate-200 hover:-translate-y-0.5 hover:border-[#0B56D9]/40"
+                    }`}
+                  >
+                    <span className="block aspect-[4/3] overflow-hidden rounded-xl bg-[#F7F9FF]">
+                      {tile.cover ? (
+                        <img
+                          src={tile.cover}
+                          alt=""
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <span className="flex h-full items-center justify-center text-[#0B56D9]/40">
+                          <LayoutGrid size={22} />
+                        </span>
+                      )}
+                    </span>
+                    <span className="block px-1.5 pb-1 pt-2">
+                      <span
+                        className={`block truncate text-xs font-extrabold ${
+                          isActive ? "text-[#0B56D9]" : "text-[#0A1931]"
+                        }`}
+                      >
+                        {tile.categoryName}
+                      </span>
+                      <span className="block text-[11px] font-semibold text-slate-400">
+                        {tile.count} item{tile.count === 1 ? "" : "s"}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+        </div>
+
+        {/* Product row */}
+        <div className="mt-10">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h3 className="text-base font-extrabold text-[#0A1931] sm:text-lg">
+              {activeTile ? activeTile.categoryName : "Popular right now"}
+            </h3>
+            <div className="flex items-center gap-2">
+              <Link
+                to={shopUrl(activeTile?.categoryName)}
+                className="text-xs font-extrabold text-[#0B56D9] hover:underline"
+              >
+                View all
+              </Link>
               <button
-                onClick={() => setActiveCategory("")}
-                className={`rounded-full px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
-                  activeCategory === ""
-                    ? "bg-[#0A1931] text-white shadow-xs"
-                    : "border border-slate-300 bg-white text-slate-600 hover:bg-slate-100"
-                }`}
+                type="button"
+                onClick={() => scrollRow(-1)}
+                className="hidden h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-colors hover:border-[#0B56D9] hover:text-[#0B56D9] sm:flex"
+                aria-label="Scroll products left"
               >
-                All
+                <ChevronLeft size={16} />
               </button>
-              {regularCategories.map((cat) => (
-                <button
-                  key={cat.categoryID}
-                  onClick={() => setActiveCategory(cat.categoryID)}
-                  className={`rounded-full px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
-                    activeCategory === cat.categoryID
-                      ? "bg-[#0B56D9] text-white shadow-xs"
-                      : "border border-slate-300 bg-white text-slate-600 hover:bg-slate-100"
-                  }`}
-                >
-                  {cat.categoryName}
-                </button>
-              ))}
+              <button
+                type="button"
+                onClick={() => scrollRow(1)}
+                className="hidden h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-colors hover:border-[#0B56D9] hover:text-[#0B56D9] sm:flex"
+                aria-label="Scroll products right"
+              >
+                <ChevronRight size={16} />
+              </button>
             </div>
-
-            {/* Direct CTA button to full category view */}
-            {activeCategory ? (
-              <Link
-                to={`/shop?category=${encodeURIComponent(activeCategoryName || "")}`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0B56D9] text-white text-xs font-bold hover:bg-[#0849B7] transition-all shadow-xs shrink-0"
-              >
-                <span>View all {activeCategoryName} in Shop</span>
-                <ArrowRight size={13} />
-              </Link>
-            ) : (
-              <Link
-                to="/shop"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-blue-200 text-[#0B56D9] text-xs font-bold hover:bg-blue-50 transition-all shadow-xs shrink-0"
-              >
-                <span>Open Full Marketplace Catalog</span>
-                <ArrowRight size={13} />
-              </Link>
-            )}
           </div>
-        )}
+
+          {!isLoading && rowProducts.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-500">
+              No products in this category yet — check back soon.
+            </p>
+          ) : (
+            <div
+              ref={rowRef}
+              className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2 scrollbar-hide sm:mx-0 sm:gap-4 sm:px-0"
+            >
+              {rowProducts.map((product) => {
+                const category = tiles.find(
+                  (t) => String(t.categoryID) === String(product.categoryID),
+                );
+                return (
+                  <Link
+                    key={product.productID}
+                    to={shopUrl(category?.categoryName)}
+                    className="group w-[44%] shrink-0 snap-start rounded-2xl border border-slate-200 bg-white p-1.5 transition-all hover:-translate-y-0.5 hover:border-[#0B56D9]/40 sm:w-52"
+                  >
+                    <span className="block aspect-square overflow-hidden rounded-xl bg-[#F7F9FF]">
+                      <img
+                        src={getImageUrl(product.imageURL) || "/no-image.png"}
+                        alt={product.productName || "Product"}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </span>
+                    <span className="block px-1.5 pb-1.5 pt-2.5">
+                      <span className="line-clamp-2 min-h-[2.25rem] text-xs font-bold leading-snug text-[#0A1931] sm:text-sm">
+                        {product.productName}
+                      </span>
+                      <span className="mt-1.5 flex items-center justify-between">
+                        <span className="text-xs font-extrabold text-[#0B56D9]">
+                          {product.price ? `₹${product.price}` : "View in Shop"}
+                        </span>
+                        <ArrowRight
+                          size={13}
+                          className="text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-[#0B56D9]"
+                        />
+                      </span>
+                    </span>
+                  </Link>
+                );
+              })}
+
+              {/* Final "see more" card */}
+              <Link
+                to={shopUrl(activeTile?.categoryName)}
+                className="flex w-[44%] shrink-0 snap-start flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#0B56D9]/40 bg-white p-4 text-center text-[#0B56D9] transition-colors hover:bg-blue-50 sm:w-52"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-50">
+                  <ArrowRight size={18} />
+                </span>
+                <span className="text-xs font-extrabold">
+                  See all {activeTile ? activeTile.categoryName : "products"}
+                </span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Exclusive sourcing shortcut */}
+        <Link
+          to="/shop#exclusive"
+          className="group mt-8 flex items-center gap-4 rounded-2xl border border-blue-100 bg-white p-4 transition-colors hover:border-[#0B56D9]/40 sm:p-5"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0B56D9] text-white">
+            <Sparkles size={18} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-extrabold text-[#0A1931]">
+              Can’t find it? Try Exclusive Sourcing
+            </span>
+            <span className="block text-xs text-slate-500">
+              Tirupati Laddu, Tirunelveli Halwa and more — sourced to order.
+            </span>
+          </span>
+          <ArrowRight
+            size={16}
+            className="shrink-0 text-[#0B56D9] transition-transform group-hover:translate-x-1"
+          />
+        </Link>
       </div>
-
-      {shownProducts.length === 0 ? (
-        <div className="mx-auto max-w-7xl px-4 py-10 text-center">
-          <p className="text-sm font-bold text-[#0A1931]">
-            No products in this category yet.
-          </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Check back soon for new arrivals.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-5">
-          {/* Row A - moving left */}
-          <div className="overflow-hidden">
-            <div
-              ref={rowARef}
-              className="pop-marquee-a flex w-max gap-4 px-4 sm:gap-5 sm:px-8"
-              style={{ animationDuration: `${rowADuration}s` }}
-            >
-              {marqueeCards.map((product, index) =>
-                renderCard(product, `a-${product.productID}-${index}`),
-              )}
-            </div>
-          </div>
-
-          {/* Row B - moving right */}
-          <div className="overflow-hidden">
-            <div
-              ref={rowBRef}
-              className="pop-marquee-b flex w-max gap-4 px-4 sm:gap-5 sm:px-8"
-              style={{ animationDuration: `${rowBDuration}s` }}
-            >
-              {marqueeCards.map((product, index) =>
-                renderCard(product, `b-${product.productID}-${index}`),
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

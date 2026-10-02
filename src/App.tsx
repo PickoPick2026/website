@@ -28,7 +28,6 @@ function ScrollToTop() {
   return null;
 }
 
-const Cart = lazy(() => import("./app/pages/Cart"));
 const Orders = lazy(() => import("./app/pages/Orders"));
 const TransactionDetail = lazy(() => import("./app/pages/TransactionDetail"));
 const Addresses = lazy(() => import("./app/pages/Adresses"));
@@ -87,7 +86,7 @@ export default function App() {
             <Route path="refund" element={<RefundPage />} />
 
             {/* Customer Account pages */}
-            <Route path="cart" element={<Cart />} />
+            <Route path="cart" element={<Navigate to="/shop?cart=open" replace />} />
             <Route path="orders" element={<Orders />} />
             <Route path="transaction/:id" element={<TransactionDetail />} />
             <Route path="addresses" element={<Addresses />} />
