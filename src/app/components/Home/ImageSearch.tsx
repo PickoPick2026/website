@@ -436,7 +436,7 @@ export function ImageSearch() {
         {/* Compact Header */}
         <div className="text-center max-w-2xl mx-auto mb-8">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-100 bg-blue-50 text-[11px] font-black uppercase tracking-widest text-[#0B56D9]">
-            <Sparkles size={12} className="text-[#FF6321]" />
+            <Sparkles size={12} className="text-[#0B56D9]" />
             Buy &amp; Ship • Personal Shopper in India
           </div>
 
@@ -569,7 +569,7 @@ export function ImageSearch() {
             </div>
 
             <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60">
-              <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-100 text-[#FF6321] flex items-center justify-center shrink-0 font-black text-xs">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 text-[#0B56D9] flex items-center justify-center shrink-0 font-black text-xs">
                 2
               </div>
               <div className="min-w-0">

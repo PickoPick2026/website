@@ -115,7 +115,7 @@ export function CountrySelect({
     <div className={`relative ${className}`} ref={containerRef}>
       {label && (
         <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-          {label} <span className="text-[#FF6321]">*</span>
+          {label} <span className="text-[#0B56D9]">*</span>
         </label>
       )}
 

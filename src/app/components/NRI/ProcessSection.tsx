@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Boxes, MessageSquare, Plane } from 'lucide-react';
+import { Box, Boxes, MessageSquare, Plane, PlayCircle } from 'lucide-react';
 
 const steps = [
   {
@@ -28,16 +28,35 @@ const steps = [
   },
 ];
 
+// "How It Works" — the first (Package Journey) video sits above the steps.
 export const ProcessSection: React.FC = () => (
-  <section id="how-it-works" className="border-b border-slate-200 bg-white py-14 sm:py-18">
+  <section id="how-it-works" className="border-b border-slate-200 bg-white py-14 sm:py-18 scroll-mt-28">
     <div className="mx-auto max-w-6xl px-4 sm:px-8">
       <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#0B56D9]">Simple NRI shipping</p>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#0B56D9]">How It Works</p>
         <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#0A1931] sm:text-4xl">
-          From India to you. We handle the rest.
+          Your Package Journey
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-          One clear process from your first request to your overseas doorstep.
+          Watch how a package travels from India to your door, step by step.
+        </p>
+      </div>
+
+      {/* First video — Package Journey */}
+      <div className="mx-auto mb-10 w-full max-w-sm overflow-hidden rounded-3xl border border-blue-100 bg-[#0A1931] sm:mb-12">
+        <video
+          src="/videos/video.mp4"
+          controls
+          preload="metadata"
+          playsInline
+          className="aspect-[9/16] w-full object-contain"
+          aria-label="Pick O Pick package journey video"
+        >
+          <track kind="captions" />
+        </video>
+        <p className="flex items-center justify-center gap-2 bg-white px-4 py-3 text-[11px] font-bold uppercase tracking-widest text-slate-500">
+          <PlayCircle className="h-4 w-4 text-[#0B56D9]" />
+          Package Journey — how your parcel travels
         </p>
       </div>
 

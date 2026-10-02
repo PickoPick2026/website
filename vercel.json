@@ -3,7 +3,9 @@
     {
       "src": "/admin(.*)",
       "status": 307,
-      "headers": { "Location": "https://pickadmin.vercel.app/" }
+      "headers": {
+        "Location": "https://pickadmin.vercel.app/"
+      }
     },
     {
       "src": "/api/shipments/(?<id>[^/]+)",
@@ -18,24 +20,16 @@
       "dest": "/api/auth.js?action=register"
     },
     {
+      "src": "/api/auth/google",
+      "dest": "/api/auth.js?action=google"
+    },
+    {
+      "src": "/api/auth/google-phone",
+      "dest": "/api/auth.js?action=google-phone"
+    },
+    {
       "src": "/api/check-user-email",
       "dest": "/api/auth.js?action=check-user-email"
-    },
-    {
-      "src": "/api/send-otp",
-      "dest": "/api/auth.js?action=send-otp"
-    },
-    {
-      "src": "/api/verify-otp",
-      "dest": "/api/auth.js?action=verify-otp"
-    },
-    {
-      "src": "/api/forgot-password",
-      "dest": "/api/auth.js?action=forgot-password"
-    },
-    {
-      "src": "/api/reset-password",
-      "dest": "/api/auth.js?action=reset-password"
     },
     {
       "src": "/api/analyze-image",

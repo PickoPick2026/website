@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { SendMailClient } from "zeptomail";
 
@@ -34,17 +35,13 @@ export default async function handler(req, res) {
   switch (action) {
     case "register":
       return handleRegister(req, res);
+    case "google":
+      return handleGoogle(req, res);
+    case "google-phone":
+      return handleGooglePhone(req, res);
     case "check-user-email":
     case "check-email":
       return handleCheckEmail(req, res);
-    case "send-otp":
-      return handleSendOtp(req, res);
-    case "verify-otp":
-      return handleVerifyOtp(req, res);
-    case "forgot-password":
-      return handleForgotPassword(req, res);
-    case "reset-password":
-      return handleResetPassword(req, res);
     default:
       return res.status(400).json({ error: "Unknown auth action: " + (action || "none") });
   }
@@ -53,11 +50,9 @@ export default async function handler(req, res) {
 function getActionFromUrl(url = "") {
   const p = url.split("?")[0];
   if (p.includes("register")) return "register";
+  if (p.includes("google-phone")) return "google-phone";
+  if (p.includes("google")) return "google";
   if (p.includes("check-user-email") || p.includes("check-email")) return "check-user-email";
-  if (p.includes("send-otp")) return "send-otp";
-  if (p.includes("verify-otp")) return "verify-otp";
-  if (p.includes("forgot-password")) return "forgot-password";
-  if (p.includes("reset-password")) return "reset-password";
   return "";
 }
 
@@ -78,134 +73,6 @@ async function handleCheckEmail(req, res) {
     return res.json({ exists: !!data });
   } catch (err) {
     console.error("CHECK EMAIL ERROR:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
-}
-
-async function handleSendOtp(req, res) {
-  try {
-    const body = parseBody(req);
-    let { email, name } = body;
-    if (!email) return res.status(400).json({ error: "Email required" });
-    email = email.trim().toLowerCase();
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    await supabase.from("otp_store").upsert({
-      email,
-      otp,
-      expiry: Date.now() + 5 * 60 * 1000,
-      verified: false,
-    });
-
-    const client = getMailClient();
-    await client.sendMailWithTemplate({
-      template_key: "2518b.5f1360f6e8e70412.k1.510d86e0-2cc0-11f1-85bc-8e9a6c33ddc2.19d424f664e",
-      from: {
-        address: process.env.FROM_EMAIL || "noreply@pickopick.com",
-        name: "PickoPick",
-      },
-      to: [{ email_address: { address: email, name: name || "User" } }],
-      merge_info: { name: name || "User", OTP: otp },
-    });
-
-    return res.json({ message: "OTP sent successfully" });
-  } catch (err) {
-    console.error("SEND OTP ERROR:", err);
-    return res.status(500).json({ error: "Failed to send OTP" });
-  }
-}
-
-async function handleVerifyOtp(req, res) {
-  try {
-    const body = parseBody(req);
-    let { email, otp } = body;
-    if (!email || !otp) return res.status(400).json({ error: "Email and OTP required" });
-    email = email.trim().toLowerCase();
-    otp = String(otp).trim();
-
-    const { data } = await supabase
-      .from("otp_store")
-      .select("*")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (!data) return res.status(400).json({ error: "OTP not generated" });
-    if (data.otp !== otp) return res.status(400).json({ error: "Invalid OTP" });
-    if (data.expiry < Date.now()) return res.status(400).json({ error: "OTP expired" });
-
-    await supabase.from("otp_store").update({ verified: true }).eq("email", email);
-    return res.json({ message: "OTP verified successfully" });
-  } catch (err) {
-    console.error("VERIFY OTP ERROR:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
-}
-
-async function handleForgotPassword(req, res) {
-  try {
-    if (req.method !== "POST") return res.status(200).json({ message: "Use POST request" });
-    const body = parseBody(req);
-    let { email, name } = body;
-    if (!email) return res.status(400).json({ error: "Email required" });
-    email = email.trim().toLowerCase();
-
-    const { data: user } = await supabase
-      .from("customerList")
-      .select("customerID")
-      .eq("emailID", email)
-      .maybeSingle();
-
-    if (!user) return res.status(400).json({ error: "Email not registered" });
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    await supabase.from("otp_store").upsert({
-      email,
-      otp,
-      expiry: Date.now() + 10 * 60 * 1000,
-      verified: false,
-    });
-
-    const mailClient = getMailClient();
-    await mailClient.sendMailWithTemplate({
-      template_key: "2518b.5f1360f6e8e70412.k1.510d86e0-2cc0-11f1-85bc-8e9a6c33ddc2.19d424f664e",
-      from: {
-        address: process.env.FROM_EMAIL || "noreply@pickopick.com",
-        name: "PickoPick",
-      },
-      to: [{ email_address: { address: email, name: name || "User" } }],
-      merge_info: { name: name || "User", OTP: otp },
-    });
-
-    return res.json({ message: "OTP sent successfully" });
-  } catch (err) {
-    console.error("FORGOT PASSWORD ERROR:", err);
-    return res.status(500).json({ error: "Failed to send OTP" });
-  }
-}
-
-async function handleResetPassword(req, res) {
-  try {
-    const body = parseBody(req);
-    let { email, otp, newPassword } = body;
-    email = email.trim().toLowerCase();
-
-    const { data } = await supabase
-      .from("otp_store")
-      .select("*")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (!data) return res.status(400).json({ error: "OTP not generated" });
-    if (data.otp !== otp) return res.status(400).json({ error: "Invalid OTP" });
-    if (data.expiry < Date.now()) return res.status(400).json({ error: "OTP expired" });
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await supabase.from("customerList").update({ password: hashedPassword }).eq("emailID", email);
-    await supabase.from("otp_store").delete().eq("email", email);
-
-    return res.json({ message: "Password updated successfully" });
-  } catch (err) {
-    console.error("RESET PASSWORD ERROR:", err);
     return res.status(500).json({ error: "Server error" });
   }
 }
@@ -295,5 +162,158 @@ async function handleRegister(req, res) {
   } catch (err) {
     console.error("REGISTER ERROR:", err);
     return res.status(500).json({ error: "Server error" });
+  }
+}
+
+// "Continue with Google" — the Firebase client has already authenticated the
+// user; this only syncs their Google email with customerList:
+//   existing email  -> return that row (same Pick ID / orders — nothing breaks)
+//   new email       -> create the row (DB generates the Pick ID), fire the CRM
+//                      webhook and the welcome + team emails, then return it
+async function handleGoogle(req, res) {
+  try {
+    const body = parseBody(req);
+    const email = (body.email || "").trim().toLowerCase();
+    const name = (body.name || "").trim() || "Customer";
+    const photoUrl = body.photoUrl || "";
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: "A valid Google email is required." });
+    }
+
+    const { data: existing, error: findError } = await supabase
+      .from("customerList")
+      .select("*")
+      .eq("emailID", email)
+      .maybeSingle();
+
+    if (findError) {
+      console.error("GOOGLE FIND ERROR:", findError);
+      return res.status(500).json({ error: "Could not verify your account. Please try again." });
+    }
+
+    if (existing) {
+      return res.json({ user: existing, isNew: false });
+    }
+
+    // New customer — Google accounts never get a usable password, but a valid
+    // bcrypt hash keeps password-login attempts failing cleanly.
+    const unusablePassword = await bcrypt.hash(randomUUID(), 10);
+    const { data, error: insertError } = await supabase
+      .from("customerList")
+      .insert([{ firstName: name, emailID: email, password: unusablePassword, phoneNumber: "" }])
+      .select();
+
+    if (insertError || !data || !data[0]) {
+      console.error("GOOGLE INSERT ERROR:", insertError);
+      return res.status(500).json({ error: "Could not create your account. Please try again." });
+    }
+
+    const user = data[0];
+    const pickID = user.pickID;
+
+    // Same CRM webhook the email registration uses.
+    try {
+      await fetch("https://apps.cratiocrm.com/Customize/Webhooks/webhook.php?id=79915", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "Contact name": name,
+          "Contact number ": "",
+          "email": email,
+          "City": "",
+          "Address": "",
+          "Country": "India",
+          "Region": "",
+          "Picopick id": pickID,
+        }),
+      });
+    } catch (crmError) {
+      console.error("CRATIO CRM ERROR:", crmError);
+    }
+
+    // Welcome email with the Pick ID + internal team notification — same
+    // templates as normal registration (no OTP involved).
+    try {
+      const mailClient = getMailClient();
+      await mailClient.sendMailWithTemplate({
+        template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
+        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
+        to: [{ email_address: { address: email, name } }],
+        merge_info: { pickID: pickID },
+      });
+
+      const mailClient1 = getMailClient();
+      await mailClient1.sendMailWithTemplate({
+        template_key: "2518b.5f1360f6e8e70412.k1.ef76b6b0-5026-11f1-8706-e256a66a52e4.19e2a502d9b",
+        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
+        to: [
+          { email_address: { address: "dm2@pickopick.com", name: "Info" } },
+          { email_address: { address: "dm1@pickopick.com", name: "Support" } },
+        ],
+        merge_info: { name: name, email: email, phoneNumber: "", pickID: pickID },
+      });
+    } catch (mailError) {
+      // Account is already created — a mail failure must not block sign-in.
+      console.error("GOOGLE WELCOME EMAIL ERROR:", mailError?.message || mailError);
+    }
+
+    return res.json({ user, isNew: true, photoUrl });
+  } catch (err) {
+    console.error("GOOGLE AUTH ERROR:", err);
+    return res.status(500).json({ error: "Google sign-in failed. Please try again." });
+  }
+}
+
+// Second step of "Continue with Google": save the mobile number the user
+// entered (accounts created via Google have no phone), update the CRM contact
+// and return the completed profile.
+async function handleGooglePhone(req, res) {
+  try {
+    const body = parseBody(req);
+    const email = (body.email || "").trim().toLowerCase();
+    const phoneNumber = (body.phoneNumber || "").trim();
+
+    if (!email) return res.status(400).json({ error: "Email required" });
+    if (phoneNumber.replace(/\D/g, "").length < 8) {
+      return res.status(400).json({ error: "Please provide a valid mobile number." });
+    }
+
+    const { data, error } = await supabase
+      .from("customerList")
+      .update({ phoneNumber })
+      .eq("emailID", email)
+      .select();
+
+    if (error || !data || !data[0]) {
+      console.error("GOOGLE PHONE UPDATE ERROR:", error);
+      return res.status(500).json({ error: "Could not save your mobile number. Please try again." });
+    }
+
+    const user = data[0];
+
+    try {
+      await fetch("https://apps.cratiocrm.com/Customize/Webhooks/webhook.php?id=79915", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "Contact name": user.firstName || "Customer",
+          "Contact number ": phoneNumber,
+          "email": email,
+          "City": "",
+          "Address": "",
+          "Country": "India",
+          "Region": "",
+          "Picopick id": user.pickID,
+        }),
+      });
+    } catch (crmError) {
+      console.error("CRATIO CRM ERROR:", crmError);
+    }
+
+    return res.json({ user });
+  } catch (err) {
+    console.error("GOOGLE PHONE ERROR:", err);
+    return res.status(500).json({ error: "Could not save your mobile number. Please try again." });
   }
 }

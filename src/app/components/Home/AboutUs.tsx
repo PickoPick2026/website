@@ -21,7 +21,7 @@ export function AboutUs() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-            <Sparkles size={12} className="text-[#FF6321]" />
+            <Sparkles size={12} className="text-[#0B56D9]" />
             About Pick O Pick
           </span>
 

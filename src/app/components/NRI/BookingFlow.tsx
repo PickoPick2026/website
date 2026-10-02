@@ -292,7 +292,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
           particleCount: 80,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#0A1931', '#FF6321', '#10B981', '#3B82F6'],
+          colors: ['#0A1931', '#0B56D9', '#10B981', '#3B82F6'],
         });
       } catch (e) {
         // Safe fallback
@@ -587,7 +587,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                           onClick={() => toggleSpecialHandling(item.id as SpecialHandlingId)}
                           className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#FF6321] text-white border-[#FF6321] shadow-sm'
+                              ? 'bg-[#0B56D9] text-white border-[#0B56D9] shadow-sm'
                               : 'bg-white text-slate-700 border-slate-300 hover:border-slate-400'
                           }`}
                         >
@@ -607,7 +607,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     Photos help our team understand packing and shipping requirements.
                   </p>
 
-                  <div className="border-2 border-dashed border-slate-300 hover:border-[#FF6321]/50 rounded-2xl p-5 text-center bg-white transition-colors">
+                  <div className="border-2 border-dashed border-slate-300 hover:border-[#0B56D9]/50 rounded-2xl p-5 text-center bg-white transition-colors">
                     <input
                       type="file"
                       id="photo-upload-input"
@@ -859,7 +859,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       Available Pickup Time Slots:
                     </label>
                     {isLoadingSlots && (
-                      <span className="text-[11px] text-[#FF6321] font-semibold animate-pulse">
+                      <span className="text-[11px] text-[#0B56D9] font-semibold animate-pulse">
                         Verifying Live Hub Slots...
                       </span>
                     )}
@@ -894,7 +894,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                             isFull || isUnavailable
                               ? 'bg-slate-100/70 border-slate-200 opacity-60 cursor-not-allowed'
                               : isSelected
-                              ? 'bg-white border-[#FF6321] shadow-md ring-2 ring-[#FF6321]/20 cursor-pointer'
+                              ? 'bg-white border-[#0B56D9] shadow-md ring-2 ring-[#0B56D9]/20 cursor-pointer'
                               : 'bg-white border-slate-200 hover:border-slate-300 cursor-pointer'
                           }`}
                         >
@@ -942,13 +942,13 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                 </div>
 
                 {/* Mandatory confirmation checkbox */}
-                <div className="p-4 rounded-xl bg-orange-50/60 border border-orange-200 flex items-start gap-3">
+                <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200 flex items-start gap-3">
                   <input
                     type="checkbox"
                     id="confirmTimeCheckbox"
                     checked={formData.understandTimeMayBeConfirmed}
                     onChange={(e) => setFormData((prev) => ({ ...prev, understandTimeMayBeConfirmed: e.target.checked }))}
-                    className="w-4 h-4 text-[#FF6321] rounded border-slate-300 focus:ring-[#FF6321] mt-0.5"
+                    className="w-4 h-4 text-[#0B56D9] rounded border-slate-300 focus:ring-[#0B56D9] mt-0.5"
                   />
                   <label htmlFor="confirmTimeCheckbox" className="text-xs text-slate-700 leading-relaxed cursor-pointer">
                     <span className="font-bold text-[#0A1931]">Acknowledgment: </span>
@@ -965,7 +965,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                 {/* Contact Identity */}
                 <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A1931] flex items-center gap-1.5">
-                    <User className="w-4 h-4 text-[#FF6321]" />
+                    <User className="w-4 h-4 text-[#0B56D9]" />
                     Your NRI Contact Information:
                   </h4>
                   
@@ -1026,7 +1026,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                 {/* Pickup Address in India */}
                 <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[#0A1931] flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-[#FF6321]" />
+                    <MapPin className="w-4 h-4 text-[#0B56D9]" />
                     Pickup Address in India:
                   </h4>
 
@@ -1215,7 +1215,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       <span className="text-[10px] uppercase font-mono font-bold text-slate-400">
                         OFFICIAL DOCKET NUMBER
                       </span>
-                      <h4 className="text-lg sm:text-xl font-extrabold font-mono text-[#FF6321] tracking-tight">
+                      <h4 className="text-lg sm:text-xl font-extrabold font-mono text-[#0B56D9] tracking-tight">
                         {submissionResult.bookingId}
                       </h4>
                     </div>
@@ -1299,7 +1299,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                 <div className="text-center pt-2">
                   <button
                     onClick={onResetBooking}
-                    className="text-xs font-bold text-[#FF6321] hover:underline transition-colors cursor-pointer"
+                    className="text-xs font-bold text-[#0B56D9] hover:underline transition-colors cursor-pointer"
                   >
                     Back to NRI Services / Book Another Shipment
                   </button>
@@ -1337,7 +1337,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     type="button"
                     disabled={isSubmitting}
                     onClick={handleSubmitBooking}
-                    className="px-8 py-4 rounded-full bg-[#FF6321] hover:bg-orange-600 text-white text-xs font-extrabold shadow-lg shadow-[#FF6321]/30 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50 uppercase tracking-wider"
+                    className="px-8 py-4 rounded-full bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-extrabold shadow-lg shadow-[#0B56D9]/30 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50 uppercase tracking-wider"
                   >
                     {isSubmitting ? (
                       <span>SUBMITTING YOUR REQUEST...</span>

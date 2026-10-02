@@ -1,5 +1,22 @@
 import { MapPin, Phone } from 'lucide-react';
 import { Link } from "react-router-dom";
+import {
+  FaInstagram,
+  FaFacebookF,
+  FaLinkedinIn,
+  FaYoutube,
+  FaXTwitter,
+} from 'react-icons/fa6';
+
+// LinkedIn / YouTube handles are placeholders until the client shares the
+// official ones.
+const socialLinks = [
+  { name: 'Instagram', href: 'https://www.instagram.com/pickopickofficial/', icon: FaInstagram, bg: 'bg-[#E4405F]' },
+  { name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61578667226102', icon: FaFacebookF, bg: 'bg-[#1877F2]' },
+  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/pick-o-pick', icon: FaLinkedinIn, bg: 'bg-[#0A66C2]' },
+  { name: 'YouTube', href: 'https://www.youtube.com/@pickopick', icon: FaYoutube, bg: 'bg-[#FF0000]' },
+  { name: 'X (Twitter)', href: 'https://x.com/Pickopicko61028', icon: FaXTwitter, bg: 'bg-[#0A1931]' },
+];
 
 export function Footer() {
   return (
@@ -9,19 +26,35 @@ export function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
             <Link to="/" className="inline-block mb-6" aria-label="Pick O Pick home">
-              <img
-                src="/PICKLogo.png"
-                alt="PickoPick"
-                className="w-[150px] sm:w-[180px] object-contain"
-              />
+              {/* Same white plate treatment as the header logo — uniform on every page */}
+              <span className="inline-flex items-center rounded-xl bg-white px-2 py-1">
+                <img
+                  src="/PICKLogo.png"
+                  alt="PickoPick"
+                  className="w-[150px] sm:w-[180px] object-contain"
+                />
+              </span>
             </Link>
             <p className="mb-6 max-w-sm text-sm leading-relaxed">
               Your premium global logistics partner. Buy from any Indian store and we'll ship it to your doorstep anywhere in the world.
             </p>
-            <div className="flex gap-3">
-              <a href="https://x.com/Pickopicko61028" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors" aria-label="X">X</a>
-              <a href="https://www.facebook.com/profile.php?id=61578667226102" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors" aria-label="Facebook">f</a>
-              <a href="https://www.instagram.com/pickopickofficial/" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors" aria-label="Instagram">ig</a>
+            <div className="flex gap-2.5">
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={social.name}
+                    title={social.name}
+                    className={`w-9 h-9 rounded-full ${social.bg} flex items-center justify-center text-white text-sm transition-transform hover:-translate-y-0.5`}
+                  >
+                    <Icon />
+                  </a>
+                );
+              })}
             </div>
           </div>
 

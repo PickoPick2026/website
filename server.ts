@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
+import { randomUUID } from "crypto";
 import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
 import bcrypt from "bcryptjs";
@@ -234,6 +235,106 @@ app.post("/api/auth/register", async (req, res) => {
     res.status(500).json({
       error: "Internal server error"
     });
+  }
+});
+
+app.post("/api/auth/google", async (req, res) => {
+  // "Continue with Google" — Firebase client already authenticated the user;
+  // sync the Google email with customerList (find existing / create + welcome).
+  try {
+    const { email: rawEmail, name: rawName } = req.body || {};
+    const email = (rawEmail || "").trim().toLowerCase();
+    const name = (rawName || "").trim() || "Customer";
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: "A valid Google email is required." });
+    }
+
+    const { data: existing, error: findError } = await supabase
+      .from("customerList")
+      .select("*")
+      .eq("emailID", email)
+      .maybeSingle();
+
+    if (findError) {
+      console.error("GOOGLE FIND ERROR:", findError);
+      return res.status(500).json({ error: "Could not verify your account. Please try again." });
+    }
+
+    if (existing) {
+      return res.json({ user: existing, isNew: false });
+    }
+
+    const unusablePassword = await bcrypt.hash(randomUUID(), 10);
+    const { data, error: insertError } = await supabase
+      .from("customerList")
+      .insert([{ firstName: name, emailID: email, password: unusablePassword, phoneNumber: "" }])
+      .select();
+
+    if (insertError || !data || !data[0]) {
+      console.error("GOOGLE INSERT ERROR:", insertError);
+      return res.status(500).json({ error: "Could not create your account. Please try again." });
+    }
+
+    const user = data[0];
+    const pickID = (user as any).pickID;
+
+    // Welcome email with the Pick ID + internal notification (same templates
+    // as normal registration). Mail failure must not block sign-in.
+    try {
+      await mailClient.sendMailWithTemplate({
+        template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
+        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
+        to: [{ email_address: { address: email, name } }],
+        merge_info: { pickID: pickID },
+      });
+      await mailClient.sendMailWithTemplate({
+        template_key: "2518b.5f1360f6e8e70412.k1.ef76b6b0-5026-11f1-8706-e256a66a52e4.19e2a502d9b",
+        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
+        to: [
+          { email_address: { address: "dm2@pickopick.com", name: "Info" } },
+          { email_address: { address: "dm1@pickopick.com", name: "Support" } },
+        ],
+        merge_info: { name: name, email: email, phoneNumber: "", pickID: pickID },
+      });
+    } catch (mailError: any) {
+      console.error("GOOGLE WELCOME EMAIL ERROR:", mailError?.message || mailError);
+    }
+
+    return res.json({ user, isNew: true });
+  } catch (err) {
+    console.error("GOOGLE AUTH ERROR:", err);
+    return res.status(500).json({ error: "Google sign-in failed. Please try again." });
+  }
+});
+
+app.post("/api/auth/google-phone", async (req, res) => {
+  // Second step of "Continue with Google": save the mobile number.
+  try {
+    const { email: rawEmail, phoneNumber: rawPhone } = req.body || {};
+    const email = (rawEmail || "").trim().toLowerCase();
+    const phoneNumber = (rawPhone || "").trim();
+
+    if (!email) return res.status(400).json({ error: "Email required" });
+    if (phoneNumber.replace(/\D/g, "").length < 8) {
+      return res.status(400).json({ error: "Please provide a valid mobile number." });
+    }
+
+    const { data, error } = await supabase
+      .from("customerList")
+      .update({ phoneNumber })
+      .eq("emailID", email)
+      .select();
+
+    if (error || !data || !data[0]) {
+      console.error("GOOGLE PHONE UPDATE ERROR:", error);
+      return res.status(500).json({ error: "Could not save your mobile number. Please try again." });
+    }
+
+    return res.json({ user: data[0] });
+  } catch (err) {
+    console.error("GOOGLE PHONE ERROR:", err);
+    return res.status(500).json({ error: "Could not save your mobile number. Please try again." });
   }
 });
 

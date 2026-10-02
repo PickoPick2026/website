@@ -18,7 +18,6 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
-import { ServiceVisualShowcase } from "../components/ServiceVisualShowcase";
 
 function FormInput({
   label,
@@ -187,6 +186,25 @@ export default function OrderAndSendPage() {
       return;
     }
 
+    // Open WhatsApp immediately inside the click gesture so the request
+    // always reaches WhatsApp (popup blockers kill async window.open).
+    const waMessage = [
+      "Hello Pick O Pick, new *Order & Send* request:",
+      `Name: ${customerName}`,
+      `Phone: ${mobileNumber}`,
+      `Email: ${customerEmail}`,
+      `Pickup City (India): ${pickupCity}`,
+      `Destination: ${destinationLocation}, ${destinationCountry}`,
+      `Approx Weight: ${approxWeight}`,
+      `Parcel Category: ${parcelType}`,
+      `Items / Links: ${productLinks}`,
+    ].join("\n");
+    window.open(
+      `https://wa.me/919790361222?text=${encodeURIComponent(waMessage)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+
     setIsSubmitting(true);
     try {
       const result = await submitServiceRequest("order_and_send", {
@@ -200,11 +218,10 @@ export default function OrderAndSendPage() {
         approxWeight,
         parcelType,
       });
-      window.open(result.whatsappUrl, "_blank", "noopener,noreferrer");
       toast.success(
         result.emailSent
-          ? "Pickup request submitted to WhatsApp and email confirmation sent!"
-          : "Pickup request submitted! Opening WhatsApp to schedule dispatch.",
+          ? "Order & Send request sent to WhatsApp — confirmation email dispatched too!"
+          : "Order & Send request sent to WhatsApp! We will confirm shortly.",
       );
     } catch (error) {
       toast.error(
@@ -268,15 +285,15 @@ export default function OrderAndSendPage() {
           {/* Trust points */}
           <div className="mx-auto mt-9 flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-3 border-t border-white/35 pt-5 text-xs text-white/80">
             <span className="inline-flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[#FF6321]" />
+              <ShieldCheck className="h-4 w-4 text-[#0B56D9]" />
               Free Doorstep Collection
             </span>
             <span className="inline-flex items-center gap-2">
-              <Scale className="h-4 w-4 text-[#FF6321]" />
+              <Scale className="h-4 w-4 text-[#0B56D9]" />
               Volumetric Box Trimming
             </span>
             <span className="inline-flex items-center gap-2">
-              <Plane className="h-4 w-4 text-[#FF6321]" />
+              <Plane className="h-4 w-4 text-[#0B56D9]" />
               3–5 Days Express Delivery
             </span>
           </div>
@@ -312,7 +329,7 @@ export default function OrderAndSendPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <Sparkles size={12} className="text-[#FF6321]" />
+              <Sparkles size={12} className="text-[#0B56D9]" />
               End-to-End Reliability
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
@@ -351,36 +368,6 @@ export default function OrderAndSendPage() {
         </div>
       </section>
 
-      <ServiceVisualShowcase
-        eyebrow="Care from pickup to delivery"
-        title="A reliable journey for every parcel"
-        description="We collect your items in India, prepare them carefully, and arrange international delivery to your destination."
-        items={[
-          {
-            title: "Doorstep collection",
-            description: "Arrange pickup from your home, family, or supplier in India.",
-            image: "/images/nri-services/personal-items.webp",
-            alt: "Personal items ready to be shipped from India",
-          },
-          {
-            title: "Careful repacking",
-            description: "We inspect and repack parcels to help protect items and reduce excess volume.",
-            image: "/images/nri-trust/professional-packing.webp",
-            alt: "Pick O Pick checking and packing an international parcel",
-          },
-          {
-            title: "Worldwide air delivery",
-            description: "Choose international courier delivery with tracking to your door.",
-            image: "/images/nri-trust/international-shipping.webp",
-            alt: "Pick O Pick global air and courier shipping network",
-          },
-        ]}
-        ctaTitle="Ready to send a parcel from India?"
-        ctaDescription="Tell us what you’re sending and where it needs to go."
-        ctaLabel="Book a pickup"
-        targetId="order-and-send-form"
-      />
-
       {/* Quote & Booking Form Section */}
       <section
         id="order-and-send-form"
@@ -397,7 +384,7 @@ export default function OrderAndSendPage() {
                   </div>
                   <div>
                     <h3 className="text-lg sm:text-xl font-extrabold text-[#0A1931] tracking-tight">
-                      Book Doorstep Pickup &amp; Courier
+                      Order &amp; Send — Book Doorstep Pickup
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
                       We’ll calculate discounted freight rates and dispatch our
@@ -549,7 +536,7 @@ export default function OrderAndSendPage() {
                     <span>
                       {isSubmitting
                         ? "Submitting..."
-                        : "Send Request to WhatsApp & Email"}
+                        : "Send Order & Send Request to WhatsApp & Email"}
                     </span>
                     <ArrowRight size={15} />
                   </button>
@@ -680,7 +667,7 @@ export default function OrderAndSendPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <ShieldCheck size={12} className="text-[#FF6321]" />
+              <ShieldCheck size={12} className="text-[#0B56D9]" />
               Shipping Guidelines
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
@@ -761,7 +748,7 @@ export default function OrderAndSendPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <HelpCircle size={12} className="text-[#FF6321]" />
+              <HelpCircle size={12} className="text-[#0B56D9]" />
               Got Questions?
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">

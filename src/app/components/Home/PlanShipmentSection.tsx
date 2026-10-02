@@ -205,7 +205,7 @@ export function PlanShipmentSection() {
         {/* Section Header */}
         <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-            <Sparkles size={13} className="text-[#FF6321]" />
+            <Sparkles size={13} className="text-[#0B56D9]" />
             Order &amp; Send • Doorstep Pickup &amp; Courier
           </div>
 
@@ -235,8 +235,8 @@ export function PlanShipmentSection() {
           {/* Left Column: ONLY Image */}
           <div className="lg:col-span-5 rounded-3xl overflow-hidden border border-slate-200/90 shadow-xs flex items-center justify-center bg-slate-50">
             <img
-              src="/images/pickopick-parcel-packing.webp"
-              alt="PickOPick Packaging Specialist preparing an international parcel from India"
+              src="/images/nri-life-scenarios-v1.webp"
+              alt="Pick O Pick collecting a parcel from an Indian home for international delivery"
               className="w-full h-full object-cover min-h-[380px] sm:min-h-[480px] lg:min-h-full"
               loading="lazy"
             />

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import {
   Hero,
-  HeroMobile,
   ImageSearch,
   PlanShipmentSection,
   AboutUs,
@@ -13,6 +12,8 @@ import {
   PromoBannerDuo,
   Testimonials,
   ShopBanner,
+  QuickActionCards,
+  PremiumCta,
 } from "../components/Home";
 import { CompanyVision } from "../components/CompanyVision";
 import { ConsultationModal } from "../components/NRI/ConsultationModal";
@@ -64,23 +65,19 @@ export default function Home() {
     <main className="bg-white text-slate-900">
       <WelcomePopup />
 
-      {/* MOBILE HERO */}
-      <div className="block sm:hidden">
-        <HeroMobile />
-      </div>
-
-      {/* DESKTOP HERO */}
-      <div className="hidden sm:block ">
-        <Hero />
-      </div>
+      <Hero />
 
       {/* UNIVERSAL BUY & SHIP SEARCH */}
       <ImageSearch />
+
+      {/* ROTATING SERVICE PICKUP BOX */}
+      <QuickActionCards />
 
       {/* PLAN YOUR SHIPMENT & DIRECT WHATSAPP QUOTE */}
       <PlanShipmentSection />
 
       <PromoBannerDuo />
+
       {/* ABOUT US: OUR STORY & CAPABILITIES */}
       <AboutUs />
 
@@ -89,6 +86,9 @@ export default function Home() {
 
       {/* SERVICES WITH 3D VISUALS */}
       <Services />
+
+      {/* NRI PREMIUM SERVICES CTA */}
+      <PremiumCta />
 
       {/* SHOPPING DIRECTORY MARQUEE */}
       <ShoppingDirectoryMarquee />

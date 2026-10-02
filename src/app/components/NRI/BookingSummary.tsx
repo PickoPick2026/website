@@ -138,7 +138,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                 'Select Date'
               )}
             </p>
-            <p className="text-[11px] text-[#FF6321] font-semibold">
+            <p className="text-[11px] text-[#0B56D9] font-semibold">
               {formData.preferredPickupSlotLabel || 'Time Slot Pending'}
             </p>
           </div>

@@ -1,39 +1,48 @@
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+
 const services = [
   {
     num: "01",
     image: "/images/nri-trust/shop-from-india.webp",
     title: "Personal Shopper",
     desc: "We buy on your behalf from any Indian store, handling local payments and communications.",
+    to: "/buy-and-ship",
   },
   {
     num: "02",
     image: "/images/nri-trust/consolidate-purchases.webp",
     title: "Package Consolidation",
     desc: "Combine multiple orders into one shipment to save up to 80% on international shipping costs.",
+    to: "/order-and-send",
   },
   {
     num: "03",
     image: "/images/nri-trust/international-shipping.webp",
     title: "Global Forwarding",
     desc: "Partnered with DHL, FedEx, and Aramex for reliable, fast delivery to over 200 countries.",
+    to: "/nri",
   },
   {
     num: "04",
     image: "/images/nri-trust/source-with-confidence.webp",
     title: "Quality Inspection",
     desc: "We verify your items upon arrival at our warehouse, providing photos before shipping.",
+    to: "/nri",
   },
   {
     num: "05",
     image: "/images/services/free-storage.webp",
     title: "Free Storage",
     desc: "Store your items securely in our warehouse for up to 30 days at no additional cost.",
+    to: "/nri",
   },
   {
     num: "06",
     image: "/images/services/secure-payments.webp",
     title: "Secure Payments",
     desc: "Pay easily in your local currency using international credit cards or PayPal.",
+    to: "/nri",
   },
 ];
 
@@ -59,12 +68,13 @@ export function Services() {
           </p>
         </div>
 
-        {/* 6 Illustrated Service Cards */}
+        {/* 6 Illustrated Service Cards — each opens its service page */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {services.map((service) => (
-            <div
+            <Link
               key={service.num}
-              className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 flex flex-col justify-between hover:border-[#0B56D9]/50 transition-colors duration-200 group"
+              to={service.to}
+              className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 flex flex-col justify-between hover:border-[#0B56D9]/50 hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer"
             >
               <div>
                 {/* Top: 3D Illustration & Service Index */}
@@ -92,7 +102,11 @@ export function Services() {
                   {service.desc}
                 </p>
               </div>
-            </div>
+
+              <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#0B56D9] opacity-0 transition-opacity group-hover:opacity-100">
+                Explore service <ArrowRight size={12} />
+              </span>
+            </Link>
           ))}
         </div>
       </div>

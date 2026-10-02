@@ -17,7 +17,6 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
-import { ServiceVisualShowcase } from "../components/ServiceVisualShowcase";
 
 function FormInput({
   label,
@@ -297,6 +296,26 @@ export default function BuyAndShipPage() {
       return;
     }
 
+    // Open WhatsApp immediately inside the click gesture so the request
+    // always reaches WhatsApp (popup blockers kill async window.open).
+    const waMessage = [
+      "Hello Pick O Pick, new *Buy & Ship* request:",
+      `Name: ${customerName}`,
+      `Phone: ${customerPhone}`,
+      `Email: ${customerEmail}`,
+      `Delivery Location: ${destinationLocation}, ${destinationCountry}`,
+      `Store: ${sourceStore}`,
+      `Product URL / Item: ${productUrl}`,
+      itemNotes.trim() ? `Size / Variant / Notes: ${itemNotes}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    window.open(
+      `https://wa.me/919790361222?text=${encodeURIComponent(waMessage)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+
     setIsSubmitting(true);
     try {
       const result = await submitServiceRequest("buy_and_ship", {
@@ -309,11 +328,10 @@ export default function BuyAndShipPage() {
         itemNotes,
         destinationCountry,
       });
-      window.open(result.whatsappUrl, "_blank", "noopener,noreferrer");
       toast.success(
         result.emailSent
-          ? "Request submitted to WhatsApp and email confirmation sent!"
-          : "Request submitted! Opening WhatsApp to connect with your Personal Shopper.",
+          ? "Buy & Ship request sent to WhatsApp — confirmation email dispatched too!"
+          : "Buy & Ship request sent to WhatsApp! Your personal shopper will connect shortly.",
       );
     } catch (error) {
       toast.error(
@@ -421,7 +439,7 @@ export default function BuyAndShipPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <Sparkles size={12} className="text-[#FF6321]" />
+              <Sparkles size={12} className="text-[#0B56D9]" />
               How It Works
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
@@ -460,36 +478,6 @@ export default function BuyAndShipPage() {
         </div>
       </section>
 
-      <ServiceVisualShowcase
-        eyebrow="A simpler way to shop India"
-        title="Your personal shopper handles the details"
-        description="Share what you found, and our India-side team will purchase, check, and prepare it for international delivery."
-        items={[
-          {
-            title: "Shop from Indian stores",
-            description: "Send us a product link or tell us what you are looking for.",
-            image: "/images/nri-services/shop-from-india.webp",
-            alt: "Indian products prepared for a Pick O Pick shopping request",
-          },
-          {
-            title: "Purchase and verify",
-            description: "We help with local checkout and check your items when they arrive.",
-            image: "/images/nri-trust/source-with-confidence.webp",
-            alt: "Pick O Pick team checking an incoming order",
-          },
-          {
-            title: "Pack and ship together",
-            description: "Combine parcels and send your purchases to your overseas address.",
-            image: "/images/nri-services/consolidation.webp",
-            alt: "Multiple Indian purchases packed together for international shipping",
-          },
-        ]}
-        ctaTitle="Found something you want from India?"
-        ctaDescription="Share the product link and we’ll take it from there."
-        ctaLabel="Start an assisted buy"
-        targetId="assisted-buy-form"
-      />
-
       {/* Assisted Buy Form Section */}
       <section
         id="assisted-buy-form"
@@ -506,7 +494,7 @@ export default function BuyAndShipPage() {
                   </div>
                   <div>
                     <h3 className="text-lg sm:text-xl font-extrabold text-[#0A1931] tracking-tight">
-                      Submit Assisted Buy Request
+                      Buy &amp; Ship — Submit Your Product Request
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
                       Tell us what you want to buy and our personal shoppers
@@ -625,7 +613,7 @@ export default function BuyAndShipPage() {
                     <span>
                       {isSubmitting
                         ? "Submitting..."
-                        : "Send Request to WhatsApp & Email"}
+                        : "Send Buy & Ship Request to WhatsApp & Email"}
                     </span>
                     <ArrowRight size={15} />
                   </button>
@@ -709,7 +697,7 @@ export default function BuyAndShipPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <Store size={12} className="text-[#FF6321]" />
+              <Store size={12} className="text-[#0B56D9]" />
               Store Directory
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
@@ -780,7 +768,7 @@ export default function BuyAndShipPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-              <HelpCircle size={12} className="text-[#FF6321]" />
+              <HelpCircle size={12} className="text-[#0B56D9]" />
               Got Questions?
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">

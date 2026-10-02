@@ -78,7 +78,7 @@ export function WelcomePopup() {
                   alt="Pick O Pick"
                   className="mt-5 h-11 w-fit object-contain"
                 />
-                <p className="mt-8 text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#FF6321]">
+                <p className="mt-8 text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#0B56D9]">
                   India to the world
                 </p>
                 <h2

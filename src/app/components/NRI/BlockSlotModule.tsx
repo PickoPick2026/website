@@ -68,8 +68,8 @@ export const BlockSlotModule: React.FC = () => {
             
             {/* Left Header */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-orange-100 text-[#FF6321] text-xs font-bold uppercase tracking-wider">
-                <Clock4 className="w-3.5 h-3.5 text-[#FF6321]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-50 text-[#0B56D9] text-xs font-bold uppercase tracking-wider">
+                <Clock4 className="w-3.5 h-3.5 text-[#0B56D9]" />
                 Priority Dispatch Reservation
               </div>
 
@@ -97,7 +97,7 @@ export const BlockSlotModule: React.FC = () => {
             <div className="lg:col-span-7 bg-slate-50 rounded-2xl border border-slate-200 p-6 sm:p-7">
               {resultNotice ? (
                 <div className="text-center py-6 space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 text-[#FF6321] flex items-center justify-center mx-auto">
+                  <div className="w-12 h-12 rounded-full bg-blue-50 text-[#0B56D9] flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
                   <h3 className="text-lg font-extrabold text-[#0A1931]">
@@ -216,7 +216,7 @@ export const BlockSlotModule: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3.5 px-6 rounded-full bg-[#FF6321] hover:bg-orange-600 text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-md shadow-[#FF6321]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full py-3.5 px-6 rounded-full bg-[#0B56D9] hover:bg-[#0849B7] text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-md shadow-[#0B56D9]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <span>Reserving Slot...</span>

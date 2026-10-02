@@ -13,13 +13,11 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { CalculateShippingModal } from "./CalculateShippingModal";
-import { LoginModal } from "./LoginModal";
-import { RegisterModal } from "./RegisterModal";
+import { AuthModal } from "./AuthModal";
 
 export function CTA() {
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   return (
     <section
@@ -78,7 +76,7 @@ export function CTA() {
             <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
               <button
                 type="button"
-                onClick={() => setIsRegisterOpen(true)}
+                onClick={() => setIsAuthOpen(true)}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] shadow-lg shadow-black/10 transition-all hover:bg-blue-50 hover:shadow-xl sm:w-auto"
               >
                 <span>Create Free Account</span>
@@ -87,7 +85,7 @@ export function CTA() {
 
               <button
                 type="button"
-                onClick={() => setIsLoginOpen(true)}
+                onClick={() => setIsAuthOpen(true)}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-8 py-4 text-xs font-extrabold uppercase tracking-wider text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white sm:w-auto"
               >
                 <span>Login</span>
@@ -220,23 +218,7 @@ export function CTA() {
         onClose={() => setIsCalculatorOpen(false)}
       />
 
-      <RegisterModal
-        isOpen={isRegisterOpen}
-        onClose={() => setIsRegisterOpen(false)}
-        onLoginClick={() => {
-          setIsRegisterOpen(false);
-          setIsLoginOpen(true);
-        }}
-      />
-
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        onRegisterClick={() => {
-          setIsLoginOpen(false);
-          setIsRegisterOpen(true);
-        }}
-      />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </section>
   );
 }

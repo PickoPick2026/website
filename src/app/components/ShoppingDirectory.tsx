@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { LoginModal } from "./LoginModal";
+import { AuthModal } from "./AuthModal";
 import { supabase } from "@/src/lib/supabase";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
@@ -659,7 +659,7 @@ export function ShoppingDirectory({
         )}
       </div>
 
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <AuthModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
       <AnimatePresence>
         {isThankYouOpen && (
           <>

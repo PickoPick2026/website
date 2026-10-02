@@ -26,7 +26,7 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ onOpenConsultation }) =>
         
         {/* Section Header */}
         <div className="text-center mb-10">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#FF6321] bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#0B56D9] bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
             Clear Answers
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0A1931] tracking-tight mt-3">

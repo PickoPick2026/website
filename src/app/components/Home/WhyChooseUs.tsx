@@ -56,7 +56,7 @@ export function WhyChooseUs() {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
-            <Sparkles size={12} className="text-[#FF6321]" />
+            <Sparkles size={12} className="text-[#0B56D9]" />
             Why Pick O Pick
           </span>
 

@@ -106,11 +106,6 @@ export default function App() {
     scrollToSection('booking-portal');
   };
 
-  // Scroll to Block Slot module
-  const handleOpenBlockSlot = () => {
-    scrollToSection('block-slot-section');
-  };
-
   // Reset form
   const handleResetBooking = () => {
     setBookingStartStep(1);
@@ -163,11 +158,11 @@ export default function App() {
       <style>{`
         .nri-page [class*="shadow"] { box-shadow: none !important; }
         .nri-page [class*="bg-gradient"] { background-image: none !important; }
-        .nri-page [class*="bg-orange-50"], .nri-page [class*="bg-orange-100"] { background-color: #EEF4FF !important; }
-        .nri-page [class*="bg-[#FF6321]"], .nri-page [class*="bg-orange-600"], .nri-page [class*="bg-orange-700"] { background-color: #0B56D9 !important; }
-        .nri-page [class*="text-[#FF6321]"], .nri-page [class*="text-orange-"] { color: #0B56D9 !important; }
-        .nri-page [class*="border-[#FF6321]"], .nri-page [class*="border-orange-"] { border-color: #0B56D9 !important; }
-        .nri-page [class*="ring-[#FF6321]"] { --tw-ring-color: rgb(11 86 217 / .22) !important; }
+        .nri-page [class*="bg-blue-50"], .nri-page [class*="bg-blue-50"] { background-color: #EEF4FF !important; }
+        .nri-page [class*="bg-[#0B56D9]"], .nri-page [class*="bg-orange-600"], .nri-page [class*="bg-orange-700"] { background-color: #0B56D9 !important; }
+        .nri-page [class*="text-[#0B56D9]"], .nri-page [class*="text-orange-"] { color: #0B56D9 !important; }
+        .nri-page [class*="border-[#0B56D9]"], .nri-page [class*="border-orange-"] { border-color: #0B56D9 !important; }
+        .nri-page [class*="ring-[#0B56D9]"] { --tw-ring-color: rgb(11 86 217 / .22) !important; }
       `}</style>
       
     
@@ -175,10 +170,12 @@ export default function App() {
       {/* Hero Section */}
       <main className="flex-1">
         <HeroSection
-          onOpenConsultation={() => setIsConsultationModalOpen(true)}
           onStartBooking={() => scrollToSection('booking-portal')}
-          onOpenBlockSlot={handleOpenBlockSlot}
         />
+
+        
+
+        <NriUseCasesSection />
 
         {/* Core Multi-Step Booking Engine & Sticky Live Summary */}
         <BookingFlow
@@ -192,14 +189,11 @@ export default function App() {
         {/* Free 1-on-1 Concierge Consultation Section */}
         <FreeConsultationModule onOpenConsultation={() => setIsConsultationModalOpen(true)} />
 
-        {/* Process Section (6 Steps) */}
-        <ProcessSection />
-
-        {/* Why Choose Pick O Pick (6 Trust Pillars) */}
+        {/* What We Give You (6 Trust Pillars) */}
         <WhyChooseUsSection />
 
-        {/* NRI Use Cases & Life Scenarios */}
-        <NriUseCasesSection onOpenConsultation={() => setIsConsultationModalOpen(true)} />
+        {/* How It Works — first video + package journey steps */}
+        <ProcessSection />
 
         {/* Customer Testimonials */}
         <TestimonialsSection />

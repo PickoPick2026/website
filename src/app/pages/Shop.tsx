@@ -119,7 +119,7 @@ export default function ShopPage() {
   };
 
   return (
-    <main className="bg-white pt-[68px] sm:pt-[76px]">
+    <main className="bg-white pt-[100px] sm:pt-[106px]">
       <section className="relative h-[220px] overflow-hidden bg-white sm:h-[280px] lg:h-[330px]">
         <img
           src="/images/shop-bg.webp"

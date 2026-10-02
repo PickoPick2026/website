@@ -214,9 +214,9 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
                   <span className="text-[10px] text-slate-400 block">Volumetric Wt</span>
                   <span className="font-bold text-slate-800">{estimateResult.volumetricWeightKg || '0.0'} kg</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-orange-50 border border-orange-200">
-                  <span className="text-[10px] text-[#FF6321] block font-bold">Chargeable Wt</span>
-                  <span className="font-bold text-orange-950">{estimateResult.billableWeightKg} kg</span>
+                <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200">
+                  <span className="text-[10px] text-[#0B56D9] block font-bold">Chargeable Wt</span>
+                  <span className="font-bold text-[#0A1931]">{estimateResult.billableWeightKg} kg</span>
                 </div>
               </div>
 
@@ -250,7 +250,7 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
               }
               onClose();
             }}
-            className="px-6 py-2.5 rounded-full bg-[#FF6321] hover:bg-orange-600 text-white text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer"
+            className="px-6 py-2.5 rounded-full bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer"
           >
             <span>Proceed to Booking with this estimate</span>
             <ArrowRight className="w-3.5 h-3.5" />
