@@ -11,6 +11,7 @@ import { GoogleGenAI } from "@google/genai";
 import { SendMailClient } from "zeptomail";
 import { supabase } from './supabase.js';
 import { brandedEmailHtml } from './api/_request-utils.js';
+import customerRequests from './api/requests.js';
 
 
 const otpStore: Record<string, { otp: string; expiry: number }> = {};
@@ -96,7 +97,7 @@ async function sendNriConsultationConfirmation(email: string, name: string, requ
     await transactionalMailClient.sendMail({
       from: { address: "noreply@pickopick.com", name: "Pick O Pick" },
       to: [{ email_address: { address: email, name } }],
-      cc: [{ email_address: { address:  "info@pickopick.com", name: "Pick O Pick Team" } }],
+      cc: [{ email_address: { address:  "sales@pickopick.com", name: "Pick O Pick Team" } }],
       subject,
       htmlbody: brandedEmailHtml({ name, code: requestCode, message, details, whatsappUrlValue }),
     });
@@ -116,6 +117,7 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
   // API Routes
+  app.post('/api/requests', (req, res) => customerRequests(req, res));
   app.get("/api/shipments", (req, res) => {
     const shipments = db.prepare("SELECT * FROM shipments").all();
     res.json(shipments);
@@ -778,38 +780,6 @@ app.post("/api/auth/login", async (req, res) => {
     }
     const cost = rate.base_rate + (parseFloat(weight) * rate.per_kg_rate);
     res.json({ cost, days: rate.days });
-  });
-
-  app.post("/api/estimate", (req, res) => {
-    const { destinationCountry, weightKg, lengthCm = 0, widthCm = 0, heightCm = 0 } = req.body || {};
-    const actualWeightKg = Number(weightKg);
-    const dimensions = [lengthCm, widthCm, heightCm].map(Number);
-    if (!destinationCountry || !Number.isFinite(actualWeightKg) || actualWeightKg <= 0 || dimensions.some((value) => !Number.isFinite(value) || value < 0)) {
-      return res.status(400).json({ error: "Provide a destination and valid package measurements." });
-    }
-    const zones: Record<string, { base: number; perKg: number; days: string }> = {
-      USA: { base: 1450, perKg: 560, days: "5–8 business days" }, Canada: { base: 1550, perKg: 590, days: "6–9 business days" },
-      "United Kingdom": { base: 1350, perKg: 510, days: "4–7 business days" }, UAE: { base: 950, perKg: 390, days: "3–5 business days" },
-      Australia: { base: 1650, perKg: 610, days: "6–10 business days" }, Singapore: { base: 1050, perKg: 430, days: "3–6 business days" },
-    };
-    const rate = zones[destinationCountry] || { base: 1750, perKg: 650, days: "6–12 business days" };
-    const volumetricWeightKg = (dimensions[0] * dimensions[1] * dimensions[2]) / 5000;
-    const billableWeightKg = Math.max(actualWeightKg, volumetricWeightKg);
-    const midpoint = rate.base + billableWeightKg * rate.perKg;
-    const estimatedInrMin = Math.round(midpoint * 0.9), estimatedInrMax = Math.round(midpoint * 1.12);
-    return res.json({ origin: "India", destinationCountry, actualWeightKg: Number(actualWeightKg.toFixed(2)), volumetricWeightKg: Number(volumetricWeightKg.toFixed(2)), billableWeightKg: Number(billableWeightKg.toFixed(2)), estimatedInrMin, estimatedInrMax, estimatedUsdMin: Number((estimatedInrMin / 84).toFixed(2)), estimatedUsdMax: Number((estimatedInrMax / 84).toFixed(2)), transitDays: rate.days, serviceLevel: "International express", notes: ["This is an indicative rate only; the final quotation follows shipment verification.", "Chargeable weight is the higher of actual and volumetric weight."] });
-  });
-
-  app.get("/api/slots/availability", (req, res) => {
-    const date = String(req.query.date || "");
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: "A valid pickup date is required." });
-    return res.json({ date, slots: [
-      { id: "morning", timeRange: "09:00 AM – 11:00 AM", label: "Morning", status: "AVAILABLE", remainingQuota: 4 },
-      { id: "midday", timeRange: "11:00 AM – 01:00 PM", label: "Midday", status: "AVAILABLE", remainingQuota: 3 },
-      { id: "afternoon", timeRange: "01:00 PM – 03:00 PM", label: "Afternoon", status: "LIMITED", remainingQuota: 2, badge: "Limited" },
-      { id: "evening", timeRange: "03:00 PM – 05:00 PM", label: "Evening", status: "AVAILABLE", remainingQuota: 3 },
-      { id: "late-evening", timeRange: "05:00 PM – 07:00 PM", label: "Late evening", status: "AVAILABLE", remainingQuota: 2 },
-    ] });
   });
 
   app.post("/api/service-requests", async (req, res) => {

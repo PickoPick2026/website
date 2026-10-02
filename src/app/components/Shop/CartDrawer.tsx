@@ -15,6 +15,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { supabase } from "@/src/lib/supabase";
+import { submitCustomerRequest } from '../../../services/requestService';
 import { COUNTRY_OPTIONS, FieldLabel, fieldClass } from "../ServicePage";
 
 /* Slide-in cart for the Shop page. Replaces the old /cart page:
@@ -225,21 +226,19 @@ export function CartDrawer({
 
       // Confirmation email with product details (CC info@pickopick.com).
       try {
-        await fetch("/api/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "cart_quote",
-            code: orderCode,
-            name: details.name,
-            email: details.email,
-            phone: details.phone,
+        await submitCustomerRequest({
+          requestType: 'cart_quote',
+          payload: {
+            orderCode,
+            customerName: details.name,
+            customerEmail: details.email,
+            customerPhone: details.phone,
             items: cartItems.map((item) => ({
               name: item.name,
               quantity: item.quantity,
               image: item.image || "",
             })),
-          }),
+          },
         });
       } catch (emailErr) {
         console.warn("Quote confirmation email trigger failed:", emailErr);

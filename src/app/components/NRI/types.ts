@@ -32,14 +32,14 @@ export type SpecialHandlingId =
   | 'liquids_cosmetics'
   | 'other';
 
-export type SlotStatus = 'AVAILABLE' | 'LIMITED' | 'FULL' | 'UNAVAILABLE';
+export type SlotStatus = 'AVAILABLE' | 'LIMITED' | 'FULL' | 'UNAVAILABLE' | 'PREFERENCE';
 
 export interface TimeSlot {
   id: string;
   timeRange: string;
   label: string;
   status: SlotStatus;
-  remainingQuota: number;
+  remainingQuota?: number;
   badge?: string;
 }
 

@@ -23,6 +23,8 @@ import {
   MapPin
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getPickupSlots } from '../../../services/pickupSlotService';
+import { submitCustomerRequest } from '../../../services/requestService';
 import { 
   BookingFormData, 
   ServiceTypeId, 
@@ -80,7 +82,6 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
   } | null>(null);
 
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
-  const [isLoadingSlots, setIsLoadingSlots] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCustomDate, setIsCustomDate] = useState(false);
   const pickupDates = Array.from({ length: 7 }, (_, index) => {
@@ -94,19 +95,17 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
     if (startStep && startStep > 1) setCurrentStep(startStep);
   }, [startStep]);
 
-  // Fetch real backend slots when pickup date changes
+  // Local pickup preferences; dispatch confirms the actual booking.
   useEffect(() => {
     if (formData.preferredPickupDate) {
-      setIsLoadingSlots(true);
-      fetch(`/api/slots/availability?date=${formData.preferredPickupDate}`)
-        .then((res) => res.json())
-        .then((data) => {
+      try {
+          const data = getPickupSlots(formData.preferredPickupDate);
           if (data && data.slots) {
             setAvailableSlots(data.slots);
             // If currently selected slot is full or unavailable, clear or auto-select first available
             const selectedCurrent = data.slots.find((s: TimeSlot) => s.id === formData.preferredPickupSlotId);
             if (!selectedCurrent || selectedCurrent.status === 'FULL' || selectedCurrent.status === 'UNAVAILABLE') {
-              const firstAvail = data.slots.find((s: TimeSlot) => s.status === 'AVAILABLE' || s.status === 'LIMITED');
+              const firstAvail = data.slots.find((s: TimeSlot) => s.status === 'PREFERENCE' || s.status === 'AVAILABLE' || s.status === 'LIMITED');
               if (firstAvail) {
                 setFormData((prev) => ({
                   ...prev,
@@ -116,13 +115,9 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
               }
             }
           }
-        })
-        .catch((err) => {
-          console.error('Failed to load slots:', err);
-        })
-        .finally(() => {
-          setIsLoadingSlots(false);
-        });
+      } catch {
+        setAvailableSlots([]);
+      }
     }
   }, [formData.preferredPickupDate]);
 
@@ -266,16 +261,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
     setErrorMessage(null);
 
     try {
-      const response = await fetch('/api/nri-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestType: 'pickup_request', payload: formData }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit booking');
-      }
+      const data = await submitCustomerRequest({ requestType: 'pickup_request', payload: formData });
 
       setSubmissionResult({
         bookingId: data.requestId,
@@ -852,17 +838,13 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                   <p className="mt-2 text-[11px] text-slate-500">Choose today or any day in the next seven days.</p>
                 </div>
 
-                {/* Available Time Slots from real backend */}
+                {/* Preferred windows configured locally */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                      Available Pickup Time Slots:
+                      Preferred Pickup Time:
                     </label>
-                    {isLoadingSlots && (
-                      <span className="text-[11px] text-[#0B56D9] font-semibold animate-pulse">
-                        Verifying Live Hub Slots...
-                      </span>
-                    )}
+                    <span className="text-[11px] text-slate-500">Team confirmation required</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -901,7 +883,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-bold text-[#0A1931]">{slot.timeRange}</span>
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${badgeColor}`}>
-                              {slot.status}
+                              {slot.status === 'PREFERENCE' ? 'Preferred window' : slot.status}
                             </span>
                           </div>
                           <div className="mt-1 flex items-center justify-between text-xs text-slate-500">

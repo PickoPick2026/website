@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { POPULAR_NRI_COUNTRIES, ALL_SUPPORTED_COUNTRIES } from './data/mockData';
 import { ShippingEstimateResult } from './types';
+import { calculateShippingEstimate } from '../../../services/shippingEstimateService';
 
 interface ShippingEstimateModalProps {
   isOpen: boolean;
@@ -34,18 +35,13 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
   const calculateEstimate = async () => {
     setIsCalculating(true);
     try {
-      const res = await fetch('/api/estimate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const data = calculateShippingEstimate({
           destinationCountry,
           weightKg: parseFloat(weightKg) || 1,
           lengthCm: parseFloat(lengthCm) || 0,
           widthCm: parseFloat(widthCm) || 0,
           heightCm: parseFloat(heightCm) || 0,
-        }),
       });
-      const data = await res.json();
       setEstimateResult(data);
     } catch (err) {
       console.error('Calculation error:', err);
@@ -77,7 +73,7 @@ export const ShippingEstimateModal: React.FC<ShippingEstimateModalProps> = ({
                 International Shipping Rate Estimator
               </h3>
                <p className="text-xs text-slate-500">
-                Transparent live estimates with volumetric packaging comparison
+                Indicative guidance with volumetric packaging comparison
               </p>
             </div>
           </div>

@@ -56,12 +56,8 @@
       "dest": "/api/service-requests.js"
     },
     {
-      "src": "/api/estimate",
-      "dest": "/api/estimate.js"
-    },
-    {
-      "src": "/api/slots/availability",
-      "dest": "/api/slots-availability.js"
+      "src": "/api/requests",
+      "dest": "/api/requests.js"
     },
     {
       "src": "/api/send-email",

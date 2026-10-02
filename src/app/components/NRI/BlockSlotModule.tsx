@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { submitCustomerRequest } from '../../../services/requestService';
 import { 
   Clock4, 
   Calendar, 
@@ -40,14 +41,7 @@ export const BlockSlotModule: React.FC = () => {
     setError(null);
 
     try {
-      const res = await fetch('/api/nri-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestType: 'slot_reservation', payload: formData }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to submit slot reservation.');
+      const data = await submitCustomerRequest({ requestType: 'slot_reservation', payload: formData });
 
       setResultNotice({
         id: data.requestId,

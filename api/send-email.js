@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     items = [],
   } = req.body || {};
 
-  // 1. Cart quote request flow (immediate confirmation email with products + CC info@pickopick.com)
+  // 1. Cart quote request flow (immediate confirmation email with products + CC sales@pickopick.com)
   if (type === "cart_quote" || type === "quote_request") {
     const customerEmail = cleanText(
       email || payload.customerEmail || payload.email,

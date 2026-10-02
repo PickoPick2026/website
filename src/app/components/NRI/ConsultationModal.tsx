@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { submitCustomerRequest } from '../../../services/requestService';
 import { CheckCircle2, Headphones, MessageSquare, X } from 'lucide-react';
 
 interface ConsultationModalProps {
@@ -59,9 +60,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
         whatsappNumber: `${formData.whatsappCountryCode}${formData.whatsappNumber.trim()}`,
         preferredTime: selectedSlot ? `${selectedSlot.label} (${formData.timezone})` : '',
       };
-      const response = await fetch('/api/nri-requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requestType: 'consultation', payload }) });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Unable to book your consultation.');
+      const data = await submitCustomerRequest({ requestType: 'consultation', payload });
       setResult({ consultationId: data.requestId, whatsappUrl: data.whatsappUrl, emailSent: Boolean(data.emailSent) });
     } catch (submissionError: any) {
       setError(submissionError.message || 'We could not save your request. Please try again shortly.');

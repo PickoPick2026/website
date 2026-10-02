@@ -121,7 +121,7 @@ export async function sendConfirmationEmail({
       cc: [
         {
           email_address: {
-            address: "info@pickopick.com",
+            address: "sales@pickopick.com",
             name: "Pick O Pick Team",
           },
         },

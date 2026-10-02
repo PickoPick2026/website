@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { submitCustomerRequest } from '../../services/requestService';
 import {
   ArrowRight,
   CheckCircle2,
@@ -82,17 +83,10 @@ export default function ShippingEstimatePage() {
       ].some(Boolean)
         ? `${dimensions.length || 0} × ${dimensions.width || 0} × ${dimensions.height || 0} cm`
         : "";
-      const response = await fetch("/api/estimate-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const data = await submitCustomerRequest({
           requestType: "estimate_request",
           payload: { ...form, dimensions: dimensionText },
-        }),
       });
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || "Unable to request an estimate.");
       setResult({ requestId: data.requestId, whatsappUrl: data.whatsappUrl, emailSent: Boolean(data.emailSent) });
       window.open(data.whatsappUrl, "_blank", "noopener,noreferrer");
     } catch (requestError: any) {
