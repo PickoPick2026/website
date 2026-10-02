@@ -35,6 +35,7 @@ export function PageHero({
   image,
   imageAlt,
   floatingChips = [],
+  flat = false,
 }: {
   eyebrow: string;
   title: string;
@@ -44,6 +45,7 @@ export function PageHero({
   image: string;
   imageAlt: string;
   floatingChips?: { icon: LucideIcon; label: string }[];
+  flat?: boolean;
 }) {
   return (
     <BluePanel className="border-b border-blue-100">
@@ -70,7 +72,7 @@ export function PageHero({
         </div>
 
         <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-          <div className="rounded-[32px] border border-white/30 bg-white p-6 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.45)]">
+          <div className={`rounded-[32px] border border-white/30 bg-white p-6 ${flat ? '' : 'shadow-[0_40px_80px_-40px_rgba(0,0,0,0.45)]'}`}>
             <img
               src={image}
               alt={imageAlt}
@@ -80,7 +82,7 @@ export function PageHero({
           {floatingChips.map(({ icon: Icon, label }, index) => (
             <span
               key={label}
-              className={`absolute hidden items-center gap-2 rounded-2xl border border-blue-100 bg-white px-3.5 py-2.5 text-xs font-extrabold text-[#0A1931] shadow-lg sm:inline-flex ${
+              className={`absolute hidden items-center gap-2 rounded-2xl border border-blue-100 bg-white px-3.5 py-2.5 text-xs font-extrabold text-[#0A1931] ${flat ? '' : 'shadow-lg'} sm:inline-flex ${
                 index === 0
                   ? "-left-4 top-8"
                   : index === 1
@@ -140,13 +142,15 @@ export function HeroSecondaryButton({
 /** White stats bar that overlaps the bottom of the hero. */
 export function StatsBar({
   stats,
+  flat = false,
 }: {
   stats: { icon: LucideIcon; value: string; label: string }[];
+  flat?: boolean;
 }) {
   return (
     <div className="relative z-20 mx-auto -mt-14 max-w-6xl px-4 sm:px-8">
       <div
-        className={`grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-blue-100 bg-blue-100 shadow-[0_24px_60px_-30px_rgba(11,86,217,0.45)] ${
+        className={`grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-blue-100 bg-blue-100 ${flat ? '' : 'shadow-[0_24px_60px_-30px_rgba(11,86,217,0.45)]'} ${
           stats.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
         }`}
       >

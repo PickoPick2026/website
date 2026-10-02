@@ -68,10 +68,12 @@ const MOBILE_LINKS: NavItem[] = [
   { label: "Shipment Estimation", href: "/shipping-estimate", icon: Calculator },
   { label: "How It Works", href: "/#how-it-works", icon: Info },
   { label: "About Us", href: "/#about", icon: Building2 },
+  { label: "Global Offices", href: "/#global-offices", icon: MapPin },
   { label: "Contact Us", href: "/contact", icon: ContactRound },
 ];
 
 const COMPANY_LINKS: NavItem[] = [
+  { label: "Global Offices", href: "/#global-offices", icon: MapPin, hint: "Singapore, United Kingdom and Dubai / UAE" },
   {
     label: "Shipment Estimation",
     href: "/shipping-estimate",
@@ -302,21 +304,25 @@ export function Navbar() {
     <>
       <header className="fixed inset-x-0 top-0 z-50">
         {/* Special offers strip (32px — page offsets depend on it) */}
+        <div className="flex h-8 items-center bg-[#0B56D9] text-white">
         <a
           href={WHATSAPP_OFFERS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-8 items-center justify-center gap-2 bg-[#0B56D9] px-4 text-white"
+          className="flex h-8 min-w-0 flex-1 items-center justify-center gap-1.5 px-2 text-white sm:gap-2 sm:px-3"
           aria-label="Special price and special offers are available. Chat with us on WhatsApp"
         >
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-70" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
           </span>
-          <span className="truncate text-[10.5px] font-extrabold uppercase tracking-[0.14em] sm:text-[11px]">
-            Special Price · Special Offers Are Available — Chat with us
+          <span className="truncate text-[10px] font-extrabold sm:text-[11px] sm:uppercase sm:tracking-[0.14em]">
+            <span className="sm:hidden">Offers · Chat with us</span>
+            <span className="hidden sm:inline">Offers &amp; discounts available · Chat with us</span>
           </span>
         </a>
+        <a href="/shipping-estimate" onClick={(event) => handleNavigation(event, '/shipping-estimate')} className="flex h-8 shrink-0 items-center gap-1.5 border-l border-white/30 px-3 text-[10.5px] font-bold hover:bg-white/10 sm:px-5 sm:text-xs"><Calculator className="h-3.5 w-3.5" aria-hidden="true" />Shipment Estimation</a>
+        </div>
 
         <nav className="relative w-full border-b border-slate-200/80 bg-white">
           <div className="mx-auto flex h-[64px] max-w-[1440px] items-center gap-2 px-4 sm:h-[68px] sm:gap-3 sm:px-6 lg:px-8">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import {
   Hero,
@@ -20,6 +21,7 @@ import { ConsultationModal } from "../components/NRI/ConsultationModal";
 import { WelcomePopup } from "../components/WelcomePopup";
 
 export default function Home() {
+  const { hash } = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
 
@@ -52,13 +54,14 @@ export default function Home() {
 
   // Hash navigation handler (e.g. #plan-shipment)
   useEffect(() => {
-    if (window.location.hash) {
-      const id = window.location.hash.replace("#", "");
-      window.setTimeout(() => {
+    if (hash) {
+      const id = hash.replace("#", "");
+      const timer = window.setTimeout(() => {
         document.getElementById(id)?.scrollIntoView();
       }, 150);
+      return () => window.clearTimeout(timer);
     }
-  }, []);
+  }, [hash]);
 
   // 🎯 CONDITIONAL RENDER
   return (
@@ -80,6 +83,7 @@ export default function Home() {
 
       {/* ABOUT US: OUR STORY & CAPABILITIES */}
       <AboutUs />
+      <CompanyVision />
 
       {/* 7-STEP JOURNEY */}
       <StoryFlow />
@@ -98,9 +102,6 @@ export default function Home() {
 
       {/* SHOP BANNER & BRAND PARTNERS */}
       <ShopBanner />
-
-      {/* Bottom Section: Vision, Mission, Commitment & Company Info */}
-      <CompanyVision />
 
       <ConsultationModal
         isOpen={isConsultationOpen}

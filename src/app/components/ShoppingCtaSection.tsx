@@ -59,7 +59,7 @@ export function ShoppingCtaSection({
                 onClick={onOpenConsultation}
                 className="inline-flex w-auto items-center justify-center gap-2 rounded-full bg-[#0B56D9] px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-[#0849B7] sm:px-5 sm:py-3 sm:text-[11px]"
               >
-                Talk to a concierge <ArrowRight className="h-4 w-4" />
+                Book Your Consultation <ArrowRight className="h-4 w-4" />
               </button>
             ) : (
               <Link
@@ -75,7 +75,7 @@ export function ShoppingCtaSection({
                 onClick={onStartBooking}
                 className="inline-flex w-auto items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-3.5 py-2.5 text-[10px] font-extrabold uppercase tracking-wide text-[#0A1931] transition-colors hover:bg-slate-50 sm:px-5 sm:py-3 sm:text-[11px]"
               >
-                Plan your shipment <ArrowRight className="h-4 w-4" />
+                Book Shipment Assistance <ArrowRight className="h-4 w-4" />
               </button>
             ) : (
               <Link

@@ -49,7 +49,7 @@ export function PremiumCta() {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/80 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-[#0B56D9]">
                 <Crown size={13} aria-hidden="true" />
-                <span className="brand-shine-text">NRI Premium Service</span>
+                <span className="brand-shine-text">NRI Premium Services</span>
               </span>
 
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl lg:leading-[1.08] xl:text-5xl">
@@ -76,7 +76,7 @@ export function PremiumCta() {
                   />
                 </Link>
                 <Link
-                  to="/nri"
+                  to="/nri#consultation"
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-[#0B56D9]/30 bg-white/80 px-7 py-3.5 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] transition-colors hover:bg-blue-50"
                 >
                   <MessageCircleHeart size={15} aria-hidden="true" />

@@ -75,7 +75,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
       <div className="max-h-[92dvh] w-full max-w-xl overflow-y-auto rounded-t-3xl border border-slate-200 bg-white sm:rounded-3xl">
         <style>{`.input { width: 100%; border: 1px solid #cbd5e1; border-radius: .75rem; padding: .75rem; font-size: .75rem; font-weight: 500; color: #0A1931; outline: none; background: #fff; } .input:focus { border-color: #0B56D9; box-shadow: 0 0 0 3px rgb(11 86 217 / .12); }`}</style>
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-5">
-          <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-[#0B56D9]"><Headphones className="h-5 w-5" /></div><div><h3 className="text-base font-extrabold text-[#0A1931]">Book Free Shipping Consultation</h3><p className="text-[11px] text-slate-500">Choose a time in your own timezone.</p></div></div>
+          <div className="flex items-center gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#0B56D9]"><Headphones className="h-5 w-5" /></div><div><h3 className="text-base font-extrabold text-[#0A1931]">Book Your Consultation</h3><p className="text-[11px] text-slate-500">NRI Premium Services · Free consultation in your timezone.</p></div></div>
           <button onClick={onClose} aria-label="Close consultation form" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"><X className="h-5 w-5" /></button>
         </div>
         <div className="p-5 sm:p-6">

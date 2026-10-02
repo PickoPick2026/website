@@ -283,7 +283,7 @@ export function PlanShipmentSection() {
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-[#0A1931] tracking-tight">
-                    Get Instant Shipping Quote
+                    Order &amp; Send Request
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-500 mt-1">
                     Provide your shipment details. We prepare the lowest
@@ -576,7 +576,7 @@ export function PlanShipmentSection() {
                   <span>
                     {isSubmitting
                       ? "Generating Rate Quote..."
-                      : "Send Request to WhatsApp & Email"}
+                      : "Send Order & Send Request"}
                   </span>
                   <ArrowRight size={16} />
                 </button>

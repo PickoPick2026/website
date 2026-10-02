@@ -221,7 +221,7 @@ export function AboutUs() {
                 to="/nri"
                 className="group inline-flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-2xl bg-white hover:bg-blue-50 text-[#0B56D9] text-xs sm:text-sm font-extrabold tracking-wide transition-colors"
               >
-                <span>Explore NRI Services</span>
+                <span>Explore NRI Premium Services</span>
                 <ArrowRight
                   size={14}
                   className="transition-transform group-hover:translate-x-1"

@@ -306,7 +306,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
   };
 
   return (
-    <section id="booking-portal" className="py-16 sm:py-20 bg-[#F7F9FF]">
+    <section id="booking-portal" className="scroll-mt-28 py-16 sm:py-20 bg-[#F7F9FF]">
       <div className="max-w-7xl mx-auto p-6 rounded-3xl bg-white">
         
         {/* Stepper Header */}
@@ -314,7 +314,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
           <div className="flex items-center justify-between flex-wrap gap-4 pb-6 border-b border-slate-200">
             <div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A1931] tracking-tight">
-                Plan Your India Shipment
+                Book NRI Premium Services
               </h2>
             </div>
           </div>
@@ -381,7 +381,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
               <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
-                    Select Your Required NRI Service:
+                    Select Your Required NRI Premium Services:
                   </label>
                   <ServiceCards selectedServices={formData.selectedServices} onToggleService={toggleBookingService} />
                 </div>
@@ -1301,7 +1301,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                     onClick={onResetBooking}
                     className="text-xs font-bold text-[#0B56D9] hover:underline transition-colors cursor-pointer"
                   >
-                    Back to NRI Services / Book Another Shipment
+                    Back to NRI Premium Services / Book Another Shipment
                   </button>
                 </div>
               </div>
@@ -1343,7 +1343,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
                       <span>SUBMITTING YOUR REQUEST...</span>
                     ) : (
                       <>
-                        <span>SUBMIT MY REQUEST</span>
+                        <span>Send NRI Premium Services Request</span>
                         <Check className="w-4 h-4 stroke-[3]" />
                       </>
                     )}

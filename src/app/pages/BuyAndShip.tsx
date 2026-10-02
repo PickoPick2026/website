@@ -350,9 +350,10 @@ export default function BuyAndShipPage() {
     <main className="min-h-screen bg-white text-[#0A1931]">
       {/* ───────── Hero ───────── */}
       <PageHero
+        flat
         eyebrow="Buy & Ship • Personal Shopper in India"
-        title="Shop Any Store in India."
-        highlight="We Buy & Deliver Worldwide."
+        title="Buy & Ship"
+        highlight="Shop India. Delivered Worldwide."
         description="Can’t buy online in India because of domestic OTPs or local cards? Pick O Pick purchases on your behalf in INR, inspects every item, repacks, and delivers directly to your foreign doorstep."
         image="/images/nri-trust/shop-from-india.webp"
         imageAlt="Parcels from Indian stores combined into one Pick O Pick box"
@@ -375,6 +376,7 @@ export default function BuyAndShipPage() {
       />
 
       <StatsBar
+        flat
         stats={[
           { icon: Store, value: "500+", label: "Indian stores" },
           { icon: Package, value: "30 days", label: "Free locker storage" },
@@ -426,8 +428,8 @@ export default function BuyAndShipPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-8">
           <SectionHeader
             eyebrow="Start your order"
-            title="Tell us what to"
-            highlight="buy for you"
+            title="Buy & Ship"
+            highlight="Request"
             description="Share the product and where it’s going — your personal shopper takes it from there."
           />
 

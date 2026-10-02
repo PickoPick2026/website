@@ -3,7 +3,7 @@ import { ServiceOption } from '../types';
 export const NRI_SERVICES: ServiceOption[] = [
   {
     id: 'shop_from_india',
-    title: 'Shop From India',
+    title: 'Buy & Ship',
     shortDesc: 'Tell us what you want. We’ll help source it from any local or online Indian market.',
     tagline: 'Personal Sourcing & Shopping Assistance',
     badge: 'Popular for NRIs',
@@ -13,7 +13,7 @@ export const NRI_SERVICES: ServiceOption[] = [
   },
   {
     id: 'personal_items',
-    title: 'Send Personal Items',
+    title: 'Order & Send',
     shortDesc: 'Send clothes, personal belongings, essential documents, and family heirlooms safely.',
     tagline: 'Doorstep Courier & Relocation',
     badge: 'Express Doorstep',

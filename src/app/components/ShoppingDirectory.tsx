@@ -14,6 +14,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { AuthModal } from "./AuthModal";
 import { supabase } from "@/src/lib/supabase";
+import { useCatalog } from "@/src/lib/catalogCache";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
 import { BluePanel, FieldLabel, FormGroup, fieldClass } from "./ServicePage";
@@ -71,8 +72,7 @@ export function ShoppingDirectory({
     "directory",
   );
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [categories, setCategories] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
+  const { categories, products, loading, error: catalogError } = useCatalog();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isThankYouOpen, setIsThankYouOpen] = useState(false);
   const [isAdding, setIsAdding] = useState<string | null>(null);
@@ -110,24 +110,6 @@ export function ShoppingDirectory({
     });
     return found ? String(found.categoryID) : val;
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const [{ data: catData }, { data: productData }] = await Promise.all([
-        supabase.from("category").select("*"),
-        supabase.from("productTable").select("*"),
-      ]);
-      const cats = catData || [];
-      setCategories(cats);
-      setProducts(productData || []);
-
-      if (categoryFilter) {
-        const resolved = resolveCategoryId(categoryFilter, cats);
-        setSelectedCategory(resolved);
-      }
-    };
-    void fetchData();
-  }, []);
 
   useEffect(() => {
     const syncTabFromHash = () =>
@@ -295,6 +277,8 @@ export function ShoppingDirectory({
       className="scroll-mt-24 pb-12 pt-6 sm:pb-16 sm:pt-8"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
+        {loading && <p role="status" className="mb-4 text-sm text-slate-500">Loading products…</p>}
+        {catalogError && <p role="alert" className="mb-4 text-sm text-red-700">{catalogError}</p>}
         {/* Tabs */}
         <div className="mb-6 flex justify-center sm:mb-8">
           <div className="inline-flex w-full rounded-2xl border border-slate-200 bg-white p-1 sm:w-fit">
@@ -433,7 +417,7 @@ export function ShoppingDirectory({
               })}
             </div>
 
-            {directoryProducts.length === 0 && (
+            {!loading && !catalogError && directoryProducts.length === 0 && (
               <div className="rounded-[28px] border border-dashed border-[#0B56D9]/30 bg-white px-6 py-16 text-center">
                 <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#0B56D9]">
                   <Search size={22} />

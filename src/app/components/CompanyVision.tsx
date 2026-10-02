@@ -10,6 +10,7 @@ import {
   Phone,
   Target,
 } from "lucide-react";
+import { GlobalOffices } from './GlobalOffices';
 
 const companyDetails = [
   { icon: MapPin, label: "Based in", value: "Chennai, Tamil Nadu, India" },
@@ -44,7 +45,8 @@ const contactDetails = [
 
 export function CompanyVision() {
   return (
-    <section className="overflow-hidden border-t border-slate-200/80 bg-[#F7F9FF] py-20 sm:py-28">
+    <>
+    <section id="company-profile" className="scroll-mt-28 overflow-hidden border-t border-slate-200/80 bg-[#F7F9FF] py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
         <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[.9fr_1.1fr]">
           <div className="bg-[#0B56D9] p-8 text-white sm:p-12">
@@ -177,5 +179,7 @@ export function CompanyVision() {
         </div>
       </div>
     </section>
+    <GlobalOffices />
+    </>
   );
 }

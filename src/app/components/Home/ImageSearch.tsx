@@ -741,7 +741,7 @@ export function ImageSearch() {
                     <CheckCircle2 size={32} />
                   </div>
                   <h3 className="text-xl font-extrabold text-[#0A1931]">
-                    Purchase Inquiry Sent!
+                    Buy &amp; Ship Request Received
                   </h3>
                   <p className="text-xs text-slate-500 mt-2 leading-relaxed">
                     Our personal shopping executive will review the product
@@ -760,7 +760,7 @@ export function ImageSearch() {
                 <form onSubmit={handleInquirySubmit} className="space-y-4">
                   <div>
                     <h3 className="text-lg font-extrabold text-[#0A1931]">
-                      Request Assisted Buy Quote
+                      Buy &amp; Ship Request
                     </h3>
                     <p className="text-xs text-slate-500 truncate">
                       {analysisResult?.productTitle}
@@ -905,7 +905,7 @@ export function ImageSearch() {
                       className="w-2/3 py-2.5 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-extrabold uppercase tracking-wide inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                     >
                       <FaWhatsapp size={16} />
-                      <span>Submit to Shopper</span>
+                      <span>Send Buy &amp; Ship Request</span>
                     </button>
                   </div>
                 </form>

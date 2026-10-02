@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 import { HeroSection } from '../components/NRI/HeroSection';
 import { BookingFlow } from '../components/NRI/BookingFlow';
 import { FreeConsultationModule } from '../components/NRI/FreeConsultationModule';
@@ -17,6 +19,7 @@ const getTodayValue = () => {
 };
 
 export default function App() {
+  const { hash } = useLocation();
   // Master booking form state
   const [formData, setFormData] = useState<BookingFormData>({
     serviceType: 'shop_from_india',
@@ -82,15 +85,33 @@ export default function App() {
     window.addEventListener('pickopick:open-pickup', openPickup);
     window.addEventListener('pickopick:open-estimate', openEstimate);
 
-    const action = window.location.hash;
-    if (action === '#booking-portal') window.setTimeout(openPickup, 120);
-    if (action === '#shipping-estimate') window.setTimeout(openEstimate, 120);
-
     return () => {
       window.removeEventListener('pickopick:open-pickup', openPickup);
       window.removeEventListener('pickopick:open-estimate', openEstimate);
     };
   }, []);
+
+  useEffect(() => {
+    if (hash === '#consultation') {
+      setIsConsultationModalOpen(true);
+      scrollToSection('consultation-section');
+    } else if (hash === '#booking-portal') {
+      setBookingStartStep(1);
+      scrollToSection('booking-portal');
+    } else if (hash === '#consultation-section') {
+      scrollToSection('consultation-section');
+    } else if (hash === '#shipping-estimate') {
+      window.location.assign('/shipping-estimate');
+    }
+  }, [hash]);
+
+  const nextSection = (id: string, label: string) => (
+    <div className="flex justify-center bg-white py-4">
+      <button type="button" onClick={() => scrollToSection(id)} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[#0B56D9] hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-[#0B56D9]">
+        {label}<ChevronDown className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  );
 
   // Select service from any interactive trigger and scroll to booking flow
   const handleSelectService = (serviceId: ServiceTypeId) => {
@@ -170,12 +191,20 @@ export default function App() {
       {/* Hero Section */}
       <main className="flex-1">
         <HeroSection
+          onOpenConsultation={() => setIsConsultationModalOpen(true)}
           onStartBooking={() => scrollToSection('booking-portal')}
         />
 
         
 
+        <FreeConsultationModule onOpenConsultation={() => setIsConsultationModalOpen(true)} />
+        {nextSection('use-cases', 'Explore your premium services')}
         <NriUseCasesSection />
+        {nextSection('why-us', 'Meet your India-side team')}
+        <WhyChooseUsSection />
+        {nextSection('how-it-works', 'See how your shipment travels')}
+        <ProcessSection />
+        {nextSection('booking-portal', 'Ready to book assistance?')}
 
         {/* Core Multi-Step Booking Engine & Sticky Live Summary */}
         <BookingFlow
@@ -185,15 +214,6 @@ export default function App() {
           onResetBooking={handleResetBooking}
           startStep={bookingStartStep}
         />
-
-        {/* Free 1-on-1 Concierge Consultation Section */}
-        <FreeConsultationModule onOpenConsultation={() => setIsConsultationModalOpen(true)} />
-
-        {/* What We Give You (6 Trust Pillars) */}
-        <WhyChooseUsSection />
-
-        {/* How It Works — first video + package journey steps */}
-        <ProcessSection />
 
         {/* Customer Testimonials */}
         <TestimonialsSection />

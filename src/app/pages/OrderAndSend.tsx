@@ -261,9 +261,10 @@ export default function OrderAndSendPage() {
     <main className="min-h-screen bg-white text-[#0A1931]">
       {/* ───────── Hero ───────── */}
       <PageHero
+        flat
         eyebrow="Order & Send • Doorstep Pickup & Courier"
-        title="Doorstep Pickup in India."
-        highlight="Express Delivery Worldwide."
+        title="Order & Send"
+        highlight="India Pickup. Worldwide Delivery."
         description="Have homemade delicacies, sweets, garments, documents, or personal gifts at home in India? We collect directly from your Indian doorstep across 25,000+ pincodes, repack to trim volumetric dead weight, and express-courier to 200+ countries."
         image="/images/nri-trust/international-shipping.webp"
         imageAlt="Pick O Pick plane, ship and truck delivering parcels worldwide"
@@ -286,6 +287,7 @@ export default function OrderAndSendPage() {
       />
 
       <StatsBar
+        flat
         stats={[
           { icon: MapPin, value: "25,000+", label: "Pickup pincodes" },
           { icon: Percent, value: "Up to 40%", label: "Freight saved by repacking" },
@@ -338,8 +340,8 @@ export default function OrderAndSendPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-8">
           <SectionHeader
             eyebrow="Book a pickup"
-            title="Schedule your"
-            highlight="doorstep pickup"
+            title="Order & Send"
+            highlight="Pickup Request"
             description="We’ll calculate discounted freight rates and dispatch our courier to the Indian address."
           />
 

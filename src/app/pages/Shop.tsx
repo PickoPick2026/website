@@ -1,16 +1,17 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { ShoppingDirectory } from "../components/ShoppingDirectory";
 import { CrossLinkBanner } from "../components/ServicePage";
 import { CartDrawer } from "../components/Shop/CartDrawer";
-import { supabase } from "@/src/lib/supabase";
+import { useCatalog } from "@/src/lib/catalogCache";
 
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [categories, setCategories] = useState<any[]>([]);
+  const { categories: catalogCategories } = useCatalog();
+  const categories = useMemo(() => catalogCategories.filter(category => category.categoryName !== 'Exclusive'), [catalogCategories]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -64,33 +65,6 @@ export default function ShopPage() {
     });
     return found ? String(found.categoryID) : "";
   };
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      const { data } = await supabase
-        .from("category")
-        .select("categoryID, categoryName");
-      const filtered = (data || []).filter(
-        (category) => category.categoryName !== "Exclusive",
-      );
-      setCategories(filtered);
-
-      const urlCategory = searchParams.get("category");
-      if (urlCategory) {
-        const resolvedId = matchCategory(urlCategory, filtered);
-        if (resolvedId) {
-          setSelectedCategoryId(resolvedId);
-        }
-      }
-
-      const urlSearch = searchParams.get("search");
-      if (urlSearch) {
-        setSearchInput(urlSearch);
-        setQuery(urlSearch);
-      }
-    };
-    void loadCategories();
-  }, []);
 
   // Update when URL searchParams change
   useEffect(() => {

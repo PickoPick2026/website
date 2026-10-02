@@ -12,7 +12,7 @@ const trustIllustrations: Record<string, string> = {
 
 export const WhyChooseUsSection: React.FC = () => {
   return (
-    <section id="why-us" className="py-16 sm:py-20 bg-[#F1F5F9] border-b border-slate-200">
+    <section id="why-us" className="scroll-mt-28 py-16 sm:py-20 bg-[#F1F5F9] border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Section Header */}
