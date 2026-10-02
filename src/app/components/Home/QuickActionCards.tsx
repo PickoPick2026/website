@@ -19,7 +19,6 @@ const actions = [
       "Share any product link — our personal shopper purchases, verifies and ships it to your doorstep abroad.",
     cta: "Start Buy & Ship",
     to: "/buy-and-ship",
-    accent: "from-[#0B56D9] to-[#0849B7]",
   },
   {
     id: "order-and-send",
@@ -30,7 +29,6 @@ const actions = [
       "Doorstep pickup anywhere in India, careful repacking and express courier to 200+ countries in 3–5 days.",
     cta: "Schedule a Pickup",
     to: "/order-and-send",
-    accent: "from-[#0A1931] to-[#0B56D9]",
   },
   {
     id: "express-consultation",
@@ -41,7 +39,6 @@ const actions = [
       "Rates, timelines, customs, packaging — get answers immediately and book your slot with our concierge team.",
     cta: "Book Free Consultation",
     event: "pickopick:open-consultation",
-    accent: "from-[#087f5b] to-[#0B56D9]",
   },
   {
     id: "premium-services",
@@ -52,7 +49,6 @@ const actions = [
       "Dedicated service team, priority handling, white-glove support — see what premium gets you.",
     cta: "Explore Premium",
     to: "/nri",
-    accent: "from-[#0B56D9] to-[#0849B7]",
   },
 ];
 
@@ -77,6 +73,14 @@ export function QuickActionCards() {
       return;
     }
 
+    navigate(action.to!);
+  };
+
+  const openAction = (action: (typeof actions)[number]) => {
+    if (action.event) {
+      window.dispatchEvent(new Event(action.event));
+      return;
+    }
     navigate(action.to!);
   };
 
@@ -106,10 +110,8 @@ export function QuickActionCards() {
             {/* Rotating detail card */}
             <div
               key={active.id}
-              className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${active.accent} p-6 text-white sm:p-8 animate-fade-in`}
+              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0B56D9] to-[#0849B7] p-6 text-white sm:p-8 animate-fade-in"
             >
-              <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full bg-white/10" />
-              <div className="absolute -bottom-10 -left-6 h-28 w-28 rounded-full bg-white/10" />
               <div className="relative z-10">
                 <div className="flex items-center gap-3">
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-xs">
@@ -127,7 +129,7 @@ export function QuickActionCards() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => handleSelect(activeIndex)}
+                  onClick={() => openAction(active)}
                   className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#0A1931] transition-transform hover:-translate-y-0.5 cursor-pointer"
                 >
                   {active.cta}
@@ -166,7 +168,7 @@ export function QuickActionCards() {
                         {action.eyebrow}
                       </span>
                       <span className="mt-0.5 block text-[10px] font-semibold text-slate-500">
-                        Changes every 3s · tap to open
+                        Tap to open
                       </span>
                     </span>
                   </button>
