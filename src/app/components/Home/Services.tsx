@@ -4,14 +4,14 @@ import { ArrowRight } from "lucide-react";
 const services = [
   {
     num: "01",
-    image: "/images/nri-trust/shop-from-india.webp",
+    image: "/images/nri-trust/nri-cta-closer-v1.webp",
     title: "Personal Shopper",
     desc: "We buy on your behalf from any Indian store, handling local payments and communications.",
     to: "/buy-and-ship",
   },
   {
     num: "02",
-    image: "/images/nri-trust/consolidate-purchases.webp",
+    image: "/images/nri-trust/shop-from-india.webp",
     title: "Package Consolidation",
     desc: "Combine multiple orders into one shipment to save up to 80% on international shipping costs.",
     to: "/order-and-send",
@@ -25,7 +25,7 @@ const services = [
   },
   {
     num: "04",
-    image: "/images/nri-trust/source-with-confidence.webp",
+    image: "/images/nri-trust/professional-packing.webp",
     title: "Quality Inspection",
     desc: "We verify your items upon arrival at our warehouse, providing photos before shipping.",
     to: "/nri",

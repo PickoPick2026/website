@@ -1,27 +1,72 @@
-import { Link } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { ArrowUpRight, MapPin } from "lucide-react";
 
 const offices = [
-  { name: 'Singapore', location: 'Singapore Operations Desk', flag: '/images/flags/sg.svg' },
-  { name: 'United Kingdom', location: 'London, United Kingdom', flag: '/images/flags/gb.svg' },
-  { name: 'Dubai / UAE', location: 'Dubai, United Arab Emirates', flag: '/images/flags/ae.svg' },
+  { name: "Chennai, India", location: "Your India-side team", flag: null },
+  { name: "Singapore", location: "Singapore Operations Desk", flag: "/images/flags/sg.svg" },
+  { name: "United Kingdom", location: "London, United Kingdom", flag: "/images/flags/gb.svg" },
+  { name: "Dubai / UAE", location: "Dubai, United Arab Emirates", flag: "/images/flags/ae.svg" },
 ];
 
 export function GlobalOffices() {
   return (
-    <section id="global-offices" aria-labelledby="global-offices-heading" className="scroll-mt-28 border-y border-blue-100 bg-white py-10 sm:py-14">
-      <div className="mx-auto max-w-7xl px-4 sm:px-8">
-        <h2 id="global-offices-heading" className="text-2xl font-extrabold text-[#0A1931] sm:text-3xl">Our global offices</h2>
-        <p className="mt-2 text-sm text-slate-600">An India-side team with overseas support closer to you.</p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          {offices.map(office => (
-            <div key={office.name} className="flex items-start gap-4 rounded-2xl border border-blue-100 p-5">
-              <img src={office.flag} alt="" width={36} height={24} className="mt-1 h-6 w-9 rounded object-cover" loading="lazy" />
-              <div><h3 className="font-bold text-[#0A1931]">{office.name}</h3><p className="mt-1 flex items-start gap-1 text-sm text-slate-600"><MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{office.location}</p></div>
-            </div>
-          ))}
+    <section
+      id="global-offices"
+      aria-labelledby="global-offices-heading"
+      className="relative isolate w-full scroll-mt-28 overflow-hidden bg-[#D9F1FF] lg:aspect-[3/1] lg:min-h-[460px]"
+    >
+      <img
+        src="/images/global-offices-cloud-panorama-v2.png"
+        alt="Chennai, Singapore, London and Dubai landmarks connected across a bright sky with soft white clouds"
+        width={2048}
+        height={683}
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 block h-auto w-full"
+        loading="lazy"
+        decoding="async"
+      />
+      <div className="grid gap-8 px-5 pt-8 pb-[38vw] sm:px-8 sm:pt-10 lg:grid-cols-[1fr_1fr] lg:gap-16 lg:px-12 lg:pb-48 xl:pt-12">
+        <header>
+          <h2 id="global-offices-heading" className="max-w-lg text-3xl font-extrabold leading-tight tracking-tight text-[#07378A] sm:text-4xl xl:text-5xl">
+            From Chennai,<br />closer to you.
+          </h2>
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#173A63] sm:text-base">
+            Your team in India, with overseas support closer to home.
+          </p>
+          <Link
+            to="/contact"
+            className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#07378A] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#052860] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#07378A]"
+          >
+            Contact our team <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </header>
+
+        <div>
+          <h3 className="text-lg font-bold text-[#07378A]">Our global offices</h3>
+          <ul className="mt-5 grid grid-cols-1 gap-x-6 gap-y-5 min-[400px]:grid-cols-2">
+            {offices.map((office) => (
+              <li key={office.name} className="flex items-start gap-3">
+                {office.flag ? (
+                  <img
+                    src={office.flag}
+                    alt=""
+                    width={36}
+                    height={24}
+                    className="mt-0.5 h-6 w-9 shrink-0 rounded-sm object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="mt-0.5 flex h-6 w-9 shrink-0 items-center justify-center text-[#173A63]">
+                    <MapPin className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                )}
+                <div className="min-w-0">
+                  <h4 className="text-sm font-bold text-[#07378A]">{office.name}</h4>
+                  <p className="mt-1 text-xs leading-relaxed text-[#173A63]">{office.location}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-        <Link to="/contact" className="mt-5 inline-block text-sm font-bold text-[#0B56D9] hover:underline">Contact our team for office assistance</Link>
       </div>
     </section>
   );
