@@ -13,11 +13,11 @@ export function GlobalOffices() {
     <section
       id="global-offices"
       aria-labelledby="global-offices-heading"
-      className="relative isolate w-full scroll-mt-28 overflow-hidden bg-[#D9F1FF] lg:aspect-[3/1] lg:min-h-[460px]"
+      className="relative isolate w-full scroll-mt-28 overflow-hidden bg-[#D9F1FF] lg:aspect-[3/1] lg:min-h-[560px]"
     >
       <img
-        src="/images/global-offices-cloud-panorama-v2.png"
-        alt="Chennai, Singapore, London and Dubai landmarks connected across a bright sky with soft white clouds"
+        src="/images/global-offices-sea-freight-v4.png"
+        alt="Pick O Pick-branded aircraft and a cargo ship travelling from Chennai across the sea toward Singapore, London and Dubai beneath a bright cloudy sky"
         width={2048}
         height={683}
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 block h-auto w-full"
