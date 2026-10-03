@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight, MapPin } from "lucide-react";
 
 const offices = [
-  { name: "Chennai, India", location: "Your India-side team", flag: null },
+  { name: "Chennai, India", location: "Head office & shipping hub", flag: null },
   { name: "Singapore", location: "Singapore Operations Desk", flag: "/images/flags/sg.svg" },
   { name: "United Kingdom", location: "London, United Kingdom", flag: "/images/flags/gb.svg" },
   { name: "Dubai / UAE", location: "Dubai, United Arab Emirates", flag: "/images/flags/ae.svg" },
@@ -27,10 +27,10 @@ export function GlobalOffices() {
       <div className="grid gap-8 px-5 pt-8 pb-[62vw] sm:px-8 sm:pt-10 sm:pb-[38vw] lg:grid-cols-[1fr_1fr] lg:gap-16 lg:px-12 lg:pb-48 xl:pt-12">
         <header>
           <h2 id="global-offices-heading" className="max-w-lg text-3xl font-extrabold leading-tight tracking-tight text-[#07378A] sm:text-4xl xl:text-5xl">
-            From Chennai,<br />closer to you.
+            From Chennai,<br />to your doorstep.
           </h2>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#173A63] sm:text-base">
-            Your team in India, with overseas support closer to home.
+            Your parcels are packed and shipped by our team in Chennai — and our offices in Singapore, London and Dubai keep support close to you, in your time zone.
           </p>
           <Link
             to="/contact"
