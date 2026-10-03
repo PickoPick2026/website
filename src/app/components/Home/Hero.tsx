@@ -9,7 +9,8 @@ import "swiper/css/a11y";
 
 const heroSlides = [
   {
-    src: "/images/Hero/hero-section.png",
+    src: "/images/Hero/hero-section.webp",
+    mobileSrc: "/images/Hero/mobile/hero-section-mobile.webp",
     alt: "Pick O Pick worldwide delivery with Indian products",
     width: 1916,
     height: 821,
@@ -19,7 +20,8 @@ const heroSlides = [
     button: "Explore the shop",
   },
   {
-    src: "/images/Hero/hero-section-2.png",
+    src: "/images/Hero/hero-section-2.webp",
+    mobileSrc: "/images/Hero/mobile/hero-section-2-mobile.webp",
     alt: "Pick O Pick personal shopper packing Indian products for overseas delivery",
     width: 1916,
     height: 821,
@@ -29,7 +31,8 @@ const heroSlides = [
     button: "Explore Buy & Ship",
   },
   {
-    src: "/images/Hero/hero-section-3.png",
+    src: "/images/Hero/hero-section-3.webp",
+    mobileSrc: "/images/Hero/mobile/hero-section-3-mobile.webp",
     alt: "Pick O Pick service team handling parcels for worldwide delivery",
     width: 1916,
     height: 821,
@@ -39,7 +42,8 @@ const heroSlides = [
     button: "Explore Order & Send",
   },
   {
-    src: "/images/Hero/hero-section-4.png",
+    src: "/images/Hero/hero-section-4.webp",
+    mobileSrc: "/images/Hero/mobile/hero-section-4-mobile.webp",
     alt: "Shop Indian stores with Pick O Pick, from personal shopping to doorstep delivery worldwide",
     width: 1916,
     height: 821,
@@ -105,17 +109,26 @@ export function Hero() {
         {heroSlides.map((slide, index) => (
           <SwiperSlide key={slide.src}>
             <div className="relative">
-            <img
-              src={slide.src}
-              alt={slide.alt}
-              width={slide.width}
-              height={slide.height}
-              className="block h-auto w-full"
-              loading="eager"
-              fetchPriority={index === 0 ? "high" : "low"}
-              decoding="async"
-              draggable={false}
-            />
+            <picture>
+              <source
+                media="(max-width: 639px)"
+                srcSet={slide.mobileSrc}
+                width={1120}
+                height={1400}
+                type="image/webp"
+              />
+              <img
+                src={slide.src}
+                alt={slide.alt}
+                width={slide.width}
+                height={slide.height}
+                className="block aspect-[4/5] h-auto w-full object-cover sm:aspect-auto"
+                loading="eager"
+                fetchPriority={index === 0 ? "high" : "low"}
+                decoding="async"
+                draggable={false}
+              />
+            </picture>
             <div className="bg-white px-5 py-4 sm:absolute sm:bottom-5 sm:left-6 sm:max-w-sm sm:rounded-2xl sm:border sm:border-blue-100 sm:bg-white/95 sm:p-5 lg:bottom-8 lg:left-10 lg:max-w-md">
               <h2 className="text-xl font-extrabold tracking-tight text-[#0A1931] sm:text-2xl lg:text-3xl">{slide.title}</h2>
               <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:text-sm">{slide.text}</p>

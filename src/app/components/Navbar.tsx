@@ -348,7 +348,7 @@ export function Navbar() {
               aria-label="Pick O Pick home"
             >
               <img
-                src="/PICKLogo.png"
+                src="/PICKLogo.webp"
                 alt="Pick O Pick"
                 className="h-11 w-auto object-contain sm:h-14"
               />
@@ -611,7 +611,7 @@ export function Navbar() {
               className="fixed inset-y-0 right-0 z-[61] flex w-[86%] max-w-sm flex-col bg-white xl:hidden"
             >
               <div className="flex h-16 items-center justify-between border-b border-slate-100 px-5">
-                <img src="/PICKLogo.png" alt="Pick O Pick" className="h-10 w-auto" />
+                <img src="/PICKLogo.webp" alt="Pick O Pick" className="h-10 w-auto" />
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}

@@ -116,7 +116,7 @@ export function ShoppingCtaSection({
 
         <div className="order-1 flex h-[220px] min-w-0 items-center justify-center overflow-hidden bg-white sm:h-[320px] md:order-2 md:h-full md:min-h-[480px]">
           <img
-            src="/images/nri-cta-closer-v1.webp"
+            src="/images/nri-trust/nri-cta-closer-v1.webp"
             alt="Pick O Pick team member ready to help shop, pack, and ship your order"
             className="block h-full w-full object-contain object-center opacity-100"
             loading="eager"

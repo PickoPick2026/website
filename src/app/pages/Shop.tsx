@@ -138,7 +138,7 @@ export default function ShopPage() {
       {/* ───────── Hero banner ───────── */}
       <section className="relative w-full">
         <img
-          src="/images/shop-bg.png"
+          src="/images/shop-bg.webp"
           alt=""
           width={2172}
           height={724}

@@ -101,7 +101,7 @@ export function Footer() {
       {/* Keep the full panorama on desktop and the central parcel visible on mobile. */}
       <div className="relative h-[250px] min-h-[250px] w-full overflow-hidden sm:h-[32vw]" aria-hidden="true">
         <img
-          src="/images/footer-hometown-to-world-v1.png"
+          src="/images/footer-hometown-to-world-v1.webp"
           alt=""
           width={1774}
           height={887}
@@ -117,7 +117,7 @@ export function Footer() {
           <div className="lg:col-span-4">
             <Link to="/" className="inline-block" aria-label="Pick O Pick home">
               <img
-                src="/PICKLogo.png"
+                src="/PICKLogo.webp"
                 alt="PickoPick"
                 className="w-[160px] object-contain sm:w-[180px]"
               />

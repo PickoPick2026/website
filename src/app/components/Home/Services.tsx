@@ -32,14 +32,14 @@ const services = [
   },
   {
     num: "05",
-    image: "/images/services/free-storage.webp",
+    image: "/images/nri-trust/free-storage.webp",
     title: "Free Storage",
     desc: "Store your items securely in our warehouse for up to 30 days at no additional cost.",
     to: "/nri",
   },
   {
     num: "06",
-    image: "/images/services/secure-payments.webp",
+    image: "/images/nri-trust/secure-payments.webp",
     title: "Secure Payments",
     desc: "Pay easily in your local currency using international credit cards or PayPal.",
     to: "/nri",

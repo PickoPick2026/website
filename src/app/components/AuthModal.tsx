@@ -145,7 +145,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               {step === 'google' ? (
                 <>
                   <img
-                    src="/PICKLogo.png"
+                    src="/PICKLogo.webp"
                     alt="Pick O Pick"
                     className="h-11 w-fit object-contain mt-1 mb-5"
                   />

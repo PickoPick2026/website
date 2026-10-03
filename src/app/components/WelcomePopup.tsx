@@ -74,7 +74,7 @@ export function WelcomePopup() {
               <div className="order-2 flex min-h-[500px] flex-col justify-center p-7 sm:p-10">
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#0B56D9]">To Home From Your Hometown</p>
                 <img
-                  src="/PICKLogo.png"
+                  src="/PICKLogo.webp"
                   alt="Pick O Pick"
                   className="mt-5 h-11 w-fit object-contain"
                 />
