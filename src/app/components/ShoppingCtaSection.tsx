@@ -13,8 +13,8 @@ interface ShoppingCtaSectionProps {
 }
 
 const partnerStores = [
-  { name: "Amazon India", src: "/partners/Amazon_logo.webp", category: "/buy-and-ship" },
-  { name: "Flipkart", src: "/partners/Flipkart.webp", category: "/buy-and-ship" },
+  { name: "Amazon India", src: "/partners/Amazon_logo.webp", category: "/order-and-send" },
+  { name: "Flipkart", src: "/partners/Flipkart.webp", category: "/order-and-send" },
   { name: "Myntra", src: "/partners/Myntra.webp", category: "/shop?category=Dresses" },
   { name: "Best Terracotta", src: "/partners/BestTerracotta.webp", category: "/shop?category=Home+Decorations" },
   { name: "Mambalam Iyers", src: "/partners/mambalamiyers.webp", category: "/shop?category=Sweets+and+Savories" },

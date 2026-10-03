@@ -792,7 +792,7 @@ app.post("/api/auth/login", async (req, res) => {
       order_and_send: {
         prefix: "SEND",
         subject: "Your Pick O Pick Order & Send Request Has Been Received",
-        message: "We received your Order & Send request. Our logistics team will review the pickup and destination details and contact you with the next steps.",
+        message: "We received your Order & Send request. Our team will consolidate your parcels at our India hub and contact you with shipping options.",
       },
       exclusive_sourcing: {
         prefix: "EXCL",

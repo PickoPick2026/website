@@ -1,22 +1,23 @@
 import { useEffect, useState, type FormEvent } from "react";
 import {
-  Truck,
-  ArrowRight,
+  ShoppingBag,
+  Link2,
   CheckCircle2,
+  ArrowRight,
   ShieldCheck,
   Plane,
-  AlertTriangle,
-  Scale,
-  FileText,
-  Clock,
-  Check,
-  X,
-  MapPin,
-  CalendarCheck,
-  Home,
-  Globe2,
+  ExternalLink,
+  Package,
+  Store,
+  Clipboard,
+  Search,
   Percent,
+  Shirt,
+  ShoppingCart,
+  Candy,
+  Flame,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 import { submitServiceRequest } from "../../lib/serviceRequests";
@@ -37,144 +38,220 @@ import {
   fieldClass,
 } from "../components/ServicePage";
 
-const WHATSAPP_COURIER_URL =
-  "https://wa.me/919790361222?text=Hello%20PickoPick%20Courier%2C%20I%20want%20to%20schedule%20a%20doorstep%20pickup%20in%20India.";
+const WHATSAPP_ORDER_URL =
+  "https://wa.me/919790361222?text=Hello%20PickoPick%2C%20I%20want%20to%20order%20products%20to%20your%20India%20office%20address.";
 
-const POPULAR_PICKUP_CITIES = [
-  "Chennai",
-  "Bengaluru",
-  "Hyderabad",
-  "Mumbai",
-  "Delhi-NCR",
-  "Coimbatore",
-  "Madurai",
-  "Kolkata",
-  "Pune",
-  "Ahmedabad",
-];
-
-const WEIGHT_TIERS = ["1–2 kg", "3–5 kg", "5–10 kg", "10–20 kg", "20+ kg"];
-
-const PARCEL_CATEGORIES = [
-  "Homemade Food & Sweets",
-  "Sarees & Traditional Clothes",
-  "Documents & Certificates",
-  "Books & Religious Items",
-  "Luggage & Excess Baggage",
-  "Commercial / Artisan Samples",
+const QUICK_STORES = [
+  "Amazon.in",
+  "Myntra",
+  "Ajio",
+  "Flipkart",
+  "Nykaa",
+  "Meesho",
+  "Fabindia",
+  "Taneira",
+  "Local Boutique",
 ];
 
 const STEPS = [
   {
     num: "01",
-    icon: CalendarCheck,
-    title: "Schedule Pickup Online",
-    desc: "Enter the pickup address in India and destination details abroad. Choose your preferred pickup time slot.",
+    icon: Search,
+    title: "Shop Any Indian Store Online",
+    desc: "Order from Amazon.in, Flipkart, Myntra, Meesho or any Indian website and deliver your orders to our Pick O Pick office address in India.",
   },
   {
     num: "02",
-    icon: Home,
-    title: "Doorstep Collection in India",
-    desc: "Our courier executive visits the Indian address, hands over an instant receipt, and safely collects the parcel.",
+    icon: Link2,
+    title: "Share Your Product Links",
+    desc: "Paste the product links below so we know what to expect. No Indian card or local phone OTP is needed — you order, we handle the rest.",
   },
   {
     num: "03",
-    icon: Scale,
-    title: "Box Trimming & Repacking",
-    desc: "At our central hub, we inspect, trim empty dead space, custom repack, and share WhatsApp photo/video proof.",
+    icon: ShieldCheck,
+    title: "We Receive, Inspect & Consolidate",
+    desc: "Every parcel that lands at our Chennai hub is logged into your free 30-day locker, inspected, and combined into one compact, secure box.",
   },
   {
     num: "04",
     icon: Plane,
-    title: "Express Air Delivery Abroad",
-    desc: "Dispatched via DHL, FedEx, or Aramex with customs clearance and handed over at your foreign doorstep in 3–5 days.",
+    title: "Consolidate & Express Deliver",
+    desc: "One box instead of many — save up to 80% on international shipping, then express fly to your doorstep in 3–5 days.",
   },
 ];
 
-const SAVINGS = [
+const CHECKLIST_ITEMS = [
   {
-    icon: Scale,
-    title: "Volumetric Box Trimming",
-    text: "Couriers charge by box volume. We cut down oversized cartons and save you up to 40% on freight.",
+    title: "Product Web Links or Clear Screenshot",
+    detail:
+      "Direct URLs from Amazon, Flipkart, Myntra, Meesho or any Indian online store you ordered from.",
   },
   {
-    icon: ShieldCheck,
-    title: "Tamper-Evident Packaging",
-    text: "Multi-layer security tape, moisture protection, and reinforced corrugated boxes.",
+    title: "Exact Sizing & Variant Specs",
+    detail:
+      "Color, size, variant, brand, and desired quantity so we verify the exact match on arrival.",
   },
   {
-    icon: FileText,
-    title: "Customs Compliance",
-    text: "We generate compliant commercial invoices and food declaration paperwork for smooth overseas clearance.",
+    title: "Destination Country & Zip Code",
+    detail:
+      "Your delivery country and postal code so we can estimate the fastest shipping option.",
   },
   {
-    icon: Clock,
-    title: "3–5 Days Express Air Transit",
-    text: "Direct air cargo via DHL, FedEx, and Aramex with continuous live tracking.",
+    title: "Special Inspection Notes",
+    detail:
+      "Let us know if you need specific measurements or fabric photos upon warehouse arrival.",
   },
 ];
 
-const ALLOWED_ITEMS = [
-  "Homemade traditional sweets, savouries & dry snacks",
-  "Sealed regional spices, podis, masalas & curry pastes",
-  "Commercial sealed pickles in certified leak-proof packaging",
-  "Silk sarees, festive lehengas, kurtas & ethnic garments",
-  "Educational degrees, transcripts, passports & legal papers",
-  "Temple prasadam, brass pooja lamps, idols & spiritual books",
-  "Handcrafted terracotta, clay pots & Indian home decor",
-  "Personal luggage, books, cookware & non-perishable essentials",
-];
-
-const PROHIBITED_ITEMS = [
-  "Liquids containing alcohol, flammable chemicals & deodorants",
-  "Perfumes, nail polish & aerosol spray canisters",
-  "Lithium battery power banks, loose cells & explosives",
-  "Currency, bullion, precious jewelry without export clearance",
-  "Raw dairy, unpreserved perishable meat, fresh vegetables",
-  "Medicines requiring special import narcotics licenses",
+const POPULAR_STORES = [
+  {
+    category: "Fashion & Ethnic Wear",
+    icon: Shirt,
+    stores: [
+      {
+        name: "Myntra",
+        desc: "Ethnic wear, festive apparel & kurtas",
+        link: "/shop?category=Dresses",
+      },
+      {
+        name: "Ajio",
+        desc: "Indie brands & artisanal apparel",
+        link: "https://www.ajio.com",
+        external: true,
+      },
+      {
+        name: "Nykaa Fashion",
+        desc: "Designer sarees, lehengas & footwear",
+        link: "https://www.nykaafashion.com",
+        external: true,
+      },
+      {
+        name: "Fabindia",
+        desc: "Handcrafted cottons & festive linens",
+        link: "https://www.fabindia.com",
+        external: true,
+      },
+    ],
+  },
+  {
+    category: "General & Mega Marketplaces",
+    icon: ShoppingCart,
+    stores: [
+      {
+        name: "Amazon India",
+        desc: "Kitchenware, books, electronics & ayurveda",
+        link: "https://www.amazon.in",
+        external: true,
+      },
+      {
+        name: "Flipkart",
+        desc: "Indian electronics, appliances & lifestyle",
+        link: "https://www.flipkart.com",
+        external: true,
+      },
+      {
+        name: "Tata CLiQ",
+        desc: "Authentic luxury & premium Indian brands",
+        link: "https://www.tatacliq.com",
+        external: true,
+      },
+      {
+        name: "Meesho",
+        desc: "Budget regional fashion & home goods",
+        link: "https://www.meesho.com",
+        external: true,
+      },
+    ],
+  },
+  {
+    category: "Authentic Regional Foods & Sweets",
+    icon: Candy,
+    stores: [
+      {
+        name: "Mambalam Iyers",
+        desc: "Authentic South Indian pickles, podis & pastes",
+        link: "/shop?category=Sweets+and+Savories",
+      },
+      {
+        name: "Nandri Masala",
+        desc: "Fresh ground regional Indian spice blends",
+        link: "/shop?category=Groceries",
+      },
+      {
+        name: "Sri Krishna Sweets",
+        desc: "World-famous Mysore Pak & traditional sweets",
+        link: "/shop?category=Sweets+and+Savories",
+      },
+      {
+        name: "Haldiram's / Anand Sweets",
+        desc: "Traditional regional Indian snacks",
+        link: "/shop?category=Sweets+and+Savories",
+      },
+    ],
+  },
+  {
+    category: "Pooja Items & Handicrafts",
+    icon: Flame,
+    stores: [
+      {
+        name: "Best Terracotta",
+        desc: "Handmade Indian clay cookware & decor",
+        link: "/shop?category=Home+Decorations",
+      },
+      {
+        name: "Giri Trading",
+        desc: "Temple pooja idols, brass lamps & spiritual books",
+        link: "/shop?category=Pooja+Items",
+      },
+      {
+        name: "Craftsvilla",
+        desc: "Authentic Indian handicrafts & artifacts",
+        link: "/shop?category=Home+Decorations",
+      },
+      {
+        name: "Jaypore",
+        desc: "Curated Indian handloom & artisanal jewelry",
+        link: "https://www.jaypore.com",
+        external: true,
+      },
+    ],
+  },
 ];
 
 const FAQS = [
   {
-    q: "How does doorstep pickup work across India?",
-    a: "Once you submit your booking details or message us on WhatsApp, our logistics network assigns a local courier partner to visit the Indian address at your scheduled slot. Your family receives an official pickup receipt and airway bill barcode right at the door.",
+    q: "What is Order & Send vs Buy & Ship?",
+    a: "Order & Send is for online shopping: you paste product links from Amazon, Flipkart, Myntra, Meesho etc., deliver your orders to our India office address, and we receive, consolidate and courier everything abroad. Buy & Ship is our personal shopper service where a dedicated Pick O Pick shopper purchases on your behalf from Indian websites or physical shops.",
   },
   {
-    q: "Can my parents in India send homemade snacks and sweets?",
-    a: "Yes! Homemade food parcels are our most popular shipment. We provide food-safe repackaging, vacuum sealing if required, and complete the necessary foreign customs commercial invoices to ensure smooth clearance abroad.",
+    q: "How do I order to your India office address?",
+    a: "At checkout on any Indian website, enter the Pick O Pick office address as the delivery address. Every parcel that arrives is logged into your free 30-day locker, and you get a WhatsApp confirmation with photos for each one.",
   },
   {
-    q: "How does Pick O Pick reduce volumetric weight?",
-    a: "International airlines charge based on the greater of actual gross weight or volumetric weight (L × W × H / 5000). Many boxes sent by families contain empty void space. Our packaging specialists resize and custom-pack your cartons, cutting dead weight and saving you up to 40% on shipping charges.",
+    q: "Can I order from multiple different Indian websites?",
+    a: "Yes! That is one of our biggest advantages. You can order clothes from Myntra, sweets from a Chennai shop, and books from Amazon India. We hold them free in your locker for 30 days, discard heavy outer boxes, combine them into one package, and save you up to 80% on international shipping.",
   },
   {
-    q: "How can I track my shipment once collected?",
-    a: "You receive an official Pick O Pick tracking ID immediately. You can track progress 24/7 on our Track Shipment page and receive live WhatsApp milestones from pickup in India to final signature abroad.",
+    q: "How long does shipping take once my orders arrive?",
+    a: "Once all your parcels reach our Chennai consolidation hub and you approve the packing photos, express international transit takes just 3 to 5 business days to USA, UK, Canada, Australia, UAE, Europe, and 200+ countries worldwide.",
   },
   {
-    q: "What if I need custom wooden crating for delicate brass or clay items?",
-    a: "We provide multi-layer bubble wrap, foam corner guards, and optional heavy-duty wooden crating for fragile terracotta and brass idols to guarantee zero transit damage.",
+    q: "What if an item arrives damaged or is the wrong size?",
+    a: "We inspect every item as it lands at our hub. If something arrives with defects or in the wrong size, we flag it to you on WhatsApp immediately and handle the return and replacement directly with the seller in India before sending it abroad.",
   },
 ];
 
-const pillClass = (active: boolean) =>
-  `rounded-xl border text-xs font-bold transition-colors ${
-    active
-      ? "border-[#0B56D9] bg-[#0B56D9] text-white"
-      : "border-slate-200 bg-[#F8FAFC] text-slate-700 hover:border-[#0B56D9]/40"
-  }`;
-
 export default function OrderAndSendPage() {
   const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [destinationLocation, setDestinationLocation] = useState("");
-  const [productLinks, setProductLinks] = useState("");
-  const [pickupCity, setPickupCity] = useState("");
+  const [sourceStore, setSourceStore] = useState("");
+  const [productUrl, setProductUrl] = useState("");
+  const [itemNotes, setItemNotes] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("United States");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [approxWeight, setApproxWeight] = useState("3–5 kg");
-  const [parcelType, setParcelType] = useState("Homemade Food & Sweets");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(0);
 
   useEffect(() => {
     if (window.location.hash === "#order-and-send-form") {
@@ -188,23 +265,33 @@ export default function OrderAndSendPage() {
     }
   }, []);
 
-  const handleSubmitQuote = async (e: FormEvent) => {
-    e.preventDefault();
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setProductUrl(text);
+        toast.success("Pasted URL from clipboard!");
+      }
+    } catch {
+      toast.info("Please paste the link manually into the field.");
+    }
+  };
 
-    if (!pickupCity.trim()) {
-      toast.error("Please enter your Indian pickup city or town.");
+  const handleSubmitRequest = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!productUrl.trim()) {
+      toast.error("Please enter a product URL or describe the item.");
       return;
     }
-
     if (
       !customerName.trim() ||
+      !customerPhone.trim() ||
       !customerEmail.trim() ||
-      !mobileNumber.trim() ||
-      !destinationLocation.trim() ||
-      !productLinks.trim()
+      !sourceStore.trim() ||
+      !destinationLocation.trim()
     ) {
       toast.error(
-        "Please complete your name, phone, email, item details / product links, and delivery location.",
+        "Please complete your name, phone, email, store, and delivery location.",
       );
       return;
     }
@@ -214,14 +301,15 @@ export default function OrderAndSendPage() {
     const waMessage = [
       "Hello Pick O Pick, new *Order & Send* request:",
       `Name: ${customerName}`,
-      `Phone: ${mobileNumber}`,
+      `Phone: ${customerPhone}`,
       `Email: ${customerEmail}`,
-      `Pickup City (India): ${pickupCity}`,
-      `Destination: ${destinationLocation}, ${destinationCountry}`,
-      `Approx Weight: ${approxWeight}`,
-      `Parcel Category: ${parcelType}`,
-      `Items / Links: ${productLinks}`,
-    ].join("\n");
+      `Delivery Location: ${destinationLocation}, ${destinationCountry}`,
+      `Store: ${sourceStore}`,
+      `Product URL / Item: ${productUrl}`,
+      itemNotes.trim() ? `Size / Variant / Notes: ${itemNotes}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
     window.open(
       `https://wa.me/919790361222?text=${encodeURIComponent(waMessage)}`,
       "_blank",
@@ -232,19 +320,18 @@ export default function OrderAndSendPage() {
     try {
       const result = await submitServiceRequest("order_and_send", {
         customerName,
-        phone: mobileNumber,
+        phone: customerPhone,
         email: customerEmail,
         location: destinationLocation,
-        pickupCity,
-        productLinks,
+        productUrl,
+        sourceStore,
+        itemNotes,
         destinationCountry,
-        approxWeight,
-        parcelType,
       });
       toast.success(
         result.emailSent
           ? "Order & Send request sent to WhatsApp — confirmation email dispatched too!"
-          : "Order & Send request sent to WhatsApp! We will confirm shortly.",
+          : "Order & Send request sent to WhatsApp! We will consolidate and connect shortly.",
       );
     } catch (error) {
       toast.error(
@@ -257,28 +344,30 @@ export default function OrderAndSendPage() {
     }
   };
 
+  const category = POPULAR_STORES[activeCategory];
+
   return (
     <main className="min-h-screen bg-white text-[#0A1931]">
       {/* ───────── Hero ───────── */}
       <PageHero
         flat
-        eyebrow="Order & Send • Doorstep Pickup & Courier"
+        eyebrow="Order & Send • Shop India, Ship Worldwide"
         title="Order & Send"
-        highlight="India Pickup. Worldwide Delivery."
-        description="Have homemade delicacies, sweets, garments, documents, or personal gifts at home in India? We collect directly from your Indian doorstep across 25,000+ pincodes, repack to trim volumetric dead weight, and express-courier to 200+ countries."
-        image="/images/nri-trust/international-shipping.webp"
-        imageAlt="Pick O Pick plane, ship and truck delivering parcels worldwide"
+        highlight="Your India Address. Worldwide Delivery."
+        description="Order from Amazon, Flipkart, Myntra, Meesho or any Indian store straight to our India office address. We receive every parcel, consolidate them into one box, and express-ship to 200+ countries."
+        image="/images/nri-trust/shop-from-india.webp"
+        imageAlt="Parcels from Amazon, Flipkart, Myntra and Meesho consolidated into one Pick O Pick box"
         floatingChips={[
-          { icon: Home, label: "Free doorstep collection" },
-          { icon: Scale, label: "Volumetric box trimming" },
-          { icon: Plane, label: "3–5 day express" },
+          { icon: Package, label: "Free India office address" },
+          { icon: ShieldCheck, label: "Inspected on arrival" },
+          { icon: Plane, label: "3–5 day delivery" },
         ]}
         actions={
           <>
             <HeroPrimaryButton href="#order-and-send-form">
-              Schedule Doorstep Pickup
+              Share Your Product Links
             </HeroPrimaryButton>
-            <HeroSecondaryButton href={WHATSAPP_COURIER_URL}>
+            <HeroSecondaryButton href={WHATSAPP_ORDER_URL}>
               <FaWhatsapp size={16} />
               Chat on WhatsApp
             </HeroSecondaryButton>
@@ -289,31 +378,30 @@ export default function OrderAndSendPage() {
       <StatsBar
         flat
         stats={[
-          { icon: MapPin, value: "25,000+", label: "Pickup pincodes" },
-          { icon: Percent, value: "Up to 40%", label: "Freight saved by repacking" },
-          { icon: Globe2, value: "200+", label: "Destination countries" },
-          { icon: Plane, value: "3–5 days", label: "Express delivery" },
+          { icon: Store, value: "500+", label: "Indian stores" },
+          { icon: Package, value: "30 days", label: "Free locker storage" },
+          { icon: Percent, value: "Up to 80%", label: "Consolidation savings" },
+          { icon: Plane, value: "3–5 days", label: "Global delivery" },
         ]}
       />
 
-      {/* ───────── Pickup hubs ribbon ───────── */}
+      {/* ───────── Supported stores ribbon ───────── */}
       <section className="pt-10">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 px-4 sm:px-8">
           <span className="mr-1 text-[11px] font-black uppercase tracking-widest text-slate-400">
-            Major pickup hubs
+            Shop from
           </span>
-          {POPULAR_PICKUP_CITIES.map((city) => (
+          {QUICK_STORES.map((st) => (
             <button
-              key={city}
+              key={st}
               type="button"
               onClick={() => {
-                setPickupCity(city);
+                setSourceStore(st);
                 document.getElementById("order-and-send-form")?.scrollIntoView();
               }}
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-[#0B56D9] hover:bg-blue-50 hover:text-[#0B56D9]"
+              className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-[#0B56D9] hover:bg-blue-50 hover:text-[#0B56D9]"
             >
-              <MapPin size={11} />
-              {city}
+              {st}
             </button>
           ))}
         </div>
@@ -323,89 +411,72 @@ export default function OrderAndSendPage() {
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-8">
           <SectionHeader
-            eyebrow="End-to-end reliability"
+            eyebrow="How it works"
             title="How Order & Send"
             highlight="Works"
-            description="Effortless doorstep collection from your family or suppliers in India to your home overseas."
+            description="Four simple steps from placing your Indian orders to unboxing one consolidated parcel abroad."
           />
           <StepsTimeline steps={STEPS} />
         </div>
       </section>
 
-      {/* ───────── Booking form ───────── */}
+      {/* ───────── Request form ───────── */}
       <section
         id="order-and-send-form"
         className="scroll-mt-24 border-y border-slate-200/80 bg-[#F7F9FF] py-16 sm:py-24"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-8">
           <SectionHeader
-            eyebrow="Book a pickup"
+            eyebrow="Start your order"
             title="Order & Send"
-            highlight="Pickup Request"
-            description="We’ll calculate discounted freight rates and dispatch our courier to the Indian address."
+            highlight="Request"
+            description="Paste your product links and where they're going — we receive, consolidate and ship."
           />
 
           <div className="grid items-start gap-8 lg:grid-cols-12">
             <form
-              onSubmit={handleSubmitQuote}
+              onSubmit={handleSubmitRequest}
               className="space-y-8 rounded-[28px] border border-slate-200 bg-white p-6 sm:p-9 lg:col-span-7"
             >
-              <FormGroup step="1" title="Pickup & parcel">
-                <FormInput
-                  label="Pickup City / Town (India)"
-                  value={pickupCity}
-                  onChange={setPickupCity}
-                  placeholder="e.g. Chennai, Mylapore or 600004"
-                />
-
-                <div>
-                  <span className="mb-1.5 block text-xs font-bold text-slate-700">
-                    Approximate Weight
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {WEIGHT_TIERS.map((tier) => (
-                      <button
-                        key={tier}
-                        type="button"
-                        aria-pressed={approxWeight === tier}
-                        onClick={() => setApproxWeight(tier)}
-                        className={`px-4 py-2.5 ${pillClass(approxWeight === tier)}`}
-                      >
-                        {tier}
-                      </button>
-                    ))}
+              <FormGroup step="1" title="The product">
+                <FieldLabel label="Product URL or Item Description" required>
+                  <div className="relative">
+                    <Link2
+                      size={16}
+                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#0B56D9]"
+                    />
+                    <input
+                      type="text"
+                      required
+                      value={productUrl}
+                      onChange={(e) => setProductUrl(e.target.value)}
+                      placeholder="Paste link from Amazon.in, Myntra, Ajio, Nykaa or describe item..."
+                      className={`${fieldClass} pl-11 pr-24`}
+                    />
+                    <button
+                      type="button"
+                      onClick={handlePaste}
+                      className="absolute right-2 top-1/2 inline-flex -translate-y-1/2 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition-colors hover:border-[#0B56D9] hover:text-[#0B56D9]"
+                    >
+                      <Clipboard size={12} /> Paste
+                    </button>
                   </div>
-                </div>
-
-                <div>
-                  <span className="mb-1.5 block text-xs font-bold text-slate-700">
-                    Parcel Category
-                  </span>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {PARCEL_CATEGORIES.map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        aria-pressed={parcelType === cat}
-                        onClick={() => setParcelType(cat)}
-                        className={`p-3 text-left leading-tight ${pillClass(parcelType === cat)}`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <FieldLabel label="Share Product Links or List Items to Send" required>
-                  <textarea
-                    required
-                    rows={3}
-                    value={productLinks}
-                    onChange={(e) => setProductLinks(e.target.value)}
-                    placeholder="Share product links from Myntra, Meesho, Instagram, Flipkart, Amazon etc., or list personal items (e.g. homemade sweets, clothes, documents)..."
-                    className={`${fieldClass.replace("h-12 ", "")} resize-none py-3`}
-                  />
                 </FieldLabel>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormInput
+                    label="Store Name / Source"
+                    value={sourceStore}
+                    onChange={setSourceStore}
+                    placeholder="e.g. Myntra, Amazon.in, Boutique..."
+                  />
+                  <FormInput
+                    label="Size / Variant / Quantity / Notes"
+                    value={itemNotes}
+                    onChange={setItemNotes}
+                    placeholder="e.g. Size 38, Maroon, Qty 2"
+                    required={false}
+                  />
+                </div>
               </FormGroup>
 
               <div className="border-t border-dashed border-slate-200" />
@@ -413,16 +484,16 @@ export default function OrderAndSendPage() {
               <FormGroup step="2" title="Your details">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
-                    label="Sender / Customer Name"
+                    label="Your Full Name"
                     value={customerName}
                     onChange={setCustomerName}
-                    placeholder="Full name"
+                    placeholder="e.g. Rahul Sharma"
                   />
                   <FormInput
-                    label="WhatsApp / Mobile Number"
-                    value={mobileNumber}
-                    onChange={setMobileNumber}
-                    placeholder="+1 555 000 0000 or +91..."
+                    label="WhatsApp / Phone Number"
+                    value={customerPhone}
+                    onChange={setCustomerPhone}
+                    placeholder="+1 555 000 0000"
                     type="tel"
                   />
                 </div>
@@ -437,13 +508,13 @@ export default function OrderAndSendPage() {
 
               <div className="border-t border-dashed border-slate-200" />
 
-              <FormGroup step="3" title="Delivery abroad">
+              <FormGroup step="3" title="Delivery">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
-                    label="Destination City / Zip Code"
+                    label="Delivery Location"
                     value={destinationLocation}
                     onChange={setDestinationLocation}
-                    placeholder="e.g. London, UK EC1A 1BB"
+                    placeholder="City, State / Postal Code"
                   />
                   <FieldLabel label="Destination Country">
                     <select
@@ -479,8 +550,8 @@ export default function OrderAndSendPage() {
                   />
                 </button>
                 <p className="pt-3 text-center text-[11px] text-slate-500">
-                  Direct connection with our logistics dispatch manager. An
-                  official tracking reference code is provided immediately.
+                  Your parcels land at our India consolidation hub — an official
+                  tracking reference is provided immediately.
                 </p>
               </div>
             </form>
@@ -490,21 +561,23 @@ export default function OrderAndSendPage() {
               <BluePanel className="rounded-[28px]">
                 <div className="p-7 sm:p-8">
                   <p className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-100">
-                    Smart logistics
+                    Checklist
                   </p>
                   <h3 className="mt-2 text-xl font-extrabold tracking-tight">
-                    How We Save You Money
+                    What You Need to Provide
                   </h3>
                   <ul className="mt-6 space-y-4">
-                    {SAVINGS.map(({ icon: Icon, title, text }) => (
-                      <li key={title} className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#0B56D9]">
-                          <Icon size={16} />
+                    {CHECKLIST_ITEMS.map((item) => (
+                      <li key={item.title} className="flex items-start gap-3">
+                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-[#0B56D9]">
+                          <CheckCircle2 size={14} />
                         </span>
                         <span>
-                          <span className="block text-sm font-extrabold">{title}</span>
+                          <span className="block text-sm font-extrabold">
+                            {item.title}
+                          </span>
                           <span className="mt-0.5 block text-xs leading-relaxed text-blue-100">
-                            {text}
+                            {item.detail}
                           </span>
                         </span>
                       </li>
@@ -514,7 +587,7 @@ export default function OrderAndSendPage() {
               </BluePanel>
 
               <a
-                href={WHATSAPP_COURIER_URL}
+                href={WHATSAPP_ORDER_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="group flex items-center gap-4 rounded-[24px] border border-slate-200 bg-white p-5 transition-colors hover:border-[#0B56D9]/40"
@@ -524,10 +597,10 @@ export default function OrderAndSendPage() {
                 </span>
                 <span className="flex-1">
                   <span className="block text-sm font-extrabold text-[#0A1931]">
-                    Need a pickup today?
+                    Prefer to chat?
                   </span>
                   <span className="block text-xs text-slate-500">
-                    Message our dispatch team on WhatsApp.
+                    Send your product links straight to our Order & Send desk.
                   </span>
                 </span>
                 <ArrowRight
@@ -540,70 +613,88 @@ export default function OrderAndSendPage() {
         </div>
       </section>
 
-      {/* ───────── Allowed vs prohibited ───────── */}
-      <section id="allowed-items" className="scroll-mt-24 py-16 sm:py-24">
+      {/* ───────── Store directory ───────── */}
+      <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-8">
           <SectionHeader
-            eyebrow="Shipping guidelines"
-            title="What Can You Send"
-            highlight="From India?"
-            description="Clear guidelines on compliant air cargo vs aviation prohibited materials."
+            eyebrow="Store directory"
+            title="Popular Indian Stores"
+            highlight="To Order From"
+            description="Browse products on these sites, copy the link, and paste it into Pick O Pick."
           />
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
-              <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-[#0B56D9]">
-                  <Check size={18} />
-                </span>
-                <h3 className="text-lg font-extrabold text-[#0A1931]">
-                  Allowed &amp; Popular Items
-                </h3>
-              </div>
-              <ul className="divide-y divide-slate-100">
-                {ALLOWED_ITEMS.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-3 py-3 text-sm text-slate-700"
-                  >
-                    <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[#0B56D9]" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div
+            className="mb-8 flex gap-2 overflow-x-auto pb-1 scrollbar-hide sm:flex-wrap sm:justify-center"
+            role="tablist"
+          >
+            {POPULAR_STORES.map((cat, index) => {
+              const Icon = cat.icon;
+              const isActive = index === activeCategory;
+              return (
+                <button
+                  key={cat.category}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveCategory(index)}
+                  className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-bold transition-colors ${
+                    isActive
+                      ? "border-[#0B56D9] bg-[#0B56D9] text-white"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-[#0B56D9]/40"
+                  }`}
+                >
+                  <Icon size={14} />
+                  {cat.category}
+                </button>
+              );
+            })}
+          </div>
 
-            <div className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
-              <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-red-500">
-                  <X size={18} />
-                </span>
-                <h3 className="text-lg font-extrabold text-[#0A1931]">
-                  Aviation Prohibited Items
-                </h3>
-              </div>
-              <ul className="divide-y divide-slate-100">
-                {PROHIBITED_ITEMS.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-3 py-3 text-sm text-slate-700"
-                  >
-                    <AlertTriangle size={16} className="mt-0.5 shrink-0 text-red-500" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href={WHATSAPP_COURIER_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-5 flex items-center gap-2 rounded-2xl bg-blue-50 p-4 text-xs font-semibold text-slate-700 transition-colors hover:bg-blue-100"
-              >
-                <Truck size={16} className="shrink-0 text-[#0B56D9]" />
-                Unsure about an item? Message our WhatsApp support for instant
-                customs verification before packing.
-              </a>
-            </div>
+          <div
+            key={category.category}
+            className="animate-fade-in grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            role="tabpanel"
+          >
+            {category.stores.map((s) => {
+              const content = (
+                <>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-base font-black text-[#0B56D9] transition-colors group-hover:bg-[#0B56D9] group-hover:text-white">
+                    {s.name.charAt(0)}
+                  </span>
+                  <span className="mt-4 block text-sm font-extrabold text-[#0A1931]">
+                    {s.name}
+                  </span>
+                  <span className="mt-1 block flex-1 text-xs leading-relaxed text-slate-500">
+                    {s.desc}
+                  </span>
+                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#0B56D9]">
+                    {s.external ? "Visit Store" : "View in Shop"}
+                    {s.external ? (
+                      <ExternalLink size={12} />
+                    ) : (
+                      <ArrowRight size={12} />
+                    )}
+                  </span>
+                </>
+              );
+              const cardClass =
+                "group flex flex-col rounded-[24px] border border-slate-200 bg-white p-5 transition-all hover:-translate-y-1 hover:border-[#0B56D9]/40";
+              return s.external ? (
+                <a
+                  key={s.name}
+                  href={s.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={cardClass}
+                >
+                  {content}
+                </a>
+              ) : (
+                <Link key={s.name} to={s.link} className={cardClass}>
+                  {content}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -611,30 +702,42 @@ export default function OrderAndSendPage() {
       {/* ───────── FAQs ───────── */}
       <section className="border-t border-slate-200/80 bg-[#F7F9FF] py-16 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-8 lg:grid-cols-[0.8fr_1.2fr]">
-          <SectionHeader
-            align="left"
-            eyebrow="Got questions?"
-            title="Frequently Asked"
-            highlight="Questions"
-            description="Questions and answers about our doorstep pickup and international courier process."
-          />
+          <div>
+            <SectionHeader
+              align="left"
+              eyebrow="Got questions?"
+              title="Frequently Asked"
+              highlight="Questions"
+              description="Everything you need to know about ordering to our India address and consolidated shipping."
+            />
+            <a
+              href={WHATSAPP_ORDER_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="-mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-[#0B56D9] hover:underline"
+            >
+              <ShoppingBag size={16} />
+              Still unsure? Chat with our team
+              <ArrowRight size={14} />
+            </a>
+          </div>
           <FaqAccordion faqs={FAQS} />
         </div>
       </section>
 
       <CrossLinkBanner
-        eyebrow="Need sourcing help?"
+        eyebrow="Need someone to buy it for you?"
         title="Want us to buy from Indian shops?"
         description={
           <>
-            If you don&apos;t have goods in India yet and want our team to buy
-            online from Indian shops, use our <strong>Buy &amp; Ship</strong>{" "}
-            assisted personal shopper service.
+            If you can&apos;t order online yourself, use our{" "}
+            <strong>Buy &amp; Ship</strong> personal shopper service — a
+            dedicated shopper purchases on your behalf from any Indian store.
           </>
         }
         to="/buy-and-ship"
         cta="Go to Buy & Ship"
-        image="/images/nri-trust/shop-from-india.webp"
+        image="/images/nri-trust/source-with-confidence.webp"
       />
     </main>
   );

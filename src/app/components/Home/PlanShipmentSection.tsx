@@ -206,7 +206,7 @@ export function PlanShipmentSection() {
         <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B56D9]">
             <Sparkles size={13} className="text-[#0B56D9]" />
-            Order &amp; Send • Doorstep Pickup &amp; Courier
+            Order &amp; Send • Consolidation &amp; Courier
           </div>
 
           <h2 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-[#0A1931] sm:text-5xl">
@@ -214,7 +214,7 @@ export function PlanShipmentSection() {
           </h2>
 
           <p className="mx-auto mt-3 max-w-2xl text-base font-normal leading-relaxed text-slate-600 sm:text-lg">
-            We collect across India, repack to reduce shipping weight, and deliver worldwide. Get a quick quote by WhatsApp or email.
+            Order to our India office address, and we receive, repack to reduce shipping weight, and deliver worldwide. Get a quick quote by WhatsApp or email.
           </p>
 
           <div className="mt-4 flex justify-center">

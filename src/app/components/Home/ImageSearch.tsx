@@ -438,37 +438,37 @@ export function ImageSearch() {
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-100 bg-blue-50 text-[11px] font-black uppercase tracking-widest text-[#0B56D9]">
             <Sparkles size={12} className="text-[#0B56D9]" />
-            Buy &amp; Ship • Personal Shopper in India
+            Order &amp; Send • Shop by Product Link
           </div>
 
           <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0A1931]">
             Find it in India.{" "}
-            <span className="text-[#0B56D9]">We Buy &amp; Ship it Abroad.</span>
+            <span className="text-[#0B56D9]">We Consolidate &amp; Ship it Abroad.</span>
           </h2>
 
           <p className="mt-3 text-sm text-slate-600 leading-relaxed">
-            Paste any Indian product link below. PickoPick purchases it locally
-            in INR, verifies and repacks your parcel, and delivers directly to
-            your overseas doorstep.
+            Paste any Indian product link below and order it to our India office
+            address. We receive, verify and consolidate your parcels, then
+            express-ship them to your overseas doorstep.
           </p>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
             <Link
-              to="/buy-and-ship"
+              to="/order-and-send"
               className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#0B56D9] hover:underline"
             >
-              <span>Read Full Buy &amp; Ship Guide &amp; FAQs</span>
+              <span>Read Full Order &amp; Send Guide &amp; FAQs</span>
               <ArrowRight size={13} />
             </Link>
             <span className="text-slate-300">•</span>
             <a
-              href="https://wa.me/919790361222?text=Hello%20PickoPick%20Personal%20Shopper%2C%20I%20want%20to%20buy%20items%20from%20an%20Indian%20store."
+              href="https://wa.me/919790361222?text=Hello%20PickoPick%2C%20I%20want%20to%20order%20products%20to%20your%20India%20office%20address."
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-xs font-extrabold text-emerald-600 hover:underline"
             >
               <FaWhatsapp size={14} />
-              <span>Personal Shopper Chat</span>
+              <span>Order &amp; Send Chat</span>
             </a>
           </div>
         </div>
@@ -573,7 +573,7 @@ export function ImageSearch() {
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-1">
                 <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-100">
                   <ShieldCheck size={13} />
-                  Bought locally in INR by our personal shoppers in Chennai.
+                  Received, verified and consolidated at our Chennai hub.
                 </p>
                 {productLink && (
                   <button
@@ -741,12 +741,11 @@ export function ImageSearch() {
                     <CheckCircle2 size={32} />
                   </div>
                   <h3 className="text-xl font-extrabold text-[#0A1931]">
-                    Buy &amp; Ship Request Received
+                    Order &amp; Send Request Received
                   </h3>
                   <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                    Our personal shopping executive will review the product
-                    availability and send your INR and shipping quote directly
-                    on WhatsApp.
+                    Our team will consolidate your parcels at our India hub and
+                    send your shipping quote directly on WhatsApp.
                   </p>
                   <button
                     type="button"
@@ -760,7 +759,7 @@ export function ImageSearch() {
                 <form onSubmit={handleInquirySubmit} className="space-y-4">
                   <div>
                     <h3 className="text-lg font-extrabold text-[#0A1931]">
-                      Buy &amp; Ship Request
+                      Order &amp; Send Request
                     </h3>
                     <p className="text-xs text-slate-500 truncate">
                       {analysisResult?.productTitle}
@@ -905,7 +904,7 @@ export function ImageSearch() {
                       className="w-2/3 py-2.5 rounded-xl bg-[#0B56D9] hover:bg-[#0849B7] text-white text-xs font-extrabold uppercase tracking-wide inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                     >
                       <FaWhatsapp size={16} />
-                      <span>Send Buy &amp; Ship Request</span>
+                      <span>Send Order &amp; Send Request</span>
                     </button>
                   </div>
                 </form>

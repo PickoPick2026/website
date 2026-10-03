@@ -8,7 +8,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'Personal Sourcing & Shopping Assistance',
     badge: 'Popular for NRIs',
     iconName: 'ShoppingBag',
-    imagePath: '/images/nri-services/shop-from-india.webp',
+    imagePath: '/images/nri-services/consolidation.webp',
     popularItems: ['Clothing & Ethnic Wear', 'Ayurvedic Products', 'Regional Books & Stationery', 'Handcrafted Utensils'],
   },
   {
@@ -48,7 +48,7 @@ export const NRI_SERVICES: ServiceOption[] = [
     tagline: 'Zero Locker Fees for 30 Days',
     badge: 'Save up to 70% Shipping',
     iconName: 'Layers',
-    imagePath: '/images/nri-services/consolidation.webp',
+    imagePath: '/images/nri-services/shop-from-india.webp',
     popularItems: ['E-Commerce Multi-Cart', 'Designer Saree Parcels', 'Tech Accessories & Books', 'Combined Family Boxes'],
   },
   {

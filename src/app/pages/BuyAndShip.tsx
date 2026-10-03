@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import {
   ShoppingBag,
-  Link2,
   CheckCircle2,
   ArrowRight,
   ShieldCheck,
@@ -9,7 +8,6 @@ import {
   ExternalLink,
   Package,
   Store,
-  Clipboard,
   Search,
   Percent,
   Shirt,
@@ -57,34 +55,39 @@ const STEPS = [
   {
     num: "01",
     icon: Search,
-    title: "Discover Any Product in India",
-    desc: "Browse Indian e-commerce sites (Amazon.in, Myntra, Ajio, Nykaa) or local specialty shops in Chennai, Mumbai, or Delhi.",
+    title: "Tell Us What You Need",
+    desc: "Describe the product, share a link, or name the store where you spotted it — no Indian card or local phone OTP is needed.",
   },
   {
     num: "02",
-    icon: Link2,
-    title: "Share Link or Photo",
-    desc: "Paste the product link or send item screenshots with size and color. No Indian card or local phone OTP is needed.",
+    icon: ShoppingBag,
+    title: "Your Personal Shopper Buys It",
+    desc: "A dedicated Pick O Pick shopper is assigned to you and purchases your items in INR — from Amazon.in and Myntra to local boutiques and markets.",
   },
   {
     num: "03",
     icon: ShieldCheck,
-    title: "We Purchase & Verify",
-    desc: "Our India team purchases the items in INR, inspects them at our Chennai center, and provides free 30-day locker storage.",
+    title: "Verified at Our Chennai Hub",
+    desc: "Every item is brought to our center, inspected on arrival, and stored free for 30 days while the rest of your order lands.",
   },
   {
     num: "04",
     icon: Plane,
-    title: "Consolidate & Express Deliver",
-    desc: "We combine orders from multiple shops into one box to save up to 80% on shipping, then express fly to your doorstep in 3–5 days.",
+    title: "Consolidated & Shipped to You",
+    desc: "We combine everything into one secure box to save up to 80% on shipping, then express fly it to your doorstep in 3–5 days.",
   },
 ];
 
 const CHECKLIST_ITEMS = [
   {
-    title: "Product Web Link or Clear Screenshot",
+    title: "Product Details or Link",
     detail:
-      "Direct URL from any Indian website or screenshots of the items you wish to purchase.",
+      "A description, screenshot or URL of what you want — the more specific, the better the match.",
+  },
+  {
+    title: "Store You Shortlisted (optional)",
+    detail:
+      "Already spotted it in a store? Tell us where — online or a local shop — and we'll source the exact item.",
   },
   {
     title: "Exact Sizing & Variant Specs",
@@ -95,11 +98,6 @@ const CHECKLIST_ITEMS = [
     title: "Destination Country & Zip Code",
     detail:
       "Your delivery country and postal code so we can estimate the fastest shipping option.",
-  },
-  {
-    title: "Special Inspection Notes",
-    detail:
-      "Let us know if you need specific measurements or fabric photos upon warehouse arrival.",
   },
 ];
 
@@ -221,7 +219,7 @@ const POPULAR_STORES = [
 const FAQS = [
   {
     q: "What is Buy & Ship vs Order & Send?",
-    a: "Buy & Ship is our Assisted Shopping Service where Pick O Pick buys items on your behalf from Indian websites or physical shops when you don't have an Indian payment card. Order & Send is for packages you or your family already possess in India that you want us to pick up from your doorstep and courier internationally.",
+    a: "Buy & Ship is our personal shopper service: a dedicated Pick O Pick shopper is assigned to you and purchases on your behalf from Indian websites or physical shops when you don't have an Indian payment card or local access. Order & Send is for online orders: you paste product links, deliver them to our India office address, and we consolidate and courier everything internationally.",
   },
   {
     q: "How do I pay for the items purchased?",
@@ -246,52 +244,39 @@ export default function BuyAndShipPage() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [destinationLocation, setDestinationLocation] = useState("");
+  const [productDetails, setProductDetails] = useState("");
   const [sourceStore, setSourceStore] = useState("");
-  const [productUrl, setProductUrl] = useState("");
   const [itemNotes, setItemNotes] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("United States");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
 
   useEffect(() => {
-    if (window.location.hash === "#assisted-buy-form") {
+    if (window.location.hash === "#buy-and-ship-form") {
       window.setTimeout(
         () =>
           document
-            .getElementById("assisted-buy-form")
+            .getElementById("buy-and-ship-form")
             ?.scrollIntoView(),
         80,
       );
     }
   }, []);
 
-  const handlePaste = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      if (text) {
-        setProductUrl(text);
-        toast.success("Pasted URL from clipboard!");
-      }
-    } catch {
-      toast.info("Please paste the link manually into the field.");
-    }
-  };
-
   const handleSubmitRequest = async (e: FormEvent) => {
     e.preventDefault();
-    if (!productUrl.trim()) {
-      toast.error("Please enter a product URL or describe the item.");
+    if (!productDetails.trim()) {
+      toast.error("Please tell us what you want us to buy.");
       return;
     }
     if (
       !customerName.trim() ||
       !customerPhone.trim() ||
       !customerEmail.trim() ||
-      !sourceStore.trim() ||
       !destinationLocation.trim()
     ) {
       toast.error(
-        "Please complete your name, phone, email, store, and delivery location.",
+        "Please complete your name, phone, email, and delivery location.",
       );
       return;
     }
@@ -304,8 +289,8 @@ export default function BuyAndShipPage() {
       `Phone: ${customerPhone}`,
       `Email: ${customerEmail}`,
       `Delivery Location: ${destinationLocation}, ${destinationCountry}`,
-      `Store: ${sourceStore}`,
-      `Product URL / Item: ${productUrl}`,
+      `Product: ${productDetails}`,
+      sourceStore.trim() ? `Shortlisted Store: ${sourceStore}` : "",
       itemNotes.trim() ? `Size / Variant / Notes: ${itemNotes}` : "",
     ]
       .filter(Boolean)
@@ -323,7 +308,7 @@ export default function BuyAndShipPage() {
         phone: customerPhone,
         email: customerEmail,
         location: destinationLocation,
-        productUrl,
+        productDetails,
         sourceStore,
         itemNotes,
         destinationCountry,
@@ -353,10 +338,10 @@ export default function BuyAndShipPage() {
         flat
         eyebrow="Buy & Ship • Personal Shopper in India"
         title="Buy & Ship"
-        highlight="Shop India. Delivered Worldwide."
-        description="Can’t buy online in India because of domestic OTPs or local cards? Pick O Pick purchases on your behalf in INR, inspects every item, repacks, and delivers directly to your foreign doorstep."
-        image="/images/nri-trust/shop-from-india.webp"
-        imageAlt="Parcels from Indian stores combined into one Pick O Pick box"
+        highlight="A Shopper in India. Delivered Worldwide."
+        description="Tell us what you're looking for — a dedicated personal shopper purchases it for you from any Indian store, online or local market, verifies every item at our Chennai hub, and ships it straight to your doorstep abroad."
+        image="/images/nri-trust/nri-cta-closer-v1.webp"
+        imageAlt="Pick O Pick personal shopper with your purchases, ready to ship worldwide"
         floatingChips={[
           { icon: ShieldCheck, label: "Inspected in Chennai" },
           { icon: Package, label: "One box, many stores" },
@@ -364,8 +349,8 @@ export default function BuyAndShipPage() {
         ]}
         actions={
           <>
-            <HeroPrimaryButton href="#assisted-buy-form">
-              Submit Product Link
+            <HeroPrimaryButton href="#buy-and-ship-form">
+              Tell Us What to Buy
             </HeroPrimaryButton>
             <HeroSecondaryButton href={WHATSAPP_SHOPPER_URL}>
               <FaWhatsapp size={16} />
@@ -385,11 +370,11 @@ export default function BuyAndShipPage() {
         ]}
       />
 
-      {/* ───────── Supported stores ribbon ───────── */}
+      {/* ───────── Stores we buy from ribbon ───────── */}
       <section className="pt-10">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 px-4 sm:px-8">
           <span className="mr-1 text-[11px] font-black uppercase tracking-widest text-slate-400">
-            Shop from
+            We buy from
           </span>
           {QUICK_STORES.map((st) => (
             <button
@@ -397,7 +382,7 @@ export default function BuyAndShipPage() {
               type="button"
               onClick={() => {
                 setSourceStore(st);
-                document.getElementById("assisted-buy-form")?.scrollIntoView();
+                document.getElementById("buy-and-ship-form")?.scrollIntoView();
               }}
               className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-[#0B56D9] hover:bg-blue-50 hover:text-[#0B56D9]"
             >
@@ -414,7 +399,7 @@ export default function BuyAndShipPage() {
             eyebrow="How it works"
             title="How Buy & Ship"
             highlight="Works"
-            description="Four simple steps from finding an item in India to unboxing it at your doorstep abroad."
+            description="Four simple steps from telling us what you need to unboxing it at your doorstep abroad."
           />
           <StepsTimeline steps={STEPS} />
         </div>
@@ -422,7 +407,7 @@ export default function BuyAndShipPage() {
 
       {/* ───────── Request form ───────── */}
       <section
-        id="assisted-buy-form"
+        id="buy-and-ship-form"
         className="scroll-mt-24 border-y border-slate-200/80 bg-[#F7F9FF] py-16 sm:py-24"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-8">
@@ -430,7 +415,7 @@ export default function BuyAndShipPage() {
             eyebrow="Start your order"
             title="Buy & Ship"
             highlight="Request"
-            description="Share the product and where it’s going — your personal shopper takes it from there."
+            description="Tell us the product and where it's going — your personal shopper takes it from there."
           />
 
           <div className="grid items-start gap-8 lg:grid-cols-12">
@@ -439,35 +424,23 @@ export default function BuyAndShipPage() {
               className="space-y-8 rounded-[28px] border border-slate-200 bg-white p-6 sm:p-9 lg:col-span-7"
             >
               <FormGroup step="1" title="The product">
-                <FieldLabel label="Product URL or Item Description" required>
-                  <div className="relative">
-                    <Link2
-                      size={16}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#0B56D9]"
-                    />
-                    <input
-                      type="text"
-                      required
-                      value={productUrl}
-                      onChange={(e) => setProductUrl(e.target.value)}
-                      placeholder="Paste link from Amazon.in, Myntra, Ajio, Nykaa or describe item..."
-                      className={`${fieldClass} pl-11 pr-24`}
-                    />
-                    <button
-                      type="button"
-                      onClick={handlePaste}
-                      className="absolute right-2 top-1/2 inline-flex -translate-y-1/2 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition-colors hover:border-[#0B56D9] hover:text-[#0B56D9]"
-                    >
-                      <Clipboard size={12} /> Paste
-                    </button>
-                  </div>
+                <FieldLabel label="What Do You Want Us to Buy?" required>
+                  <textarea
+                    required
+                    rows={3}
+                    value={productDetails}
+                    onChange={(e) => setProductDetails(e.target.value)}
+                    placeholder="e.g. Red silk saree with gold border — or paste a product link if you have one..."
+                    className={`${fieldClass.replace("h-12 ", "")} resize-none py-3`}
+                  />
                 </FieldLabel>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
-                    label="Store Name / Source"
+                    label="Store You Shortlisted (optional)"
                     value={sourceStore}
                     onChange={setSourceStore}
-                    placeholder="e.g. Myntra, Amazon.in, Boutique..."
+                    placeholder="e.g. Myntra, Amazon.in, local boutique..."
+                    required={false}
                   />
                   <FormInput
                     label="Size / Variant / Quantity / Notes"
@@ -620,7 +593,7 @@ export default function BuyAndShipPage() {
             eyebrow="Store directory"
             title="Popular Indian Stores"
             highlight="We Buy From"
-            description="Browse products on these sites, copy the link, and paste it into Pick O Pick."
+            description="Name any store — online or local — and your personal shopper will source it. These are the ones we buy from most."
           />
 
           <div
@@ -726,18 +699,18 @@ export default function BuyAndShipPage() {
       </section>
 
       <CrossLinkBanner
-        eyebrow="Already have items?"
-        title="Items already at home in India?"
+        eyebrow="Shopping online already?"
+        title="Have product links ready?"
         description={
           <>
-            If packages are already at your family’s residence or parents&apos;
-            house in India, use our <strong>Order &amp; Send</strong> doorstep
-            pickup service instead.
+            If you&apos;re ordering from Indian websites yourself, use our{" "}
+            <strong>Order &amp; Send</strong> service — parcels go to our India
+            office address, we consolidate and courier them abroad.
           </>
         }
         to="/order-and-send"
         cta="Go to Order & Send"
-        image="/images/nri-trust/international-shipping.webp"
+        image="/images/nri-trust/shop-from-india.webp"
       />
     </main>
   );

@@ -4,18 +4,15 @@ import { ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import {
   FaInstagram,
   FaFacebookF,
-  FaLinkedinIn,
   FaYoutube,
   FaXTwitter,
 } from "react-icons/fa6";
 
-// LinkedIn / YouTube handles are placeholders until the client shares the
-// official ones.
+// LinkedIn is left out until the client shares the official handle.
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/pickopickofficial/", icon: FaInstagram, color: "bg-linear-to-tr from-[#FCAF45] via-[#DD2A7B] to-[#8134AF]" },
-  { name: "Facebook", href: "https://www.facebook.com/profile.php?id=61578667226102", icon: FaFacebookF, color: "bg-[#1877F2]" },
-  { name: "LinkedIn", href: "https://www.linkedin.com/company/pick-o-pick", icon: FaLinkedinIn, color: "bg-[#0A66C2]" },
-  { name: "YouTube", href: "https://www.youtube.com/@pickopick", icon: FaYoutube, color: "bg-[#FF0000]" },
+  { name: "Facebook", href: "https://www.facebook.com/people/Pick-O-Pick/pfbid0F6C9GymAgZ2KsvWHpnPPfFQaaV64H2K8m7XP2DStMuGJdaF1qbKBr1MJpeERa1ppl/", icon: FaFacebookF, color: "bg-[#1877F2]" },
+  { name: "YouTube", href: "https://www.youtube.com/@pickopick.official", icon: FaYoutube, color: "bg-[#FF0000]" },
   { name: "X (Twitter)", href: "https://x.com/Pickopicko61028", icon: FaXTwitter, color: "bg-black" },
 ];
 

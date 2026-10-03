@@ -37,7 +37,7 @@ const heroSlides = [
     width: 1916,
     height: 821,
     title: "Order & Send",
-    text: "Pickup in India. Delivery to your door abroad.",
+    text: "Order to our India address. We consolidate & ship worldwide.",
     href: "/order-and-send",
     button: "Explore Order & Send",
   },
