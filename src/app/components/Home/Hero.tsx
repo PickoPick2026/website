@@ -108,33 +108,38 @@ export function Hero() {
       >
         {heroSlides.map((slide, index) => (
           <SwiperSlide key={slide.src}>
-            <div className="relative">
-            <picture>
-              <source
-                media="(max-width: 639px)"
-                srcSet={slide.mobileSrc}
-                width={1120}
-                height={1400}
-                type="image/webp"
-              />
-              <img
-                src={slide.src}
-                alt={slide.alt}
-                width={slide.width}
-                height={slide.height}
-                className="block aspect-[4/5] h-auto w-full object-cover sm:aspect-auto"
-                loading="eager"
-                fetchPriority={index === 0 ? "high" : "low"}
-                decoding="async"
-                draggable={false}
-              />
-            </picture>
-            <div className="bg-white px-5 py-4 sm:absolute sm:bottom-5 sm:left-6 sm:max-w-sm sm:rounded-2xl sm:border sm:border-blue-100 sm:bg-white/95 sm:p-5 lg:bottom-8 lg:left-10 lg:max-w-md">
-              <h2 className="text-xl font-extrabold tracking-tight text-[#0A1931] sm:text-2xl lg:text-3xl">{slide.title}</h2>
-              <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:text-sm">{slide.text}</p>
-              <Link to={slide.href} className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-[#0B56D9] px-5 py-2 text-xs font-bold text-white hover:bg-[#0849B7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B56D9]">{slide.button}</Link>
-            </div>
-            </div>
+            {/* The whole slide is one link — clicking the image or the button
+                opens the slide's page. Button sits centered, just above the
+                bottom edge. */}
+            <Link
+              to={slide.href}
+              className="group relative block"
+              aria-label={`${slide.button} — ${slide.alt}`}
+            >
+              <picture>
+                <source
+                  media="(max-width: 639px)"
+                  srcSet={slide.mobileSrc}
+                  width={1120}
+                  height={1400}
+                  type="image/webp"
+                />
+                <img
+                  src={slide.src}
+                  alt={slide.alt}
+                  width={slide.width}
+                  height={slide.height}
+                  className="block aspect-[4/5] h-auto w-full object-cover sm:aspect-auto"
+                  loading="eager"
+                  fetchPriority={index === 0 ? "high" : "low"}
+                  decoding="async"
+                  draggable={false}
+                />
+              </picture>
+              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#0B56D9] px-6 py-2.5 text-xs font-bold text-white shadow-sm transition-colors group-hover:bg-[#0849B7] lg:bottom-7">
+                {slide.button}
+              </span>
+            </Link>
           </SwiperSlide>
         ))}
       </Swiper>

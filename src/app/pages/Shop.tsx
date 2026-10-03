@@ -143,7 +143,7 @@ export default function ShopPage() {
           width={2172}
           height={724}
           fetchPriority="high"
-          className="block h-auto w-full"
+          className="block h-[56vw] min-h-[220px] w-full object-cover object-center sm:h-auto sm:min-h-0"
         />
         <div className="absolute inset-0 flex items-center justify-center px-3 py-1 text-center sm:px-6">
           <div className="w-full max-w-3xl">
@@ -153,7 +153,7 @@ export default function ShopPage() {
             <form
               id="shop-search"
               onSubmit={handleSearch}
-              className="mx-auto mt-2 flex h-11 w-full max-w-xl items-center gap-2 rounded-xl border border-white/80 bg-white/95 px-3 text-left shadow-md backdrop-blur-sm sm:mt-5 sm:h-14 sm:gap-3 sm:rounded-2xl sm:px-5"
+              className="mx-auto mt-2 flex h-10 w-full max-w-xl items-center gap-2 rounded-xl border border-white/80 bg-white/95 px-3 text-left shadow-md backdrop-blur-sm sm:mt-5 sm:h-14 sm:gap-3 sm:rounded-2xl sm:px-5"
             >
               <label htmlFor="shop-search-input" className="sr-only">
                 Search Indian products

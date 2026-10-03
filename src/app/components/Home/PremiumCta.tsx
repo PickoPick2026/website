@@ -31,7 +31,7 @@ export function PremiumCta() {
   return (
     <section
       id="premium-services"
-      className="w-full bg-[#F7F9FF] py-14 scroll-mt-28 sm:py-20"
+      className="w-full bg-[#F7F9FF] pb-14 scroll-mt-28 sm:pb-20"
       aria-label="NRI Premium Services"
     >
         <div className="relative grid w-full bg-white text-[#0A1931]">
