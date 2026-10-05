@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, Pause, Play, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const openRegister = () =>
-  window.dispatchEvent(new Event("pickopick:open-register"));
 const openConsultation = () =>
   window.dispatchEvent(new Event("pickopick:open-consultation"));
 
 export function WelcomePopup() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -90,14 +89,14 @@ export function WelcomePopup() {
                 <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-600">
                   Choose Buy &amp; Ship when you want us to shop in India, or
                   Order &amp; Send when your purchases are ready. Our team
-                  handles pickup, consolidation and global delivery.
+                  handles consolidation and global delivery.
                 </p>
                 <div className="mt-7 grid gap-3 sm:grid-cols-2">
                   <button
                     type="button"
                     onClick={() => {
                       dismiss();
-                      openRegister();
+                      navigate("/buy-and-ship");
                     }}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0B56D9] px-5 py-3.5 text-xs font-extrabold text-white transition-colors hover:bg-[#0849B7]"
                   >
@@ -107,7 +106,7 @@ export function WelcomePopup() {
                     type="button"
                     onClick={() => {
                       dismiss();
-                      openConsultation();
+                      navigate("/order-and-send");
                     }}
                     className="rounded-full border border-[#0B56D9] px-5 py-3.5 text-xs font-extrabold text-[#0B56D9] transition-colors hover:bg-blue-50"
                   >
