@@ -61,3 +61,7 @@ Apply `supabase/migrations/20261003_crm_request_status.sql` to expose CRM status
 There is no automatic CRM retry worker in this version. Failed/pending records require team follow-up or a future server-side retry worker. Do not resubmit the whole customer form to retry CRM, because that can create another local request.
 
 Legacy real request endpoints remain available for compatibility; current forms use the new shared endpoint. Legacy callers do not receive the new CRM sync behavior until they migrate.
+
+## Bot protection
+
+`/api/requests` is protected by Vercel BotID (Basic mode, free). The browser solves an invisible challenge at app startup (`initBotId` in `src/main.tsx`, production builds only) and the API validates it with `checkBotId()` before saving. Direct HTTP clients without the challenge are rejected with 403. The check fails open on BotID outages, and setting `BOTID_DISABLED=true` in the environment switches it off without a code change. Local development always classifies as human. Test forms in the browser, not with curl, once deployed.

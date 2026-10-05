@@ -20,7 +20,7 @@ export function GlobalOffices() {
         alt="Pick O Pick-branded aircraft and a cargo ship travelling from Chennai across the sea toward Singapore, London and Dubai beneath a bright cloudy sky"
         width={2048}
         height={683}
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 block h-[56vw] w-full object-cover object-bottom sm:h-auto sm:object-contain"
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 block h-[56vw] w-full object-cover object-bottom sm:h-full"
         loading="lazy"
         decoding="async"
       />

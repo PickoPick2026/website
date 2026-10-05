@@ -21,6 +21,20 @@ export default async function handler(req, res) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload) || (serviceType && requestType)) {
     return res.status(400).json({ error: 'Provide one request type and its form details.' });
   }
+  // Vercel BotID (Basic, free, always on): invisible challenge validation.
+  // Real visitors solved the challenge in their browser; direct HTTP clients
+  // did not. Suspected bots are STILL SAVED — flagged in the payload and
+  // excluded from CRM sync — so a mis-classified real customer can never
+  // lose their lead. A BotID outage also fails open (treated as human).
+  let botSuspect = false;
+  try {
+    const { checkBotId } = await import('botid/server');
+    const verification = await checkBotId();
+    botSuspect = verification?.isBot === true;
+  } catch (error) {
+    console.warn('BotID check unavailable; treating as human.', error?.message);
+  }
+  if (botSuspect) payload.botSuspect = true;
   const kind = serviceType || requestType;
   let submit;
   let table;
@@ -48,7 +62,8 @@ export default async function handler(req, res) {
     if (!result) return res.status(500).json({ error: 'Unable to process your request.' });
     if (status >= 400 || !result.success) return res.status(status).json(result);
     const reference = result.requestId || result.orderCode;
-    const crm = await createCrmLead(kind, payload, reference);
+    // Suspected bots never reach the CRM; real leads always do.
+    const crm = botSuspect ? { status: 'skipped', leadId: null } : await createCrmLead(kind, payload, reference);
     // Optional migration exposes delivery state for admin follow-up. A CRM
     // outage does not erase the saved customer request or claim a successful sync.
     if (table) {
