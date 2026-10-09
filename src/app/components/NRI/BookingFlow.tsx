@@ -1208,7 +1208,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
 
                   <p className="rounded-xl bg-blue-50 px-4 py-3 text-xs leading-relaxed text-slate-600">
                     {submissionResult.emailSent
-                      ? 'Your branded booking confirmation email has been sent, with info@pickopick.com copied.'
+                      ? 'Your branded booking confirmation email has been sent, with sales@pickopick.com copied.'
                       : 'Your booking request is saved. We could not send the confirmation email, so our team will contact you on WhatsApp.'}
                   </p>
 

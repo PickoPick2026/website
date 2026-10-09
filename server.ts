@@ -12,6 +12,7 @@ import { SendMailClient } from "zeptomail";
 import { supabase } from './supabase.js';
 import { brandedEmailHtml } from './api/_request-utils.js';
 import customerRequests from './api/requests.js';
+import analyzeProductApi from './api/analyze.js';
 
 
 const otpStore: Record<string, { otp: string; expiry: number }> = {};
@@ -85,6 +86,16 @@ const mailClient = new SendMailClient({
   url: mailUrl,
   token: mailToken
 });
+
+async function sendPickIdWelcomeEmail(email: string, name: string, pickID: string) {
+  await mailClient.sendMailWithTemplate({
+    template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
+    from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
+    to: [{ email_address: { address: email, name } }],
+    cc: [{ email_address: { address: "sales@pickopick.com", name: "Pick O Pick Sales" } }],
+    merge_info: { pickID },
+  });
+}
 
 const transactionalMailClient = new SendMailClient({
   url: "https://api.zeptomail.in/v1.1/email",
@@ -281,29 +292,34 @@ app.post("/api/auth/google", async (req, res) => {
     const user = data[0];
     const pickID = (user as any).pickID;
 
-    // Welcome email with the Pick ID + internal notification (same templates
-    // as normal registration). Mail failure must not block sign-in.
     try {
-      await mailClient.sendMailWithTemplate({
-        template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
-        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
-        to: [{ email_address: { address: email, name } }],
-        merge_info: { pickID: pickID },
+      await fetch("https://apps.cratiocrm.com/Customize/Webhooks/webhook.php?id=79915", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "Contact name": name,
+          "Contact number ": "",
+          email,
+          City: "",
+          Address: "",
+          Country: "India",
+          Region: "",
+          "Picopick id": pickID,
+        }),
       });
-      await mailClient.sendMailWithTemplate({
-        template_key: "2518b.5f1360f6e8e70412.k1.ef76b6b0-5026-11f1-8706-e256a66a52e4.19e2a502d9b",
-        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
-        to: [
-          { email_address: { address: "dm2@pickopick.com", name: "Info" } },
-          { email_address: { address: "dm1@pickopick.com", name: "Support" } },
-        ],
-        merge_info: { name: name, email: email, phoneNumber: "", pickID: pickID },
-      });
+    } catch (crmError) {
+      console.error("CRATIO CRM ERROR:", crmError);
+    }
+
+    let welcomeEmailSent = false;
+    try {
+      await sendPickIdWelcomeEmail(email, name, String(pickID ?? ""));
+      welcomeEmailSent = true;
     } catch (mailError: any) {
       console.error("GOOGLE WELCOME EMAIL ERROR:", mailError?.message || mailError);
     }
 
-    return res.json({ user, isNew: true });
+    return res.json({ user, isNew: true, welcomeEmailSent });
   } catch (err) {
     console.error("GOOGLE AUTH ERROR:", err);
     return res.status(500).json({ error: "Google sign-in failed. Please try again." });
@@ -333,7 +349,28 @@ app.post("/api/auth/google-phone", async (req, res) => {
       return res.status(500).json({ error: "Could not save your mobile number. Please try again." });
     }
 
-    return res.json({ user: data[0] });
+    const user = data[0];
+
+    try {
+      await fetch("https://apps.cratiocrm.com/Customize/Webhooks/webhook.php?id=79915", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "Contact name": user.firstName || "Customer",
+          "Contact number ": phoneNumber,
+          email,
+          City: "",
+          Address: "",
+          Country: "India",
+          Region: "",
+          "Picopick id": user.pickID,
+        }),
+      });
+    } catch (crmError) {
+      console.error("CRATIO CRM ERROR:", crmError);
+    }
+
+    return res.json({ user });
   } catch (err) {
     console.error("GOOGLE PHONE ERROR:", err);
     return res.status(500).json({ error: "Could not save your mobile number. Please try again." });
@@ -465,6 +502,7 @@ app.post("/api/verify-otp", (req, res) => {
           }
         }
       ],
+      cc: [{ email_address: { address: "sales@pickopick.com", name: "Pick O Pick Sales" } }],
       merge_info: {}
     });
 
@@ -547,6 +585,7 @@ app.post("/api/forgot-password", async (req, res) => {
           }
         }
       ],
+      cc: [{ email_address: { address: "sales@pickopick.com", name: "Pick O Pick Sales" } }],
       merge_info: {
         name: name || "User",
         OTP: otp
@@ -698,6 +737,7 @@ app.post("/api/send-otp", async (req, res) => {
           }
         }
       ],
+      cc: [{ email_address: { address: "sales@pickopick.com", name: "Pick O Pick Sales" } }],
       merge_info: {
         name: name || "User",
         OTP: otp
@@ -928,7 +968,7 @@ app.post("/api/auth/login", async (req, res) => {
         }
 
         const estimateMessage = encodeURIComponent(`Hello Pick O Pick! I requested a shipping estimate.\nVerification code: ${estimateData.request_code}\nDestination: ${country}`);
-        const estimateWhatsAppUrl = `https://wa.me/919876543210?text=${estimateMessage}`;
+        const estimateWhatsAppUrl = `https://wa.me/919790361222?text=${estimateMessage}`;
         const emailSent = await sendNriConsultationConfirmation(
           estimateRecord.email || "",
           estimateRecord.customer_name,
@@ -970,7 +1010,7 @@ app.post("/api/auth/login", async (req, res) => {
       }
 
       const message = encodeURIComponent(`Hello Pick O Pick! I submitted an NRI ${requestType.replace(/_/g, " ")} request.\nReference: ${data.request_code}`);
-      const requestWhatsAppUrl = `https://wa.me/919876543210?text=${message}`;
+      const requestWhatsAppUrl = `https://wa.me/919790361222?text=${message}`;
       const emailSent = await sendNriConsultationConfirmation(
         record.email || "",
         record.customer_name,
@@ -1083,40 +1123,6 @@ app.post("/api/auth/login", async (req, res) => {
     return `https://www.google.com/search?q=${query}+buy+online+india`;
   }
 
-  // 🔍 Helper: Extract product name from link without AI (Fallback)
-  function extractProductFromUrl(link: string): string {
-    try {
-      const url = new URL(link);
-      const host = url.hostname.toLowerCase();
-      
-      // Manual Search Fallback
-      if (host === 'manual-search.com') {
-        return decodeURIComponent(url.pathname.substring(1));
-      }
-      
-      if (host.includes('amazon')) {
-        const pathParts = url.pathname.split('/');
-        const namePart = pathParts.find(p => p.length > 5 && !p.includes('.') && p !== 'dp' && p !== 'gp' && p !== 'product-reviews');
-        if (namePart) return decodeURIComponent(namePart.replace(/-/g, ' '));
-      }
-      
-      if (host.includes('flipkart')) {
-        const pathParts = url.pathname.split('/');
-        if (pathParts[1]) return decodeURIComponent(pathParts[1].replace(/-/g, ' '));
-      }
-
-      if (host.includes('myntra')) {
-        const pathParts = url.pathname.split('/');
-        const lastPart = pathParts[pathParts.length - 1];
-        return decodeURIComponent(lastPart.replace(/-/g, ' ').replace(/\.html$/, '').replace(/\d+$/, ''));
-      }
-
-      const parts = url.pathname.split('/').filter(p => p.length > 3);
-      if (parts.length > 0) return decodeURIComponent(parts.sort((a, b) => b.length - a.length)[0].replace(/[-_]/g, ' '));
-    } catch (e) {}
-    return "Product";
-  }
-
   app.post("/api/analyze-image", async (req, res) => {
     try {
       const { image } = req.body;
@@ -1176,71 +1182,7 @@ app.post("/api/auth/login", async (req, res) => {
     }
   });
 
-  app.post("/api/analyze-link", async (req, res) => {
-    try {
-      const { link } = req.body;
-      if (!link) return res.status(400).json({ error: "No link provided" });
-
-      // 100% Reliable URL Extraction (Zero AI Quota used)
-      const productName = extractProductFromUrl(link);
-      console.log("🛠️ Link Analysis (URL extraction):", productName);
-
-      // Extract real product image from page
-      let productImage = "";
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3500);
-        const pageRes = await fetch(link, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-          },
-          signal: controller.signal
-        });
-        clearTimeout(timeout);
-        if (pageRes.ok) {
-          const html = await pageRes.text();
-          const match = html.match(/<meta[^>]+property=["'](?:og:image|og:image:secure_url)["'][^>]+content=["']([^"']+)["']/i)
-            || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["'](?:og:image|og:image:secure_url)["']/i)
-            || html.match(/<meta[^>]+name=["'](?:twitter:image|twitter:image:src)["'][^>]+content=["']([^"']+)["']/i)
-            || html.match(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["']/i)
-            || html.match(/id=["']landingImage["'][^>]*src=["']([^"']+)["']/i)
-            || html.match(/data-old-hires=["']([^"']+)["']/i);
-          if (match && match[1]) {
-            productImage = match[1].replace(/&amp;/g, "&");
-          }
-        }
-      } catch (e) {
-        console.warn("Could not fetch page og:image:", e);
-      }
-
-      const localProducts = await searchSupabaseProducts(productName);
-      const stores = ["Amazon India", "Flipkart", "Google Shopping"];
-      const universalResults = stores.map((store, i) => ({
-        id: `link-universal-${i}`,
-        name: productName,
-        price: "Check Store",
-        store: store,
-        source: store.toLowerCase().split(' ')[0],
-        image: productImage || (localProducts[0]?.image || ""),
-        category: "E-commerce",
-        inStock: true,
-        url: buildStoreUrl(store, productName),
-        description: `View ${productName} details on ${store}`
-      }));
-
-      res.json({
-        source: localProducts.length > 0 ? "mixed" : "universal",
-        identified: productName,
-        image: productImage || (localProducts[0]?.image || ""),
-        results: [...localProducts, ...universalResults]
-      });
-
-    } catch (error) {
-      console.error("Analyze Link Error:", error);
-      res.json({ source: "universal", identified: "", results: [] });
-    }
-  });
+  app.all("/api/analyze-link", (req, res) => analyzeProductApi(req, res));
 
   app.post("/api/search", async (req, res) => {
     try {

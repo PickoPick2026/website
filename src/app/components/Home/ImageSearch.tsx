@@ -332,6 +332,24 @@ export function ImageSearch() {
 
     setSearchPhase("analyzing");
     const result = extractStoreInfo(validation.domain, productLink);
+    try {
+      const endpoint = new URL('/api/analyze-link', window.location.origin);
+      endpoint.searchParams.set('url', result.originalUrl);
+      const response = await fetch(endpoint);
+      if (response.ok) {
+        const apiResult = await response.json();
+        const identified = String(apiResult.identified || '').trim();
+        if (identified && identified.toLowerCase() !== 'product') {
+          result.productTitle = identified
+            .split(/\s+/)
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+        }
+      }
+    } catch (error) {
+      // The local URL parser still provides a usable fallback if lookup fails.
+      console.warn('Product link API unavailable; using URL details.', error);
+    }
     await new Promise((r) => setTimeout(r, 400));
 
     setAnalysisResult(result);

@@ -18,6 +18,17 @@ function getMailClient() {
   });
 }
 
+async function sendPickIdWelcomeEmail(email, name, pickID) {
+  const mailClient = getMailClient();
+  await mailClient.sendMailWithTemplate({
+    template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
+    from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
+    to: [{ email_address: { address: email, name } }],
+    cc: [{ email_address: { address: "sales@pickopick.com", name: "Pick O Pick Sales" } }],
+    merge_info: { pickID },
+  });
+}
+
 function parseBody(req) {
   if (typeof req.body === "string") {
     try {
@@ -144,18 +155,8 @@ async function handleRegister(req, res) {
       template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
       from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
       to: [{ email_address: { address: cleanEmail, name: name } }],
+      cc: [{ email_address: { address: "sales@pickopick.com", name: "Pick O Pick Sales" } }],
       merge_info: { pickID: pickID },
-    });
-
-    const mailClient1 = getMailClient();
-    await mailClient1.sendMailWithTemplate({
-      template_key: "2518b.5f1360f6e8e70412.k1.ef76b6b0-5026-11f1-8706-e256a66a52e4.19e2a502d9b",
-      from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
-      to: [
-        { email_address: { address: "dm2@pickopick.com", name: "Info" } },
-        { email_address: { address: "dm1@pickopick.com", name: "Support" } },
-      ],
-      merge_info: { name: name, email: cleanEmail, phoneNumber: phoneNumber, pickID: pickID },
     });
 
     return res.json({ user });
@@ -234,31 +235,15 @@ async function handleGoogle(req, res) {
 
     // Welcome email with the Pick ID + internal team notification — same
     // templates as normal registration (no OTP involved).
+    let welcomeEmailSent = false;
     try {
-      const mailClient = getMailClient();
-      await mailClient.sendMailWithTemplate({
-        template_key: "2518b.5f1360f6e8e70412.k1.14d4fa60-0dc0-11f1-8966-62df313bf14d.19c77247d06",
-        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
-        to: [{ email_address: { address: email, name } }],
-        merge_info: { pickID: pickID },
-      });
-
-      const mailClient1 = getMailClient();
-      await mailClient1.sendMailWithTemplate({
-        template_key: "2518b.5f1360f6e8e70412.k1.ef76b6b0-5026-11f1-8706-e256a66a52e4.19e2a502d9b",
-        from: { address: process.env.FROM_EMAIL || "noreply@pickopick.com", name: "PickoPick" },
-        to: [
-          { email_address: { address: "dm2@pickopick.com", name: "Info" } },
-          { email_address: { address: "dm1@pickopick.com", name: "Support" } },
-        ],
-        merge_info: { name: name, email: email, phoneNumber: "", pickID: pickID },
-      });
+      await sendPickIdWelcomeEmail(email, name, pickID);
+      welcomeEmailSent = true;
     } catch (mailError) {
-      // Account is already created — a mail failure must not block sign-in.
       console.error("GOOGLE WELCOME EMAIL ERROR:", mailError?.message || mailError);
     }
 
-    return res.json({ user, isNew: true, photoUrl });
+    return res.json({ user, isNew: true, welcomeEmailSent, photoUrl });
   } catch (err) {
     console.error("GOOGLE AUTH ERROR:", err);
     return res.status(500).json({ error: "Google sign-in failed. Please try again." });

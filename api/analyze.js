@@ -10,40 +10,46 @@ const supabase = createClient(
 
 const genAI = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
 
+const PRODUCT_URL_DOMAINS = [
+  "amazon.in", "amazon.com", "flipkart.com", "myntra.com", "ajio.com",
+  "nykaa.com", "tatacliq.com", "meesho.com", "firstcry.com", "fabindia.com",
+  "bewakoof.com", "jiomart.com", "croma.com",
+];
+
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  const query = req.query || {};
+  const body = req.body || {};
+  const requestPath = String(req.url || "").split("?")[0];
+  const isLinkRequest = query.type === "link" || requestPath.endsWith("/analyze-link") || query.url || query.link || body.url || body.link;
 
-  const type = req.query.type || (req.body?.link ? "link" : "image");
-
-  if (type === "link" || req.body?.link) {
+  if (isLinkRequest) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    if (req.method === "OPTIONS") return res.status(204).end();
+    if (req.method !== "GET" && req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
     return handleAnalyzeLink(req, res);
-  } else {
-    return handleAnalyzeImage(req, res);
   }
+
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  return handleAnalyzeImage(req, res);
 }
 
 async function handleAnalyzeLink(req, res) {
   try {
-    const { link } = req.body || {};
-    if (!link) return res.status(400).json({ error: "No link provided" });
+    const link = req.method === "GET"
+      ? (req.query?.url || req.query?.link)
+      : (req.body?.url || req.body?.link);
+    const parsedUrl = validateProductUrl(link);
 
-    const productName = extractProductFromUrl(link);
+    const productName = extractProductFromUrl(parsedUrl.toString());
 
     // Extract real product image from page
     let productImage = "";
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3500);
-      const pageRes = await fetch(link, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-        },
-        signal: controller.signal
-      });
-      clearTimeout(timeout);
+      const pageRes = await fetchProductPage(parsedUrl);
       if (pageRes.ok) {
         const html = await pageRes.text();
         const match = html.match(/<meta[^>]+property=["'](?:og:image|og:image:secure_url)["'](?:[^>]+content=["']([^"']+)["'])?/i)
@@ -82,8 +88,63 @@ async function handleAnalyzeLink(req, res) {
       results: [...localProducts, ...universalResults],
     });
   } catch (error) {
+    if (error instanceof TypeError && error.message.startsWith("Invalid product URL:")) {
+      return res.status(400).json({ error: error.message.replace("Invalid product URL: ", "") });
+    }
     console.error("Analyze Link Error:", error);
     return res.status(500).json({ error: "Failed to analyze link" });
+  }
+}
+
+function validateProductUrl(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new TypeError("Invalid product URL: Provide a product URL in the `url` query parameter.");
+  }
+  if (value.length > 4096) {
+    throw new TypeError("Invalid product URL: The URL is too long.");
+  }
+
+  let url;
+  try {
+    url = new URL(value.trim());
+  } catch {
+    throw new TypeError("Invalid product URL: Use a complete HTTPS product URL.");
+  }
+
+  const hostname = url.hostname.toLowerCase().replace(/\.$/, "");
+  const isSupportedDomain = PRODUCT_URL_DOMAINS.some(
+    (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+  );
+  if (url.protocol !== "https:" || !isSupportedDomain || url.username || url.password) {
+    throw new TypeError("Invalid product URL: Use an HTTPS link from a supported Indian store.");
+  }
+
+  return url;
+}
+
+async function fetchProductPage(initialUrl) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3500);
+  let currentUrl = initialUrl;
+
+  try {
+    for (let redirects = 0; redirects <= 3; redirects += 1) {
+      const response = await fetch(currentUrl, {
+        redirect: "manual",
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        },
+        signal: controller.signal,
+      });
+
+      if (response.status < 300 || response.status >= 400) return response;
+      const location = response.headers.get("location");
+      if (!location || redirects === 3) return response;
+      currentUrl = validateProductUrl(new URL(location, currentUrl).toString());
+    }
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -93,7 +154,13 @@ function extractProductFromUrl(link) {
     const host = url.hostname.toLowerCase();
     if (host.includes("amazon")) {
       const parts = url.pathname.split("/");
-      const namePart = parts.find(p => p.length > 5 && !p.includes(".") && p !== "dp" && p !== "gp");
+      const namePart = parts.find(p =>
+        p.length > 5 &&
+        !p.includes(".") &&
+        !["dp", "gp", "product-reviews"].includes(p) &&
+        !/^B[A-Z0-9]{9}$/i.test(p) &&
+        !/^\d{9,}$/.test(p)
+      );
       if (namePart) return decodeURIComponent(namePart.replace(/-/g, " "));
     }
     if (host.includes("flipkart")) {

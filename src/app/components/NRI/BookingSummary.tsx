@@ -183,7 +183,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
         {/* Human Concierge Footer Help */}
         <div className="border-t border-slate-100 bg-slate-50 -mx-5 -mb-5 rounded-b-2xl p-4 pt-3">
           <a
-            href="https://wa.me/919876543210?text=Hello%20Pick%20O%20Pick!%20I%20am%20filling%20out%20my%20NRI%20booking%20and%20need%20help."
+            href="https://wa.me/919790361222?text=Hello%20Pick%20O%20Pick!%20I%20am%20filling%20out%20my%20NRI%20booking%20and%20need%20help."
             target="_blank"
             rel="noopener noreferrer"
             className="mt-2.5 w-full py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"

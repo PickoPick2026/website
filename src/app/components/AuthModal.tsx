@@ -19,6 +19,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [step, setStep] = useState<AuthStep>('google');
   const [googleUser, setGoogleUser] = useState<PickUser | null>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [welcomeEmailSent, setWelcomeEmailSent] = useState<boolean | null>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isSavingPhone, setIsSavingPhone] = useState(false);
 
@@ -28,20 +29,19 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       setStep('google');
       setGoogleUser(null);
       setPhoneNumber('');
+      setWelcomeEmailSent(null);
     }
   }, [isOpen]);
 
   const persistUser = (user: PickUser) => {
-    localStorage.setItem('user', JSON.stringify(user));
-    window.dispatchEvent(new Event('auth-change'));
-
     if (!user.phoneNumber || String(user.phoneNumber).trim() === '') {
       setGoogleUser(user);
       setStep('mobile');
-      toast.info('One last step — add your mobile number to finish.');
       return;
     }
 
+    localStorage.setItem('user', JSON.stringify(user));
+    window.dispatchEvent(new Event('auth-change'));
     toast.success(
       `Welcome${user.firstName ? `, ${user.firstName}` : ''}! You are signed in.`,
     );
@@ -51,8 +51,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      const user = await signInWithGoogle();
-      persistUser(user);
+      const result = await signInWithGoogle();
+      persistUser(result.user);
+      if (!result.user.phoneNumber || String(result.user.phoneNumber).trim() === '') {
+        setWelcomeEmailSent(result.welcomeEmailSent ?? null);
+        if (result.welcomeEmailSent === false) {
+          toast.error('We could not send your Pick ID email. Please contact sales@pickopick.com if it does not arrive.');
+        } else if (result.welcomeEmailSent) {
+          toast.success('Your Pick ID was sent to your Google email.');
+        }
+        toast.info('One last step — add your mobile number to finish.');
+      }
     } catch (error) {
       const code = (error as { code?: string })?.code;
       if (
@@ -193,6 +202,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     ready. We only use it for order updates.
                   </p>
 
+                  {welcomeEmailSent === true && (
+                    <p className="mb-5 w-full rounded-xl bg-emerald-50 px-4 py-3 text-center text-xs leading-relaxed text-emerald-800">
+                      Your Pick ID was sent to <strong>{googleUser?.emailID}</strong>.
+                    </p>
+                  )}
+                  {welcomeEmailSent === false && (
+                    <p className="mb-5 w-full rounded-xl bg-amber-50 px-4 py-3 text-center text-xs leading-relaxed text-amber-800">
+                      We could not send your Pick ID email. Please contact sales@pickopick.com if it does not arrive.
+                    </p>
+                  )}
+
                   <form onSubmit={handleMobileSubmit} className="w-full flex flex-col gap-4">
                     <div className="relative">
                       <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
@@ -200,6 +220,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       </div>
                       <input
                         type="tel"
+                        required
+                        inputMode="tel"
                         value={phoneNumber}
                         onChange={(event) => setPhoneNumber(event.target.value)}
                         placeholder="Mobile number (e.g. +1 555 000 0000)"

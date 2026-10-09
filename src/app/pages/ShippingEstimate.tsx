@@ -160,7 +160,7 @@ export default function ShippingEstimatePage() {
                 </p>
                 <p className="mx-auto mt-2 max-w-sm text-xs text-slate-500">
                   {result.emailSent
-                    ? "A confirmation email was sent to you, with info@pickopick.com copied."
+                    ? "A confirmation email was sent to you, with sales@pickopick.com copied."
                     : "Your request was saved. The confirmation email could not be sent, so our team will contact you on WhatsApp."}
                 </p>
                 <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -174,7 +174,7 @@ export default function ShippingEstimatePage() {
                     Continue on WhatsApp
                   </a>
                   <a
-                    href="tel:+919876543210"
+                    href="tel:+919790361222"
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-blue-200 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-[#0B56D9] hover:bg-blue-50"
                   >
                     <PhoneCall className="h-4 w-4" />
@@ -339,7 +339,7 @@ export default function ShippingEstimatePage() {
                   Prefer to talk?
                 </span>
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+919790361222"
                   className="block text-xs font-semibold text-[#0B56D9] hover:underline"
                 >
                   Call our contact centre

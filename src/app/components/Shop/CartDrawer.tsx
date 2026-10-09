@@ -224,7 +224,7 @@ export function CartDrawer({
         throw itemsError;
       }
 
-      // Confirmation email with product details (CC info@pickopick.com).
+      // Confirmation email with product details (CC sales@pickopick.com).
       try {
         await submitCustomerRequest({
           requestType: 'cart_quote',

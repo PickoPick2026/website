@@ -14,6 +14,11 @@ export interface PickUser {
   [key: string]: unknown;
 }
 
+export interface GoogleSignInResult {
+  user: PickUser;
+  welcomeEmailSent?: boolean;
+}
+
 /**
  * Opens the Google sign-in popup, then syncs the Google account with the Pick
  * O Pick customer list (Supabase `customerList`):
@@ -21,7 +26,7 @@ export interface PickUser {
  *  - first-time user -> the row + Pick ID are created server-side and the
  *                       welcome email is sent
  */
-export async function signInWithGoogle(): Promise<PickUser> {
+export async function signInWithGoogle(): Promise<GoogleSignInResult> {
   const auth = getAuth(firebaseApp);
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
@@ -52,5 +57,8 @@ export async function signInWithGoogle(): Promise<PickUser> {
     );
   }
 
-  return data.user as PickUser;
+  return {
+    user: data.user as PickUser,
+    welcomeEmailSent: data.welcomeEmailSent,
+  };
 }
